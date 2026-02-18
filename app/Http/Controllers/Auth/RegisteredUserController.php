@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Category;
+use App\Models\Upazila;
+use App\Models\Role;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
+
+class RegisteredUserController extends Controller
+{
+    /**
+     * Display the registration view.
+     */
+    public function create(): View
+    {
+        $categories = Category::active()
+            ->where('allow_user_submission', true)
+            ->whereNull('parent_id')
+            ->orderBy('name')
+            ->get();
+        
+        $upazilas = Upazila::active()->ordered()->get();
+        
+        return view('auth.register', compact('categories', 'upazilas'));
+    }
+
+    /**
+     * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'max:20'],
+            'nid_number' => ['nullable', 'string', 'max:20'],
+            'upazila_id' => ['required', 'exists:upazilas,id'],
+            'address' => ['required', 'string', 'max:500'],
+            'categories' => ['required', 'array', 'min:1'],
+            'categories.*' => ['exists:categories,id'],
+            'registration_purpose' => ['required', 'string', 'max:1000'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
+        ], [
+            'name.required' => 'নাম দিতে হবে',
+            'email.required' => 'ইমেইল দিতে হবে',
+            'email.unique' => 'এই ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে',
+            'phone.required' => 'মোবাইল নম্বর দিতে হবে',
+            'upazila_id.required' => 'উপজেলা নির্বাচন করতে হবে',
+            'address.required' => 'ঠিকানা দিতে হবে',
+            'categories.required' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করতে হবে',
+            'categories.min' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করতে হবে',
+            'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
+            'password.required' => 'পাসওয়ার্ড দিতে হবে',
+            'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
+            'avatar.image' => 'শুধুমাত্র ছবি ফাইল আপলোড করুন',
+            'avatar.mimes' => 'JPG, PNG অথবা GIF ফাইল আপলোড করুন',
+            'avatar.max' => 'ছবির সাইজ সর্বোচ্চ 2MB হতে পারবে',
+        ]);
+
+        // Get the default user role
+        $userRole = Role::where('slug', 'user')->first();
+
+        // Handle avatar upload
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'nid_number' => $request->nid_number,
+            'upazila_id' => $request->upazila_id,
+            'address' => $request->address,
+            'registration_purpose' => $request->registration_purpose,
+            'requested_categories' => $request->categories,
+            'password' => Hash::make($request->password),
+            'role_id' => $userRole?->id,
+            'status' => 'pending', // Account needs admin approval
+            'avatar' => $avatarPath,
+        ]);
+
+        // Store requested categories (not yet approved)
+        foreach ($request->categories as $categoryId) {
+            $user->categoryPermissions()->attach($categoryId, [
+                'is_approved' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        event(new Registered($user));
+
+        // Don't auto-login - redirect to success page
+        return redirect()->route('register.success');
+    }
+
+    /**
+     * Show registration success page
+     */
+    public function success(): View
+    {
+        return view('auth.register-success');
+    }
+}
