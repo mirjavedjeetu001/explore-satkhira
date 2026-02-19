@@ -19,6 +19,9 @@
             <a href="{{ route('admin.settings.social') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.settings.social') ? 'active' : '' }}">
                 <i class="fas fa-share-alt me-2"></i>Social Links
             </a>
+            <a href="{{ route('admin.settings.about') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.settings.about') ? 'active' : '' }}">
+                <i class="fas fa-info-circle me-2"></i>About Page
+            </a>
         </div>
     </div>
     
@@ -35,7 +38,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Site Name</label>
                             <input type="text" name="settings[site_name]" class="form-control" 
-                                   value="{{ $settings['site_name'] ?? 'সাতক্ষীরা পোর্টাল' }}">
+                                   value="{{ $settings['site_name'] ?? 'Explore Satkhira' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Site Tagline</label>
@@ -126,6 +129,46 @@
                             <label class="form-label"><i class="fab fa-linkedin text-primary me-1"></i>LinkedIn</label>
                             <input type="url" name="settings[linkedin]" class="form-control" 
                                    value="{{ $settings['linkedin'] ?? '' }}" placeholder="https://linkedin.com/...">
+                        </div>
+                    </div>
+                    
+                @elseif(request()->routeIs('admin.settings.about'))
+                    <h5 class="mb-4"><i class="fas fa-info-circle text-success me-2"></i>About Page Settings</h5>
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">পরিচিতি (Introduction)</label>
+                            <textarea name="settings[about_intro]" class="form-control" rows="3" placeholder="এক্সপ্লোর সাতক্ষীরা হলো সাতক্ষীরা জেলার সকল তথ্যের একটি সমন্বিত ডিজিটাল প্ল্যাটফর্ম।">{{ $settings['about_intro'] ?? '' }}</textarea>
+                            <small class="text-muted">About page এর প্রথম প্যারাগ্রাফ</small>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">বিস্তারিত বিবরণ (Description)</label>
+                            <textarea name="settings[about_description]" class="form-control" rows="4" placeholder="এই পোর্টালের মাধ্যমে আপনি সাতক্ষীরা জেলার ৭টি উপজেলার সকল গুরুত্বপূর্ণ তথ্য...">{{ $settings['about_description'] ?? '' }}</textarea>
+                            <small class="text-muted">About page এর দ্বিতীয় প্যারাগ্রাফ</small>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">আমাদের লক্ষ্য (Mission)</label>
+                            <textarea name="settings[mission]" class="form-control" rows="3" placeholder="সাতক্ষীরা জেলার সকল নাগরিকদের জন্য একটি সহজ ও সুলভ তথ্য সেবা প্রদান করা...">{{ $settings['mission'] ?? '' }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">আমাদের দৃষ্টিভঙ্গি (Vision)</label>
+                            <textarea name="settings[vision]" class="form-control" rows="3" placeholder="সাতক্ষীরা জেলাকে ডিজিটাল দিক থেকে দেশের একটি অগ্রণী জেলা হিসেবে গড়ে তোলা...">{{ $settings['vision'] ?? '' }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">জনসংখ্যা (Population)</label>
+                            <input type="text" name="settings[population]" class="form-control" 
+                                   value="{{ $settings['population'] ?? '২০ লক্ষ+' }}" placeholder="২০ লক্ষ+">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">About Page ছবি</label>
+                            <input type="file" name="about_image" class="form-control" accept="image/*">
+                            @if(!empty($settings['about_image']))
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/' . $settings['about_image']) }}" alt="About Image" class="img-thumbnail" style="max-height: 150px;">
+                                    <p class="text-muted small mt-1">বর্তমান ছবি</p>
+                                </div>
+                            @endif
+                            <small class="text-muted">সর্বোচ্চ 2MB, JPG/PNG ফরম্যাট</small>
                         </div>
                     </div>
                 @endif

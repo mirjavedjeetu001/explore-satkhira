@@ -35,6 +35,10 @@ class SettingController extends Controller
             $path = $request->file('favicon')->store('settings', 'public');
             SiteSetting::updateOrCreate(['key' => 'site_favicon'], ['value' => $path]);
         }
+        if ($request->hasFile('about_image')) {
+            $path = $request->file('about_image')->store('settings', 'public');
+            SiteSetting::updateOrCreate(['key' => 'about_image'], ['value' => $path]);
+        }
 
         SiteSetting::clearCache();
 
@@ -83,8 +87,8 @@ class SettingController extends Controller
 
     public function about()
     {
-        $settings = SiteSetting::where('group', 'about')->pluck('value', 'key');
-        return view('admin.settings.about', compact('settings'));
+        $settings = SiteSetting::pluck('value', 'key')->toArray();
+        return view('admin.settings.index', compact('settings'));
     }
 
     public function updateAbout(Request $request)

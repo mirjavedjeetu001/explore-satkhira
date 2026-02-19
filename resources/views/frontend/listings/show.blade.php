@@ -161,14 +161,36 @@
                         </div>
                         
                         <!-- Map -->
-                        @if($listing->latitude && $listing->longitude)
+                        @if($listing->map_embed || ($listing->latitude && $listing->longitude))
                             <div class="border-top pt-4 mt-4">
                                 <h5 class="mb-3"><i class="fas fa-map text-success me-2"></i>ম্যাপে অবস্থান</h5>
-                                <div class="ratio ratio-16x9">
-                                    <iframe 
-                                        src="https://www.google.com/maps?q={{ $listing->latitude }},{{ $listing->longitude }}&z=15&output=embed"
-                                        style="border:0;" allowfullscreen="" loading="lazy">
-                                    </iframe>
+                                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                                    @if($listing->map_embed)
+                                        @php
+                                            // Extract src from iframe if full HTML provided
+                                            $mapEmbed = $listing->map_embed;
+                                            if (preg_match('/src=["\']([^"\']+)["\']/', $mapEmbed, $matches)) {
+                                                $mapSrc = $matches[1];
+                                            } else {
+                                                $mapSrc = $mapEmbed;
+                                            }
+                                        @endphp
+                                        <iframe 
+                                            src="{{ $mapSrc }}"
+                                            style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                                        </iframe>
+                                    @else
+                                        <iframe 
+                                            src="https://www.google.com/maps?q={{ $listing->latitude }},{{ $listing->longitude }}&z=15&output=embed"
+                                            style="border:0;" allowfullscreen="" loading="lazy">
+                                        </iframe>
+                                    @endif
+                                </div>
+                                <div class="mt-2">
+                                    <a href="https://www.google.com/maps?q={{ $listing->latitude ?? '' }},{{ $listing->longitude ?? '' }}" 
+                                       target="_blank" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-external-link-alt me-1"></i>Google Maps এ দেখুন
+                                    </a>
                                 </div>
                             </div>
                         @endif

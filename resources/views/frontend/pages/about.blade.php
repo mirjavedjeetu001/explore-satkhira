@@ -21,7 +21,11 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <img src="https://picsum.photos/seed/satkhira/600/400" class="img-fluid rounded shadow" alt="{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা' : 'Satkhira' }}">
+                    @if(!empty($settings['about_image']))
+                        <img src="{{ asset('storage/' . $settings['about_image']) }}" class="img-fluid rounded shadow" alt="{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা' : 'Satkhira' }}">
+                    @else
+                        <img src="https://picsum.photos/seed/satkhira/600/400" class="img-fluid rounded shadow" alt="{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা' : 'Satkhira' }}">
+                    @endif
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
                     <h2 class="mb-4">{{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর সাতক্ষীরা সম্পর্কে' : 'About Explore Satkhira' }}</h2>
@@ -49,7 +53,7 @@
                                     <i class="fas fa-users"></i>
                                 </div>
                                 <div>
-                                    <h5 class="mb-0">২০ লক্ষ+</h5>
+                                    <h5 class="mb-0">{{ $settings['population'] ?? '২০ লক্ষ+' }}</h5>
                                     <small class="text-muted">জনসংখ্যা</small>
                                 </div>
                             </div>

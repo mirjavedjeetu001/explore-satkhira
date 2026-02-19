@@ -10,9 +10,8 @@
     @endphp
     <title>@yield('title', 'Dashboard') - {{ $adminSiteName }} Admin</title>
     
-    <!-- Favicon (Dynamic District-Style Icon) -->
-    <link rel="icon" type="image/svg+xml" href="{{ route('favicon.svg') }}">
-    <link rel="alternate icon" href="{{ route('favicon.ico') }}" type="image/png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -263,13 +262,8 @@
                 @if($pendingListings > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingListings }}</span>
                 @endif
-            </a>            <a href="{{ route('admin.listing-images.index') }}" class="nav-link {{ request()->routeIs('admin.listing-images.*') ? 'active' : '' }}">
-                <i class="fas fa-images"></i> Listing Images
-                @php $pendingImages = \App\Models\ListingImage::pending()->count(); @endphp
-                @if($pendingImages > 0)
-                    <span class="badge bg-warning text-dark">{{ $pendingImages }}</span>
-                @endif
-            </a>            <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">
+            </a>
+            <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">
                 <i class="fas fa-comments"></i> Comments
                 @php $pendingComments = \App\Models\Comment::pending()->count(); @endphp
                 @if($pendingComments > 0)

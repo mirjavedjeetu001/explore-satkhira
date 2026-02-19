@@ -12,10 +12,9 @@
     @endphp
     <title>@yield('title', $localeSiteName) - {{ $localeSiteName }}</title>
     
-    <!-- Favicon (Dynamic District-Style Icon) -->
-    <link rel="icon" type="image/svg+xml" href="{{ route('favicon.svg') }}">
-    <link rel="alternate icon" href="{{ route('favicon.ico') }}" type="image/png">
-    <link rel="apple-touch-icon" href="{{ route('favicon.svg') }}">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -4,11 +4,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UpazilaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ListingImageController;
 use App\Http\Controllers\MpController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -21,7 +23,12 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
 use Illuminate\Support\Facades\Route;
+
+// Dynamic Favicon
+Route::get('/favicon.svg', [FaviconController::class, 'svg'])->name('favicon.svg');
+Route::get('/favicon.ico', [FaviconController::class, 'png'])->name('favicon.ico');
 
 // Language Switcher
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
@@ -65,6 +72,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/listings/{listing}/edit', [UserDashboardController::class, 'editListing'])->name('dashboard.listings.edit');
     Route::put('/dashboard/listings/{listing}', [UserDashboardController::class, 'updateListing'])->name('dashboard.listings.update');
     Route::delete('/dashboard/listings/{listing}', [UserDashboardController::class, 'destroyListing'])->name('dashboard.listings.destroy');
+    
+    // Listing Images (Offers, Promotions, Banners)
+    Route::get('/dashboard/listings/{listing}/images', [ListingImageController::class, 'index'])->name('dashboard.listings.images');
+    Route::get('/dashboard/listings/{listing}/images/create', [ListingImageController::class, 'create'])->name('dashboard.listings.images.create');
+    Route::post('/dashboard/listings/{listing}/images', [ListingImageController::class, 'store'])->name('dashboard.listings.images.store');
+    Route::get('/dashboard/listings/{listing}/images/{image}/edit', [ListingImageController::class, 'edit'])->name('dashboard.listings.images.edit');
+    Route::put('/dashboard/listings/{listing}/images/{image}', [ListingImageController::class, 'update'])->name('dashboard.listings.images.update');
+    Route::delete('/dashboard/listings/{listing}/images/{image}', [ListingImageController::class, 'destroy'])->name('dashboard.listings.images.destroy');
+    
     Route::get('/dashboard/my-questions', [UserDashboardController::class, 'questions'])->name('dashboard.my-questions');
     Route::get('/dashboard/profile', [UserDashboardController::class, 'profile'])->name('dashboard.profile');
     Route::put('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
@@ -97,6 +113,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('listings/{listing}/approve', [AdminListingController::class, 'approve'])->name('listings.approve');
     Route::post('listings/{listing}/reject', [AdminListingController::class, 'reject'])->name('listings.reject');
     Route::post('listings/{listing}/toggle-featured', [AdminListingController::class, 'toggleFeatured'])->name('listings.toggle-featured');
+    
+    // Listing Images (Offers, Promotions, Banners) Approval
+    Route::get('listing-images', [AdminListingImageController::class, 'index'])->name('listing-images.index');
+    Route::get('listing-images/{listingImage}', [AdminListingImageController::class, 'show'])->name('listing-images.show');
+    Route::post('listing-images/{listingImage}/approve', [AdminListingImageController::class, 'approve'])->name('listing-images.approve');
+    Route::post('listing-images/{listingImage}/reject', [AdminListingImageController::class, 'reject'])->name('listing-images.reject');
+    Route::post('listing-images/bulk-approve', [AdminListingImageController::class, 'bulkApprove'])->name('listing-images.bulk-approve');
+    Route::post('listing-images/bulk-reject', [AdminListingImageController::class, 'bulkReject'])->name('listing-images.bulk-reject');
+    Route::delete('listing-images/{listingImage}', [AdminListingImageController::class, 'destroy'])->name('listing-images.destroy');
     
     // Comments Management
     Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
@@ -138,7 +163,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('settings/general', [SettingController::class, 'general'])->name('settings.general');
     Route::get('settings/contact', [SettingController::class, 'contact'])->name('settings.contact');
     Route::get('settings/social', [SettingController::class, 'social'])->name('settings.social');
+    Route::get('settings/about', [SettingController::class, 'about'])->name('settings.about');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+    
+    // Team Members Management
+    Route::get('team', [\App\Http\Controllers\Admin\TeamMemberController::class, 'index'])->name('team.index');
+    Route::post('team', [\App\Http\Controllers\Admin\TeamMemberController::class, 'store'])->name('team.store');
+    Route::put('team/{teamMember}', [\App\Http\Controllers\Admin\TeamMemberController::class, 'update'])->name('team.update');
+    Route::delete('team/{teamMember}', [\App\Http\Controllers\Admin\TeamMemberController::class, 'destroy'])->name('team.destroy');
+    Route::post('team/{teamMember}/toggle-active', [\App\Http\Controllers\Admin\TeamMemberController::class, 'toggleActive'])->name('team.toggle-active');
 });
 
 require __DIR__.'/auth.php';

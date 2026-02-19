@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('youtube')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->string('map_embed')->nullable();
+            $table->text('map_embed')->nullable();
             $table->json('opening_hours')->nullable();
             $table->decimal('price_from', 12, 2)->nullable();
             $table->decimal('price_to', 12, 2)->nullable();

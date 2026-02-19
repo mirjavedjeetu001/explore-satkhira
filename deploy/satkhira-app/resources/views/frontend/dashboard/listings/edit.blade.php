@@ -141,6 +141,59 @@
                                 @enderror
                             </div>
                             
+                            <!-- Google Map Section -->
+                            <div class="mb-4">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-map-marked-alt text-success me-2"></i>Google Map অবস্থান (ঐচ্ছিক)</h6>
+                                        <p class="text-muted small mb-3">Google Maps থেকে embed code অথবা latitude/longitude দিন</p>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Google Maps Embed URL/Code</label>
+                                            <textarea name="map_embed" class="form-control @error('map_embed') is-invalid @enderror" 
+                                                      rows="3" placeholder="Google Maps থেকে Share > Embed a map > Copy HTML করে এখানে paste করুন">{{ old('map_embed', $listing->map_embed) }}</textarea>
+                                            @error('map_embed')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="text-muted">অথবা নিচে latitude/longitude দিন</small>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Latitude (অক্ষাংশ)</label>
+                                                <input type="text" name="latitude" class="form-control @error('latitude') is-invalid @enderror" 
+                                                       value="{{ old('latitude', $listing->latitude) }}" placeholder="যেমন: 22.7100">
+                                                @error('latitude')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Longitude (দ্রাঘিমাংশ)</label>
+                                                <input type="text" name="longitude" class="form-control @error('longitude') is-invalid @enderror" 
+                                                       value="{{ old('longitude', $listing->longitude) }}" placeholder="যেমন: 89.0700">
+                                                @error('longitude')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        @if($listing->latitude && $listing->longitude)
+                                            <div class="mt-2">
+                                                <p class="small text-success mb-2"><i class="fas fa-check-circle me-1"></i>বর্তমান ম্যাপ অবস্থান সেট আছে</p>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="mt-2">
+                                            <small class="text-info"><i class="fas fa-info-circle me-1"></i>
+                                                <a href="https://www.google.com/maps" target="_blank">Google Maps</a> এ আপনার লোকেশন খুঁজুন, 
+                                                Share বাটনে ক্লিক করুন, তারপর "Embed a map" ট্যাব থেকে HTML কপি করুন।
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-save me-1"></i>আপডেট করুন

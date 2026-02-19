@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - Admin Panel</title>
+    
+    @php
+        $adminSiteName = $siteSettings['site_name'] ?? 'Satkhira Portal';
+    @endphp
+    <title>@yield('title', 'Dashboard') - {{ $adminSiteName }} Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -291,6 +298,9 @@
                 @if($pendingUsers > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingUsers }}</span>
                 @endif
+            </a>
+            <a href="{{ route('admin.team.index') }}" class="nav-link {{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
+                <i class="fas fa-users-cog"></i> Team Members
             </a>
             <a href="{{ route('admin.contacts.index') }}" class="nav-link {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
                 <i class="fas fa-envelope"></i> Contact Messages

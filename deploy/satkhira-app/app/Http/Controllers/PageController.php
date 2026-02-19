@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Models\TeamMember;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -12,7 +13,12 @@ class PageController extends Controller
     public function about()
     {
         $settings = SiteSetting::where('group', 'about')->pluck('value', 'key');
-        return view('frontend.pages.about', compact('settings'));
+        $teamMembers = TeamMember::with('user')
+            ->active()
+            ->ordered()
+            ->get();
+        
+        return view('frontend.pages.about', compact('settings', 'teamMembers'));
     }
 
     public function contact()

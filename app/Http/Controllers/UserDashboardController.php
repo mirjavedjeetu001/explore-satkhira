@@ -102,6 +102,9 @@ class UserDashboardController extends Controller
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
             'image' => 'nullable|image|max:2048',
+            'map_embed' => 'nullable|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         $validated['user_id'] = auth()->id();
@@ -179,6 +182,9 @@ class UserDashboardController extends Controller
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
             'image' => 'nullable|image|max:2048',
+            'map_embed' => 'nullable|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         if ($request->hasFile('image')) {

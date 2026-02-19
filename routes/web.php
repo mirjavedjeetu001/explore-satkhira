@@ -163,6 +163,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('settings/general', [SettingController::class, 'general'])->name('settings.general');
     Route::get('settings/contact', [SettingController::class, 'contact'])->name('settings.contact');
     Route::get('settings/social', [SettingController::class, 'social'])->name('settings.social');
+    Route::get('settings/about', [SettingController::class, 'about'])->name('settings.about');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
     
     // Team Members Management
