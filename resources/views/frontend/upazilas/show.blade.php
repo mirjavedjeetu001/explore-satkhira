@@ -35,7 +35,7 @@
                 @endphp
                 <a href="{{ route('upazilas.show', ['upazila' => $upazila, 'category' => $category->slug]) }}" 
                    class="btn {{ request('category') == $category->slug ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="{{ $category->icon ?? 'fas fa-folder' }} me-1"></i>{{ $category->name }} ({{ $count }})
+                    <i class="{{ $category->icon ?? 'fas fa-folder' }} me-1"></i>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }} ({{ $count }})
                 </a>
             @endforeach
         </div>

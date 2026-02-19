@@ -61,6 +61,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Home Tutors', 'name_bn' => 'হোম টিউটর', 'icon' => 'fa-chalkboard-teacher', 'color' => '#6f42c1', 'description' => 'Private tutors for home tuition'],
             ['name' => 'To-Let', 'name_bn' => 'টু লেট', 'icon' => 'fa-home', 'color' => '#20c997', 'description' => 'Houses and apartments for rent'],
             ['name' => 'Volunteer Organizations', 'name_bn' => 'স্বেচ্ছাসেবী সংগঠন', 'icon' => 'fa-hands-helping', 'color' => '#e83e8c', 'description' => 'NGOs and volunteer groups'],
+            ['name' => 'Joruri Sheba', 'name_bn' => 'জরুরি সেবা', 'icon' => 'fa-phone-volume', 'color' => '#dc3545', 'description' => 'Emergency services and helplines'],
+            ['name' => 'Samajik Songothon', 'name_bn' => 'সামাজিক সংগঠন', 'icon' => 'fa-people-group', 'color' => '#9c27b0', 'description' => 'Social organizations and community groups'],
         ];
 
         foreach ($categories as $index => $category) {

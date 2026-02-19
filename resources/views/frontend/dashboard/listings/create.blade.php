@@ -41,7 +41,7 @@
                                         <option value="">ক্যাটাগরি নির্বাচন করুন</option>
                                         @foreach($categories ?? [] as $category)
                                             <option value="{{ $category->id }}" {{ old('category_id', request('category')) == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                                {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
                                             </option>
                                         @endforeach
                                     </select>

@@ -27,7 +27,7 @@
                                 <div class="icon-wrapper mb-3">
                                     <i class="{{ $category->icon ?? 'fas fa-folder' }} fa-3x text-success"></i>
                                 </div>
-                                <h5 class="card-title text-dark">{{ $category->name }}</h5>
+                                <h5 class="card-title text-dark">{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
                                 @if($category->description)
                                     <p class="card-text text-muted small">{{ Str::limit($category->description, 50) }}</p>
                                 @endif

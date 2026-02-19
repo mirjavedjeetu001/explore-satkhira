@@ -89,6 +89,8 @@ class ProductionSeeder extends Seeder
             ['id' => 8, 'name' => 'Doctor', 'name_bn' => 'ডাক্তার', 'slug' => 'doctor', 'description' => 'ডাক্তার ও চিকিৎসক', 'icon' => 'fa-user-md', 'color' => '#e83e8c', 'is_active' => 1, 'show_in_menu' => 1, 'order' => 8, 'created_at' => now(), 'updated_at' => now()],
             ['id' => 9, 'name' => 'Government Office', 'name_bn' => 'সরকারি অফিস', 'slug' => 'government-office', 'description' => 'সরকারি দপ্তর', 'icon' => 'fa-landmark', 'color' => '#343a40', 'is_active' => 1, 'show_in_menu' => 1, 'order' => 9, 'created_at' => now(), 'updated_at' => now()],
             ['id' => 10, 'name' => 'Bank', 'name_bn' => 'ব্যাংক', 'slug' => 'bank', 'description' => 'ব্যাংক ও আর্থিক প্রতিষ্ঠান', 'icon' => 'fa-university', 'color' => '#6610f2', 'is_active' => 1, 'show_in_menu' => 1, 'order' => 10, 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 11, 'name' => 'Joruri Sheba', 'name_bn' => 'জরুরি সেবা', 'slug' => 'joruri-sheba', 'description' => 'জরুরি সেবা ও হেল্পলাইন', 'icon' => 'fa-phone-volume', 'color' => '#dc3545', 'is_active' => 1, 'show_in_menu' => 1, 'order' => 11, 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 12, 'name' => 'Samajik Songothon', 'name_bn' => 'সামাজিক সংগঠন', 'slug' => 'samajik-songothon', 'description' => 'সামাজিক সংগঠন ও কমিউনিটি গ্রুপ', 'icon' => 'fa-people-group', 'color' => '#9c27b0', 'is_active' => 1, 'show_in_menu' => 1, 'order' => 12, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // Site Settings
