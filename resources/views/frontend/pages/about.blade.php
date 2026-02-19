@@ -21,15 +21,15 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <img src="https://picsum.photos/seed/satkhira/600/400" class="img-fluid rounded shadow" alt="সাতক্ষীরা">
+                    <img src="https://picsum.photos/seed/satkhira/600/400" class="img-fluid rounded shadow" alt="{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা' : 'Satkhira' }}">
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
-                    <h2 class="mb-4">সাতক্ষীরা পোর্টাল সম্পর্কে</h2>
+                    <h2 class="mb-4">{{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর সাতক্ষীরা সম্পর্কে' : 'About Explore Satkhira' }}</h2>
                     <p class="lead">
-                        {{ $settings['about_intro'] ?? 'সাতক্ষীরা পোর্টাল হলো সাতক্ষীরা জেলার সকল তথ্যের একটি সমন্বিত ডিজিটাল প্ল্যাটফর্ম।' }}
+                        {{ $settings['about_intro'] ?? (app()->getLocale() == 'bn' ? 'এক্সপ্লোর সাতক্ষীরা হলো সাতক্ষীরা জেলার সকল তথ্যের একটি সমন্বিত ডিজিটাল প্ল্যাটফর্ম।' : 'Explore Satkhira is a comprehensive digital platform for all information about Satkhira district.') }}
                     </p>
                     <p class="text-muted">
-                        {{ $settings['about_description'] ?? 'এই পোর্টালের মাধ্যমে আপনি সাতক্ষীরা জেলার ৭টি উপজেলার সকল গুরুত্বপূর্ণ তথ্য, হাসপাতাল, শিক্ষা প্রতিষ্ঠান, সরকারি অফিস, ব্যবসা প্রতিষ্ঠান এবং অন্যান্য সেবা সম্পর্কে জানতে পারবেন।' }}
+                        {{ $settings['about_description'] ?? (app()->getLocale() == 'bn' ? 'এই পোর্টালের মাধ্যমে আপনি সাতক্ষীরা জেলার ৭টি উপজেলার সকল গুরুত্বপূর্ণ তথ্য, হাসপাতাল, শিক্ষা প্রতিষ্ঠান, সরকারি অফিস, ব্যবসা প্রতিষ্ঠান এবং অন্যান্য সেবা সম্পর্কে জানতে পারবেন।' : 'Through this portal, you can learn about all the important information of 7 upazilas of Satkhira district, including hospitals, educational institutions, government offices, businesses and other services.') }}
                     </p>
                     <div class="row mt-4">
                         <div class="col-6">
@@ -38,8 +38,8 @@
                                     <i class="fas fa-map-marker-alt"></i>
                                 </div>
                                 <div>
-                                    <h5 class="mb-0">৭</h5>
-                                    <small class="text-muted">উপজেলা</small>
+                                    <h5 class="mb-0">{{ app()->getLocale() == 'bn' ? '৭' : '7' }}</h5>
+                                    <small class="text-muted">{{ app()->getLocale() == 'bn' ? 'উপজেলা' : 'Upazilas' }}</small>
                                 </div>
                             </div>
                         </div>
@@ -167,6 +167,22 @@
                                 @endif
                                 @if($member->bio_display)
                                     <p class="team-bio">{{ Str::limit($member->bio_display, 100) }}</p>
+                                @endif
+                                @if($member->phone || $member->email)
+                                    <div class="team-contact mb-2">
+                                        @if($member->phone)
+                                            <div class="contact-item">
+                                                <i class="fas fa-phone-alt text-success"></i>
+                                                <a href="tel:{{ $member->phone }}" class="text-dark">{{ $member->phone }}</a>
+                                            </div>
+                                        @endif
+                                        @if($member->email)
+                                            <div class="contact-item">
+                                                <i class="fas fa-envelope text-success"></i>
+                                                <a href="mailto:{{ $member->email }}" class="text-dark">{{ $member->email }}</a>
+                                            </div>
+                                        @endif
+                                    </div>
                                 @endif
                                 <div class="team-social">
                                     @if($member->facebook_url)
@@ -314,6 +330,31 @@
     
     .social-link i {
         font-size: 0.9rem;
+    }
+    
+    .team-contact {
+        font-size: 0.85rem;
+    }
+    
+    .team-contact .contact-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+    
+    .team-contact .contact-item i {
+        font-size: 0.8rem;
+    }
+    
+    .team-contact .contact-item a {
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .team-contact .contact-item a:hover {
+        color: #28a745 !important;
     }
 </style>
 @endpush

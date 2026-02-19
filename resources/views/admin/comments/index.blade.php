@@ -34,7 +34,7 @@
                     <th>#</th>
                     <th>Comment</th>
                     <th>User</th>
-                    <th>On</th>
+                    <th>Listing / Location</th>
                     <th>Status</th>
                     <th>Date</th>
                     <th width="150">Actions</th>
@@ -44,11 +44,34 @@
                 @forelse($comments ?? [] as $comment)
                     <tr>
                         <td>{{ $comment->id }}</td>
-                        <td>{{ Str::limit($comment->content, 50) }}</td>
-                        <td>{{ $comment->user->name ?? 'Anonymous' }}</td>
                         <td>
-                            @if($comment->commentable_type == 'App\\Models\\Listing')
-                                <span class="badge bg-info">Listing</span>
+                            <div style="max-width: 200px;">
+                                {{ Str::limit($comment->content, 50) }}
+                            </div>
+                        </td>
+                        <td>
+                            <strong>{{ $comment->name ?? ($comment->user->name ?? 'Anonymous') }}</strong>
+                            @if($comment->email)
+                                <br><small class="text-muted">{{ $comment->email }}</small>
+                            @endif
+                        </td>
+                        <td>
+                            @if($comment->commentable_type == 'App\\Models\\Listing' && $comment->commentable)
+                                <a href="{{ route('listings.show', $comment->commentable) }}" target="_blank" class="text-decoration-none">
+                                    <strong>{{ Str::limit($comment->commentable->title, 30) }}</strong>
+                                </a>
+                                <br>
+                                <small class="text-primary">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ $comment->commentable->upazila->name ?? 'N/A' }}
+                                </small>
+                                <small class="text-success ms-2">
+                                    <i class="fas fa-folder me-1"></i>{{ $comment->commentable->category->name ?? 'N/A' }}
+                                </small>
+                            @elseif($comment->commentable_type == 'App\\Models\\News')
+                                <span class="badge bg-info">News</span>
+                                @if($comment->commentable)
+                                    <br><small>{{ Str::limit($comment->commentable->title, 30) }}</small>
+                                @endif
                             @else
                                 <span class="badge bg-secondary">Other</span>
                             @endif

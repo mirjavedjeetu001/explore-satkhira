@@ -22,7 +22,7 @@
             <select name="role" class="form-select">
                 <option value="">All Roles</option>
                 @foreach($roles ?? [] as $role)
-                    <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>{{ $role->display_name }}</option>
+                    <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -80,7 +80,7 @@
                         </td>
                         <td>{{ $user->email }}</td>
                         <td>
-                            <span class="badge bg-info">{{ $user->role->display_name ?? 'N/A' }}</span>
+                            <span class="badge bg-info">{{ $user->role->name ?? 'N/A' }}</span>
                         </td>
                         <td>{{ $user->upazila->name ?? 'N/A' }}</td>
                         <td>

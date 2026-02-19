@@ -104,6 +104,11 @@
                                                     <a href="{{ route('dashboard.listings.edit', $listing) }}" class="btn btn-sm btn-outline-primary" title="সম্পাদনা">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @if($listing->status == 'approved')
+                                                    <a href="{{ route('dashboard.listings.images', $listing) }}" class="btn btn-sm btn-outline-info" title="ছবি ও প্রচার">
+                                                        <i class="fas fa-images"></i>
+                                                    </a>
+                                                    @endif
                                                     <form action="{{ route('dashboard.listings.destroy', $listing) }}" method="POST" class="d-inline" 
                                                           onsubmit="return confirm('আপনি কি এই তথ্যটি মুছে ফেলতে চান?')">
                                                         @csrf

@@ -85,11 +85,11 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $user->load('categoryPermissions');
+        $user->load(['categoryPermissions', 'assignedUpazilas']);
         $roles = Role::all();
         $upazilas = Upazila::active()->ordered()->get();
         $categories = Category::active()->whereNull('parent_id')->orderBy('name')->get();
-        return view('admin.users.edit', compact('user', 'roles', 'upazilas', 'categories'));
+        return view('admin.users.form', compact('user', 'roles', 'upazilas', 'categories'));
     }
 
     public function update(Request $request, User $user)
@@ -100,12 +100,13 @@ class UserController extends Controller
             'password' => 'nullable|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'role_id' => 'required|exists:roles,id',
-            'upazila_id' => 'nullable|exists:upazilas,id',
             'status' => 'required|in:pending,active,suspended',
             'address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
             'approved_categories' => 'nullable|array',
             'approved_categories.*' => 'exists:categories,id',
+            'assigned_upazilas' => 'nullable|array',
+            'assigned_upazilas.*' => 'exists:upazilas,id',
         ]);
 
         if ($request->filled('password')) {
@@ -120,7 +121,12 @@ class UserController extends Controller
         }
 
         unset($validated['approved_categories']);
+        unset($validated['assigned_upazilas']);
         $user->update($validated);
+
+        // Update upazila permissions
+        $assignedUpazilas = $request->assigned_upazilas ?? [];
+        $user->assignedUpazilas()->sync($assignedUpazilas);
 
         // Update category permissions
         if ($request->has('approved_categories')) {

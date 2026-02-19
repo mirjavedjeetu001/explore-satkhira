@@ -15,6 +15,8 @@ class TeamMember extends Model
         'designation_bn',
         'bio',
         'bio_bn',
+        'phone',
+        'email',
         'facebook_url',
         'twitter_url',
         'linkedin_url',

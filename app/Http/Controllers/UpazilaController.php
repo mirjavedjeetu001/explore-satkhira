@@ -32,7 +32,17 @@ class UpazilaController extends Controller
             ->with(['category', 'user']);
 
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            // Support both category ID and slug
+            $categoryParam = $request->category;
+            if (is_numeric($categoryParam)) {
+                $query->where('category_id', $categoryParam);
+            } else {
+                // Find by slug
+                $category = Category::where('slug', $categoryParam)->first();
+                if ($category) {
+                    $query->where('category_id', $category->id);
+                }
+            }
         }
 
         if ($request->filled('search')) {

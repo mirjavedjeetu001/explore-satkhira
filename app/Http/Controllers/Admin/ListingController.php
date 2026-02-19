@@ -52,7 +52,7 @@ class ListingController extends Controller
     {
         $categories = Category::active()->ordered()->get();
         $upazilas = Upazila::active()->ordered()->get();
-        return view('admin.listings.create', compact('categories', 'upazilas'));
+        return view('admin.listings.form', compact('categories', 'upazilas'));
     }
 
     public function store(Request $request)
@@ -119,7 +119,7 @@ class ListingController extends Controller
     {
         $categories = Category::active()->ordered()->get();
         $upazilas = Upazila::active()->ordered()->get();
-        return view('admin.listings.edit', compact('listing', 'categories', 'upazilas'));
+        return view('admin.listings.form', compact('listing', 'categories', 'upazilas'));
     }
 
     public function update(Request $request, Listing $listing)

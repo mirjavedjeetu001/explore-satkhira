@@ -8,7 +8,7 @@
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 @forelse($sliders as $index => $slider)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ $slider->image ? asset('storage/' . $slider->image) : 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920' }}')">
+                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ $slider->image ? asset('storage/' . $slider->image) : 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920' }}')">
                         <div class="carousel-caption">
                             <h2 data-aos="fade-up">{{ app()->getLocale() == 'bn' ? ($slider->title_bn ?? $slider->title ?? __('messages.hero_title')) : ($slider->title ?? __('messages.hero_title')) }}</h2>
                             <p data-aos="fade-up" data-aos-delay="100">{{ $slider->subtitle ?? __('messages.hero_subtitle') }}</p>
@@ -20,7 +20,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="carousel-item active" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920')">
+                    <div class="carousel-item active" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920')">
                         <div class="carousel-caption">
                             <h2>{{ __('messages.hero_title') }}</h2>
                             <p>{{ __('messages.hero_subtitle') }}</p>
@@ -212,20 +212,42 @@
             <div class="row g-4">
                 @foreach($latestListings as $listing)
                     <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                        <div class="listing-card">
-                            <div class="position-relative">
-                                <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/400/250' }}" 
-                                     class="card-img-top" alt="{{ $listing->title }}" style="height: 180px; object-fit: cover;">
-                                <span class="category-badge text-white" style="background-color: {{ $listing->category->color ?? '#28a745' }}">
+                        <div class="card h-100 border-0 shadow-sm listing-card-new">
+                            <div class="position-relative overflow-hidden">
+                                <a href="{{ route('listings.show', $listing) }}">
+                                    <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/400/300' }}" 
+                                         class="card-img-top listing-img" 
+                                         alt="{{ $listing->title }}">
+                                </a>
+                                <span class="category-badge position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill text-white small fw-semibold" 
+                                      style="background-color: {{ $listing->category->color ?? '#28a745' }};">
+                                    <i class="fas fa-{{ $listing->category->icon ?? 'tag' }} me-1"></i>
                                     {{ app()->getLocale() == 'bn' ? ($listing->category->name_bn ?? $listing->category->name) : $listing->category->name }}
                                 </span>
+                                @if($listing->is_featured)
+                                    <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark">
+                                        <i class="fas fa-star"></i> Featured
+                                    </span>
+                                @endif
                             </div>
-                            <div class="card-body">
-                                <h6 class="card-title">{{ Str::limit(app()->getLocale() == 'bn' ? ($listing->title_bn ?? $listing->title) : $listing->title, 40) }}</h6>
-                                <p class="text-muted small mb-2">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name }}
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="card-title fw-bold mb-2 text-dark listing-title">
+                                    <a href="{{ route('listings.show', $listing) }}" class="text-decoration-none text-dark">
+                                        {{ Str::limit(app()->getLocale() == 'bn' ? ($listing->title_bn ?? $listing->title) : $listing->title, 45) }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted small mb-2 d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    {{ app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name }}
                                 </p>
-                                <a href="{{ route('listings.show', $listing) }}" class="btn btn-outline-success btn-sm">{{ __('messages.view_details') }}</a>
+                                @if($listing->short_description)
+                                    <p class="text-muted small mb-3 listing-desc">{{ Str::limit($listing->short_description, 60) }}</p>
+                                @endif
+                                <div class="mt-auto">
+                                    <a href="{{ route('listings.show', $listing) }}" class="btn btn-outline-success btn-sm w-100">
+                                        <i class="fas fa-eye me-1"></i>{{ __('messages.view_details') }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

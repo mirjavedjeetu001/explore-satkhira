@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>লগইন - Satkhira Portal</title>
+    <title>{{ app()->getLocale() == 'bn' ? 'লগইন - এক্সপ্লোর সাতক্ষীরা' : 'Login - Explore Satkhira' }}</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -285,20 +285,51 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                overflow: auto;
+                min-height: auto;
+                padding: 20px 0;
+            }
+            
             .login-container {
                 flex-direction: column;
+                margin: 10px;
             }
             
             .login-left {
-                padding: 40px 30px;
+                padding: 30px 20px;
             }
             
             .login-right {
-                padding: 40px 30px;
+                padding: 30px 20px;
             }
             
             .login-left .brand h1 {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
+            }
+            
+            .login-left .tagline {
+                font-size: 0.95rem;
+                margin-bottom: 25px;
+            }
+            
+            .login-left .feature-item {
+                margin-bottom: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .login-left .feature-item i {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+            
+            .login-right h2 {
+                font-size: 1.6rem;
+            }
+            
+            .form-floating .form-control {
+                height: 55px;
             }
         }
     </style>
@@ -307,22 +338,22 @@
     <div class="login-container">
         <div class="login-left">
             <div class="brand">
-                <h1><i class="fas fa-leaf"></i> সাতক্ষীরা পোর্টাল</h1>
-                <p class="tagline">সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়</p>
+                <h1><i class="fas fa-leaf"></i> {{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর সাতক্ষীরা' : 'Explore Satkhira' }}</h1>
+                <p class="tagline">{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়' : 'All information of Satkhira district in one place' }}</p>
             </div>
             
             <div class="features">
                 <div class="feature-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>৭টি উপজেলার সম্পূর্ণ তথ্য</span>
+                    <span>{{ app()->getLocale() == 'bn' ? '৭টি উপজেলার সম্পূর্ণ তথ্য' : 'Complete info of 7 upazilas' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-hospital"></i>
-                    <span>হাসপাতাল, শিক্ষা প্রতিষ্ঠান, সেবা</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'হাসপাতাল, শিক্ষা প্রতিষ্ঠান, সেবা' : 'Hospitals, Education, Services' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-tie"></i>
-                    <span>সংসদ সদস্যকে সরাসরি প্রশ্ন করুন</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'সংসদ সদস্যকে সরাসরি প্রশ্ন করুন' : 'Ask questions directly to MP' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-edit"></i>
@@ -332,8 +363,8 @@
         </div>
         
         <div class="login-right">
-            <h2>স্বাগতম!</h2>
-            <p class="subtitle">আপনার অ্যাকাউন্টে লগইন করুন</p>
+            <h2>{{ app()->getLocale() == 'bn' ? 'স্বাগতম!' : 'Welcome!' }}</h2>
+            <p class="subtitle">{{ app()->getLocale() == 'bn' ? 'আপনার অ্যাকাউন্টে লগইন করুন' : 'Login to your account' }}</p>
             
             @if(session('status'))
                 <div class="alert alert-success">
@@ -354,40 +385,40 @@
                 
                 <div class="form-floating">
                     <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="ইমেইল" value="{{ old('email') }}" required autofocus>
-                    <label for="email">ইমেইল অ্যাড্রেস</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="{{ app()->getLocale() == 'bn' ? 'ইমেইল' : 'Email' }}" value="{{ old('email') }}" required autofocus>
+                    <label for="email">{{ app()->getLocale() == 'bn' ? 'ইমেইল অ্যাড্রেস' : 'Email Address' }}</label>
                 </div>
                 
                 <div class="form-floating">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="পাসওয়ার্ড" required>
-                    <label for="password">পাসওয়ার্ড</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড' : 'Password' }}" required>
+                    <label for="password">{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড' : 'Password' }}</label>
                 </div>
                 
                 <div class="remember-forgot">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label" for="remember">মনে রাখুন</label>
+                        <label class="form-check-label" for="remember">{{ app()->getLocale() == 'bn' ? 'মনে রাখুন' : 'Remember me' }}</label>
                     </div>
                     @if(Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-link">পাসওয়ার্ড ভুলে গেছেন?</a>
+                        <a href="{{ route('password.request') }}" class="forgot-link">{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot password?' }}</a>
                     @endif
                 </div>
                 
                 <button type="submit" class="btn btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i>লগইন করুন
+                    <i class="fas fa-sign-in-alt me-2"></i>{{ app()->getLocale() == 'bn' ? 'লগইন করুন' : 'Login' }}
                 </button>
             </form>
             
-            <div class="divider"><span>অথবা</span></div>
+            <div class="divider"><span>{{ app()->getLocale() == 'bn' ? 'অথবা' : 'or' }}</span></div>
             
             <div class="register-link">
-                অ্যাকাউন্ট নেই? <a href="{{ route('register') }}">রেজিস্ট্রেশন করুন</a>
+                {{ app()->getLocale() == 'bn' ? 'অ্যাকাউন্ট নেই?' : "Don't have an account?" }} <a href="{{ route('register') }}">{{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশন করুন' : 'Register' }}</a>
             </div>
             
             <div class="text-center mt-3">
                 <a href="{{ route('home') }}" class="text-muted text-decoration-none">
-                    <i class="fas fa-arrow-left me-1"></i> হোমে ফিরে যান
+                    <i class="fas fa-arrow-left me-1"></i> {{ app()->getLocale() == 'bn' ? 'হোমে ফিরে যান' : 'Back to Home' }}
                 </a>
             </div>
         </div>

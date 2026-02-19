@@ -60,26 +60,11 @@
                     <option value="">Select Role</option>
                     @foreach($roles ?? [] as $role)
                         <option value="{{ $role->id }}" {{ old('role_id', $user->role_id ?? '') == $role->id ? 'selected' : '' }}>
-                            {{ $role->display_name }}
+                            {{ $role->name }}
                         </option>
                     @endforeach
                 </select>
                 @error('role_id')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-            
-            <div class="col-md-6">
-                <label class="form-label">Upazila (For Moderators)</label>
-                <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror">
-                    <option value="">Select Upazila</option>
-                    @foreach($upazilas ?? [] as $upazila)
-                        <option value="{{ $upazila->id }}" {{ old('upazila_id', $user->upazila_id ?? '') == $upazila->id ? 'selected' : '' }}>
-                            {{ $upazila->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('upazila_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
@@ -105,6 +90,33 @@
             </div>
             
             @if(isset($user))
+                <!-- Upazila Permissions -->
+                <div class="col-12">
+                    <label class="form-label"><i class="fas fa-map-marker-alt text-success me-2"></i>Upazila Permissions</label>
+                    <p class="text-muted small mb-2">Select which upazilas this user can add listings to (Admin/Super Admin has access to all):</p>
+                    
+                    <div class="row">
+                        @php
+                            $assignedUpazilaIds = isset($user) ? $user->assignedUpazilas->pluck('id')->toArray() : [];
+                        @endphp
+                        @foreach($upazilas ?? [] as $upazila)
+                            <div class="col-md-4 col-lg-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="assigned_upazilas[]" 
+                                           value="{{ $upazila->id }}" 
+                                           id="upazila_{{ $upazila->id }}"
+                                           {{ in_array($upazila->id, old('assigned_upazilas', $assignedUpazilaIds)) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="upazila_{{ $upazila->id }}">
+                                        <i class="fas fa-map-pin me-1 text-muted"></i>
+                                        {{ $upazila->name_bn ?? $upazila->name }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 @if($user->registration_purpose)
                 <div class="col-12">
                     <label class="form-label">Registration Purpose</label>

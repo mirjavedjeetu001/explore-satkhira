@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>রেজিস্ট্রেশন - Satkhira Portal</title>
+    <title>{{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশন - এক্সপ্লোর সাতক্ষীরা' : 'Register - Explore Satkhira' }}</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -401,22 +401,45 @@
         }
         
         @media (max-width: 900px) {
+            body {
+                overflow: auto;
+                min-height: auto;
+                padding: 20px 0;
+            }
+            
             .register-container {
                 flex-direction: column;
+                margin: 10px;
             }
             
             .register-left {
                 flex: 0 0 auto;
-                padding: 30px 25px;
+                padding: 25px 20px;
             }
             
             .register-right {
-                padding: 30px 25px;
+                padding: 25px 20px;
                 max-height: none;
             }
             
             .register-left .brand h1 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+            }
+            
+            .register-left .tagline {
+                font-size: 0.9rem;
+                margin-bottom: 20px;
+            }
+            
+            .register-left .feature-item {
+                margin-bottom: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .register-left .feature-item i {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
             }
             
             .form-row {
@@ -427,6 +450,10 @@
             .category-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
+            
+            .register-right h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -434,41 +461,41 @@
     <div class="register-container">
         <div class="register-left">
             <div class="brand">
-                <h1><i class="fas fa-leaf"></i> সাতক্ষীরা পোর্টাল</h1>
-                <p class="tagline">সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়</p>
+                <h1><i class="fas fa-leaf"></i> {{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর সাতক্ষীরা' : 'Explore Satkhira' }}</h1>
+                <p class="tagline">{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়' : 'All information of Satkhira district in one place' }}</p>
             </div>
             
             <div class="features">
                 <div class="feature-item">
                     <i class="fas fa-user-plus"></i>
-                    <span>বিনামূল্যে অ্যাকাউন্ট তৈরি করুন</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'বিনামূল্যে অ্যাকাউন্ট তৈরি করুন' : 'Create free account' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-edit"></i>
-                    <span>আপনার এলাকার তথ্য যোগ করুন</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'আপনার এলাকার তথ্য যোগ করুন' : 'Add your area information' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-check-circle"></i>
-                    <span>অ্যাডমিন অনুমোদনের পর অ্যাক্সেস</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'অ্যাডমিন অনুমোদনের পর অ্যাক্সেস' : 'Access after admin approval' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-tags"></i>
-                    <span>নির্দিষ্ট ক্যাটাগরিতে কাজ করুন</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'নির্দিষ্ট ক্যাটাগরিতে কাজ করুন' : 'Work in specific categories' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-shield-alt"></i>
-                    <span>নিরাপদ ও বিশ্বস্ত প্ল্যাটফর্ম</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'নিরাপদ ও বিশ্বস্ত প্ল্যাটফর্ম' : 'Safe and trusted platform' }}</span>
                 </div>
             </div>
         </div>
         
         <div class="register-right">
-            <h2>অ্যাকাউন্ট তৈরি করুন</h2>
-            <p class="subtitle">নিচের তথ্য দিয়ে রেজিস্ট্রেশন সম্পন্ন করুন</p>
+            <h2>{{ app()->getLocale() == 'bn' ? 'অ্যাকাউন্ট তৈরি করুন' : 'Create Account' }}</h2>
+            <p class="subtitle">{{ app()->getLocale() == 'bn' ? 'নিচের তথ্য দিয়ে রেজিস্ট্রেশন সম্পন্ন করুন' : 'Fill in the details below to register' }}</p>
             
             <div class="info-box">
                 <i class="fas fa-info-circle"></i>
-                রেজিস্ট্রেশনের পর অ্যাডমিন আপনার আবেদন পর্যালোচনা করবেন এবং অনুমোদন দিলে আপনি লগইন করতে পারবেন।
+                {{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশনের পর অ্যাডমিন আপনার আবেদন পর্যালোচনা করবেন এবং অনুমোদন দিলে আপনি লগইন করতে পারবেন।' : 'After registration, admin will review your application and you can login once approved.' }}
             </div>
             
             @if($errors->any())
@@ -483,20 +510,20 @@
                 @csrf
                 
                 <!-- Personal Information -->
-                <h5 class="section-title"><i class="fas fa-user"></i>ব্যক্তিগত তথ্য</h5>
+                <h5 class="section-title"><i class="fas fa-user"></i>{{ app()->getLocale() == 'bn' ? 'ব্যক্তিগত তথ্য' : 'Personal Information' }}</h5>
                 
                 <!-- Profile Picture Upload -->
                 <div class="mb-4 text-center">
-                    <label class="form-label d-block">প্রোফাইল ছবি <span class="text-muted">(ঐচ্ছিক)</span></label>
+                    <label class="form-label d-block">{{ app()->getLocale() == 'bn' ? 'প্রোফাইল ছবি' : 'Profile Picture' }} <span class="text-muted">({{ app()->getLocale() == 'bn' ? 'ঐচ্ছিক' : 'Optional' }})</span></label>
                     <div class="avatar-upload-wrapper">
                         <div class="avatar-preview" id="avatarPreview">
                             <i class="fas fa-user fa-3x text-muted"></i>
                         </div>
                         <label for="avatarInput" class="avatar-upload-btn">
-                            <i class="fas fa-camera"></i> ছবি আপলোড করুন
+                            <i class="fas fa-camera"></i> {{ app()->getLocale() == 'bn' ? 'ছবি আপলোড করুন' : 'Upload Photo' }}
                         </label>
                         <input type="file" name="avatar" id="avatarInput" class="d-none" accept="image/*">
-                        <small class="d-block text-muted mt-1">JPG, PNG (সর্বোচ্চ 2MB)</small>
+                        <small class="d-block text-muted mt-1">JPG, PNG ({{ app()->getLocale() == 'bn' ? 'সর্বোচ্চ' : 'Max' }} 2MB)</small>
                     </div>
                     @error('avatar')
                         <div class="text-danger mt-1" style="font-size: 0.85rem;">{{ $message }}</div>
@@ -505,12 +532,12 @@
                 
                 <div class="form-row">
                     <div class="col mb-3">
-                        <label class="form-label">পূর্ণ নাম <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'পূর্ণ নাম' : 'Full Name' }} <span class="required">*</span></label>
                         <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                               name="name" value="{{ old('name') }}" required placeholder="আপনার নাম লিখুন">
+                               name="name" value="{{ old('name') }}" required placeholder="{{ app()->getLocale() == 'bn' ? 'আপনার নাম লিখুন' : 'Enter your name' }}">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">ইমেইল অ্যাড্রেস <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'ইমেইল অ্যাড্রেস' : 'Email Address' }} <span class="required">*</span></label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" 
                                name="email" value="{{ old('email') }}" required placeholder="example@email.com">
                     </div>
@@ -518,28 +545,28 @@
                 
                 <div class="form-row">
                     <div class="col mb-3">
-                        <label class="form-label">মোবাইল নম্বর <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'মোবাইল নম্বর' : 'Mobile Number' }} <span class="required">*</span></label>
                         <input type="text" class="form-control @error('phone') is-invalid @enderror" 
                                name="phone" value="{{ old('phone') }}" required placeholder="01XXXXXXXXX">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">জাতীয় পরিচয়পত্র নম্বর (ঐচ্ছিক)</label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'জাতীয় পরিচয়পত্র নম্বর' : 'NID Number' }} ({{ app()->getLocale() == 'bn' ? 'ঐচ্ছিক' : 'Optional' }})</label>
                         <input type="text" class="form-control @error('nid_number') is-invalid @enderror" 
-                               name="nid_number" value="{{ old('nid_number') }}" placeholder="NID নম্বর">
+                               name="nid_number" value="{{ old('nid_number') }}" placeholder="{{ app()->getLocale() == 'bn' ? 'NID নম্বর' : 'NID Number' }}">
                     </div>
                 </div>
                 
                 <!-- Location Information -->
-                <h5 class="section-title"><i class="fas fa-map-marker-alt"></i>অবস্থান</h5>
+                <h5 class="section-title"><i class="fas fa-map-marker-alt"></i>{{ app()->getLocale() == 'bn' ? 'অবস্থান' : 'Location' }}</h5>
                 
                 <div class="form-row">
                     <div class="col mb-3">
-                        <label class="form-label">উপজেলা <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'উপজেলা' : 'Upazila' }} <span class="required">*</span></label>
                         <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror" required>
-                            <option value="">উপজেলা নির্বাচন করুন</option>
+                            <option value="">{{ app()->getLocale() == 'bn' ? 'উপজেলা নির্বাচন করুন' : 'Select Upazila' }}</option>
                             @foreach($upazilas ?? [] as $upazila)
                                 <option value="{{ $upazila->id }}" {{ old('upazila_id') == $upazila->id ? 'selected' : '' }}>
-                                    {{ $upazila->name_bn ?? $upazila->name }}
+                                    {{ app()->getLocale() == 'bn' ? ($upazila->name_bn ?? $upazila->name) : $upazila->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -547,14 +574,14 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">পূর্ণ ঠিকানা <span class="required">*</span></label>
+                    <label class="form-label">{{ app()->getLocale() == 'bn' ? 'পূর্ণ ঠিকানা' : 'Full Address' }} <span class="required">*</span></label>
                     <input type="text" class="form-control @error('address') is-invalid @enderror" 
-                           name="address" value="{{ old('address') }}" required placeholder="গ্রাম/মহল্লা, পোস্ট অফিস">
+                           name="address" value="{{ old('address') }}" required placeholder="{{ app()->getLocale() == 'bn' ? 'গ্রাম/মহল্লা, পোস্ট অফিস' : 'Village/Area, Post Office' }}">
                 </div>
                 
                 <!-- Category Selection -->
-                <h5 class="section-title"><i class="fas fa-th-large"></i>কোন ক্যাটাগরিতে তথ্য যোগ করতে চান? <span class="required">*</span></h5>
-                <p class="text-muted mb-3" style="font-size: 0.85rem;">আপনি যে ক্যাটাগরিতে তথ্য/লিস্টিং যোগ করতে চান সেগুলো নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)</p>
+                <h5 class="section-title"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'কোন ক্যাটাগরিতে তথ্য যোগ করতে চান?' : 'Which categories do you want to contribute?' }} <span class="required">*</span></h5>
+                <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনি যে ক্যাটাগরিতে তথ্য/লিস্টিং যোগ করতে চান সেগুলো নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select the categories you want to add listings to (you can select multiple)' }}</p>
                 
                 <div class="category-grid">
                     @foreach($categories ?? [] as $category)
@@ -564,7 +591,7 @@
                                    {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
                             <label for="cat_{{ $category->id }}">
                                 <i class="{{ $category->icon ?: 'fas fa-folder' }}"></i>
-                                {{ $category->name_bn ?? $category->name }}
+                                {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
                             </label>
                         </div>
                     @endforeach
@@ -574,50 +601,50 @@
                 @enderror
                 
                 <!-- Registration Purpose -->
-                <h5 class="section-title"><i class="fas fa-question-circle"></i>রেজিস্ট্রেশনের উদ্দেশ্য</h5>
+                <h5 class="section-title"><i class="fas fa-question-circle"></i>{{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশনের উদ্দেশ্য' : 'Registration Purpose' }}</h5>
                 
                 <div class="mb-3">
-                    <label class="form-label">কেন আপনি এই পোর্টালে তথ্য যোগ করতে চাইছেন? <span class="required">*</span></label>
+                    <label class="form-label">{{ app()->getLocale() == 'bn' ? 'কেন আপনি এই পোর্টালে তথ্য যোগ করতে চাইছেন?' : 'Why do you want to add information to this portal?' }} <span class="required">*</span></label>
                     <textarea class="form-control @error('registration_purpose') is-invalid @enderror" 
                               name="registration_purpose" rows="3" required 
-                              placeholder="উদাহরণ: আমি সাতক্ষীরা সদরে একটি দোকান চালাই এবং আমার ব্যবসার তথ্য পোর্টালে যোগ করতে চাই...">{{ old('registration_purpose') }}</textarea>
+                              placeholder="{{ app()->getLocale() == 'bn' ? 'উদাহরণ: আমি সাতক্ষীরা সদরে একটি দোকান চালাই এবং আমার ব্যবসার তথ্য পোর্টালে যোগ করতে চাই...' : 'Example: I run a shop in Satkhira Sadar and want to add my business info to the portal...' }}">{{ old('registration_purpose') }}</textarea>
                 </div>
                 
                 <!-- Password -->
-                <h5 class="section-title"><i class="fas fa-lock"></i>পাসওয়ার্ড সেট করুন</h5>
+                <h5 class="section-title"><i class="fas fa-lock"></i>{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড সেট করুন' : 'Set Password' }}</h5>
                 
                 <div class="form-row">
                     <div class="col mb-3">
-                        <label class="form-label">পাসওয়ার্ড <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড' : 'Password' }} <span class="required">*</span></label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                               name="password" required placeholder="কমপক্ষে ৮ অক্ষর">
+                               name="password" required placeholder="{{ app()->getLocale() == 'bn' ? 'কমপক্ষে ৮ অক্ষর' : 'At least 8 characters' }}">
                     </div>
                     
                     <div class="col mb-3">
-                        <label class="form-label">পাসওয়ার্ড নিশ্চিত করুন <span class="required">*</span></label>
+                        <label class="form-label">{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড নিশ্চিত করুন' : 'Confirm Password' }} <span class="required">*</span></label>
                         <input type="password" class="form-control" 
-                               name="password_confirmation" required placeholder="পাসওয়ার্ড আবার লিখুন">
+                               name="password_confirmation" required placeholder="{{ app()->getLocale() == 'bn' ? 'পাসওয়ার্ড আবার লিখুন' : 'Re-enter password' }}">
                     </div>
                 </div>
                 
                 <div class="terms-text">
-                    রেজিস্ট্রেশন করে আপনি আমাদের <a href="#">শর্তাবলী</a> এবং <a href="#">গোপনীয়তা নীতি</a>তে সম্মত হচ্ছেন।
+                    {{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশন করে আপনি আমাদের' : 'By registering, you agree to our' }} <a href="#">{{ app()->getLocale() == 'bn' ? 'শর্তাবলী' : 'Terms' }}</a> {{ app()->getLocale() == 'bn' ? 'এবং' : 'and' }} <a href="#">{{ app()->getLocale() == 'bn' ? 'গোপনীয়তা নীতি' : 'Privacy Policy' }}</a>{{ app()->getLocale() == 'bn' ? 'তে সম্মত হচ্ছেন।' : '.' }}
                 </div>
                 
                 <button type="submit" class="btn btn-register">
-                    <i class="fas fa-paper-plane me-2"></i>আবেদন জমা দিন
+                    <i class="fas fa-paper-plane me-2"></i>{{ app()->getLocale() == 'bn' ? 'আবেদন জমা দিন' : 'Submit Application' }}
                 </button>
             </form>
             
-            <div class="divider"><span>অথবা</span></div>
+            <div class="divider"><span>{{ app()->getLocale() == 'bn' ? 'অথবা' : 'or' }}</span></div>
             
             <div class="login-link">
-                ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="{{ route('login') }}">লগইন করুন</a>
+                {{ app()->getLocale() == 'bn' ? 'ইতিমধ্যে অ্যাকাউন্ট আছে?' : 'Already have an account?' }} <a href="{{ route('login') }}">{{ app()->getLocale() == 'bn' ? 'লগইন করুন' : 'Login' }}</a>
             </div>
             
             <div class="text-center mt-3">
                 <a href="{{ route('home') }}" class="text-muted text-decoration-none">
-                    <i class="fas fa-arrow-left me-1"></i> হোমে ফিরে যান
+                    <i class="fas fa-arrow-left me-1"></i> {{ app()->getLocale() == 'bn' ? 'হোমে ফিরে যান' : 'Back to Home' }}
                 </a>
             </div>
         </div>

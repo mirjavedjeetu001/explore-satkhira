@@ -76,6 +76,30 @@ class User extends Authenticatable
         return $this->approvedCategories()->where('categories.id', $categoryId)->exists();
     }
 
+    // Multiple upazilas relationship
+    public function assignedUpazilas()
+    {
+        return $this->belongsToMany(Upazila::class, 'user_upazilas')
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
+
+    public function activeUpazilas()
+    {
+        return $this->belongsToMany(Upazila::class, 'user_upazilas')
+            ->wherePivot('is_active', true)
+            ->withTimestamps();
+    }
+
+    public function hasUpazilaAccess(int $upazilaId): bool
+    {
+        // Admins have access to all upazilas
+        if ($this->isAdmin()) {
+            return true;
+        }
+        return $this->activeUpazilas()->where('upazilas.id', $upazilaId)->exists();
+    }
+
     public function listings(): HasMany
     {
         return $this->hasMany(Listing::class);
@@ -137,6 +161,12 @@ class User extends Authenticatable
             return true;
         }
 
+        // Check assigned upazilas first (new system)
+        if ($this->activeUpazilas()->where('upazilas.id', $upazilaId)->exists()) {
+            return true;
+        }
+
+        // Fallback to old single upazila_id for backward compatibility
         return $this->isModerator() && $this->upazila_id === $upazilaId;
     }
 

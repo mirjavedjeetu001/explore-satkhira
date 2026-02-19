@@ -115,18 +115,18 @@ class DatabaseSeeder extends Seeder
 
         // Create Site Settings
         $settings = [
-            ['key' => 'site_name', 'value' => 'Satkhira Portal', 'group' => 'general', 'type' => 'text', 'is_public' => true],
-            ['key' => 'site_name_bn', 'value' => 'সাতক্ষীরা পোর্টাল', 'group' => 'general', 'type' => 'text', 'is_public' => true],
+            ['key' => 'site_name', 'value' => 'Explore Satkhira', 'group' => 'general', 'type' => 'text', 'is_public' => true],
+            ['key' => 'site_name_bn', 'value' => 'এক্সপ্লোর সাতক্ষীরা', 'group' => 'general', 'type' => 'text', 'is_public' => true],
             ['key' => 'site_tagline', 'value' => 'Explore Satkhira District', 'group' => 'general', 'type' => 'text', 'is_public' => true],
             ['key' => 'site_description', 'value' => 'সাতক্ষীরা জেলার সকল তথ্যের একটি সম্পূর্ণ পোর্টাল', 'group' => 'general', 'type' => 'textarea', 'is_public' => true],
             ['key' => 'site_email', 'value' => 'info@satkhira-portal.com', 'group' => 'general', 'type' => 'email', 'is_public' => true],
             ['key' => 'site_phone', 'value' => '+880 1700-000000', 'group' => 'general', 'type' => 'text', 'is_public' => true],
             ['key' => 'site_address', 'value' => 'Satkhira Sadar, Satkhira, Bangladesh', 'group' => 'general', 'type' => 'textarea', 'is_public' => true],
-            ['key' => 'footer_text', 'value' => '© 2024 Satkhira Portal. All rights reserved.', 'group' => 'general', 'type' => 'text', 'is_public' => true],
+            ['key' => 'footer_text', 'value' => '© 2024 Explore Satkhira. All rights reserved.', 'group' => 'general', 'type' => 'text', 'is_public' => true],
             ['key' => 'facebook_url', 'value' => 'https://facebook.com/satkhiraportal', 'group' => 'social', 'type' => 'url', 'is_public' => true],
             ['key' => 'youtube_url', 'value' => 'https://youtube.com/@satkhiraportal', 'group' => 'social', 'type' => 'url', 'is_public' => true],
-            ['key' => 'about_title', 'value' => 'About Satkhira Portal', 'group' => 'about', 'type' => 'text', 'is_public' => true],
-            ['key' => 'about_content', 'value' => 'সাতক্ষীরা পোর্টাল হল সাতক্ষীরা জেলার একটি ব্যাপক তথ্য প্ল্যাটফর্ম।', 'group' => 'about', 'type' => 'textarea', 'is_public' => true],
+            ['key' => 'about_title', 'value' => 'About Explore Satkhira', 'group' => 'about', 'type' => 'text', 'is_public' => true],
+            ['key' => 'about_content', 'value' => 'এক্সপ্লোর সাতক্ষীরা হল সাতক্ষীরা জেলার একটি ব্যাপক তথ্য প্ল্যাটফর্ম।', 'group' => 'about', 'type' => 'textarea', 'is_public' => true],
         ];
 
         foreach ($settings as $setting) {
@@ -181,11 +181,11 @@ class DatabaseSeeder extends Seeder
         // Create Sample News
         News::create([
             'user_id' => $admin->id,
-            'title' => 'Welcome to Satkhira Portal',
-            'title_bn' => 'সাতক্ষীরা পোর্টালে স্বাগতম',
-            'slug' => 'welcome-to-satkhira-portal',
-            'excerpt' => 'We are excited to launch the new Satkhira Portal.',
-            'content' => 'We are excited to launch the new Satkhira Portal, your one-stop destination for all information about Satkhira district.',
+            'title' => 'Welcome to Explore Satkhira',
+            'title_bn' => 'Explore Satkhira-তে স্বাগতম',
+            'slug' => 'welcome-to-explore-satkhira',
+            'excerpt' => 'We are excited to launch Explore Satkhira.',
+            'content' => 'We are excited to launch Explore Satkhira, your one-stop destination for all information about Satkhira district.',
             'type' => 'news',
             'is_active' => true,
         ]);

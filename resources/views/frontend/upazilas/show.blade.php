@@ -27,11 +27,11 @@
         <div class="d-flex flex-wrap justify-content-center gap-2">
             <a href="{{ route('upazilas.show', $upazila) }}" 
                class="btn {{ !request('category') ? 'btn-success' : 'btn-outline-success' }}">
-                <i class="fas fa-th-large me-1"></i>সকল ({{ $upazila->listings->count() }})
+                <i class="fas fa-th-large me-1"></i>সকল ({{ $upazila->listings()->approved()->count() }})
             </a>
             @foreach($categories ?? [] as $category)
                 @php
-                    $count = $upazila->listings->where('category_id', $category->id)->count();
+                    $count = $upazila->listings()->approved()->where('category_id', $category->id)->count();
                 @endphp
                 <a href="{{ route('upazilas.show', ['upazila' => $upazila, 'category' => $category->slug]) }}" 
                    class="btn {{ request('category') == $category->slug ? 'btn-success' : 'btn-outline-success' }}">

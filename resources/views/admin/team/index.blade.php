@@ -144,6 +144,16 @@
                                                 <label class="form-label">বায়ো (বাংলা)</label>
                                                 <textarea name="bio_bn" class="form-control" rows="2">{{ $member->bio_bn }}</textarea>
                                             </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">ফোন নম্বর</label>
+                                                <input type="text" name="phone" class="form-control" 
+                                                       value="{{ $member->phone }}" placeholder="০১XXXXXXXXX">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">ইমেইল</label>
+                                                <input type="email" name="email" class="form-control" 
+                                                       value="{{ $member->email }}" placeholder="email@example.com">
+                                            </div>
                                             <div class="col-md-4">
                                                 <label class="form-label">Facebook URL</label>
                                                 <input type="url" name="facebook_url" class="form-control" 
@@ -245,6 +255,14 @@
                         <div class="col-12">
                             <label class="form-label">বায়ো (বাংলা)</label>
                             <textarea name="bio_bn" class="form-control" rows="2" placeholder="সংক্ষিপ্ত বায়ো বাংলায়"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ফোন নম্বর</label>
+                            <input type="text" name="phone" class="form-control" placeholder="০১XXXXXXXXX">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ইমেইল</label>
+                            <input type="email" name="email" class="form-control" placeholder="email@example.com">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Facebook URL</label>

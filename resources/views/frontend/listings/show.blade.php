@@ -2,6 +2,15 @@
 
 @section('title', $listing->title . ' - Satkhira Portal')
 
+@php
+    // Group promotional images by position
+    $promotionalImages = $listing->approvedImages ?? collect();
+    $topAds = $promotionalImages->whereIn('position', ['top-left', 'top-right', 'full-width']);
+    $sidebarAds = $promotionalImages->whereIn('position', ['left', 'right', 'center']);
+    $bottomAds = $promotionalImages->whereIn('position', ['bottom-left', 'bottom-right']);
+    $allOtherAds = $promotionalImages->whereNotIn('position', ['top-left', 'top-right', 'full-width', 'left', 'right', 'center', 'bottom-left', 'bottom-right']);
+@endphp
+
 @section('content')
 <!-- Page Header -->
 <section class="page-header py-4" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
@@ -16,6 +25,60 @@
         </nav>
     </div>
 </section>
+
+<!-- TOP ADS ZONE (full-width, top-left, top-right) -->
+@if($topAds->count() > 0)
+<section class="py-3 bg-light">
+    <div class="container">
+        <div class="row g-3 justify-content-between">
+            @foreach($topAds as $ad)
+                @php
+                    // Display size takes priority for width
+                    $colClass = match($ad->display_size) {
+                        'full-width' => 'col-12',
+                        'extra-large' => 'col-12 col-md-10',
+                        'large' => 'col-12 col-md-8',
+                        'medium' => 'col-md-6',
+                        'small' => 'col-md-4',
+                        default => match($ad->position) {
+                            'full-width' => 'col-12',
+                            'top-left' => 'col-md-6',
+                            'top-right' => 'col-md-6 ms-auto',
+                            default => 'col-md-6'
+                        }
+                    };
+                    // Add alignment class based on position
+                    if($ad->display_size !== 'full-width' && $ad->position === 'top-right') {
+                        $colClass .= ' ms-auto';
+                    } elseif($ad->display_size !== 'full-width' && $ad->position !== 'top-left') {
+                        $colClass .= ' mx-auto';
+                    }
+                    $imgHeight = match($ad->display_size) {
+                        'small' => '120px',
+                        'medium' => '180px',
+                        'large' => '240px',
+                        'extra-large' => '300px',
+                        'full-width' => '250px',
+                        default => '180px'
+                    };
+                @endphp
+                <div class="{{ $colClass }}">
+                    <div class="ad-banner position-relative overflow-hidden rounded shadow-sm" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#adModal{{ $ad->id }}">
+                        <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}" class="w-100" style="height: {{ $imgHeight }}; object-fit: cover;">
+                        <div class="ad-overlay position-absolute bottom-0 start-0 end-0 p-2 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                            <span class="badge bg-{{ $ad->type == 'offer' ? 'danger' : ($ad->type == 'promotion' ? 'warning' : 'info') }} me-1">
+                                {{ \App\Models\ListingImage::getTypes()[$ad->type] ?? $ad->type }}
+                            </span>
+                            @if($ad->title)<small>{{ $ad->title }}</small>@endif
+                        </div>
+                    </div>
+                </div>
+                @include('frontend.listings._ad_modal', ['ad' => $ad])
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- Listing Details -->
 <section class="py-5">
@@ -109,6 +172,51 @@
                                 </div>
                             </div>
                         @endif
+
+                        <!-- Offers, Promotions, Banners Section (Other positions) -->
+                        @if($allOtherAds->count() > 0)
+                            <div class="border-top pt-4 mt-4">
+                                <h5 class="mb-3"><i class="fas fa-bullhorn text-warning me-2"></i>অফার ও প্রচার</h5>
+                                <div class="row g-3">
+                                    @foreach($allOtherAds as $promoImage)
+                                        <div class="{{ $promoImage->getDisplaySizeClass() }}">
+                                            <div class="card border h-100">
+                                                @php
+                                                    $imgHeight = match($promoImage->display_size) {
+                                                        'small' => '150px',
+                                                        'medium' => '200px',
+                                                        'large' => '280px',
+                                                        'extra-large' => '350px',
+                                                        'full-width' => '400px',
+                                                        default => '200px'
+                                                    };
+                                                @endphp
+                                                <img src="{{ asset('storage/' . $promoImage->image) }}" 
+                                                     class="card-img-top" 
+                                                     alt="{{ $promoImage->title }}" 
+                                                     style="height: {{ $imgHeight }}; object-fit: cover; cursor: pointer;"
+                                                     data-bs-toggle="modal" 
+                                                     data-bs-target="#adModal{{ $promoImage->id }}">
+                                                <div class="card-body p-2">
+                                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
+                                                        <span class="badge bg-{{ $promoImage->type == 'offer' ? 'danger' : ($promoImage->type == 'promotion' ? 'primary' : 'info') }}">
+                                                            {{ \App\Models\ListingImage::getTypes()[$promoImage->type] ?? $promoImage->type }}
+                                                        </span>
+                                                        @if($promoImage->valid_until)
+                                                            <small class="text-muted">মেয়াদ: {{ $promoImage->valid_until->format('d M Y') }}</small>
+                                                        @endif
+                                                    </div>
+                                                    @if($promoImage->title)
+                                                        <h6 class="mt-2 mb-0">{{ $promoImage->title }}</h6>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @include('frontend.listings._ad_modal', ['ad' => $promoImage])
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="card-footer bg-transparent">
                         <small class="text-muted">
@@ -124,6 +232,18 @@
                         <h5 class="mb-0"><i class="fas fa-comments text-success me-2"></i>মন্তব্যসমূহ</h5>
                     </div>
                     <div class="card-body">
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
                         @auth
                             <form action="{{ route('listings.comment', $listing) }}" method="POST" class="mb-4">
                                 @csrf
@@ -133,6 +253,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-paper-plane me-1"></i>মন্তব্য করুন
                                 </button>
+                                <small class="text-muted ms-2">মন্তব্য অ্যাডমিন অনুমোদনের পর প্রদর্শিত হবে।</small>
                             </form>
                         @else
                             <div class="alert alert-info">
@@ -160,6 +281,39 @@
             
             <!-- Sidebar -->
             <div class="col-lg-4">
+                <!-- SIDEBAR ADS (left, right, center positions) -->
+                @if($sidebarAds->count() > 0)
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0"><i class="fas fa-ad me-2"></i>বিজ্ঞাপন</h6>
+                    </div>
+                    <div class="card-body p-2">
+                        @foreach($sidebarAds as $ad)
+                            @php
+                                $imgHeight = match($ad->display_size) {
+                                    'small' => '120px',
+                                    'medium' => '180px',
+                                    'large' => '240px',
+                                    'extra-large' => '280px',
+                                    'full-width' => '200px',
+                                    default => '180px'
+                                };
+                            @endphp
+                            <div class="sidebar-ad mb-3 position-relative overflow-hidden rounded" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#adModal{{ $ad->id }}">
+                                <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}" class="w-100" style="height: {{ $imgHeight }}; object-fit: cover;">
+                                <div class="position-absolute bottom-0 start-0 end-0 p-2 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+                                    <span class="badge bg-{{ $ad->type == 'offer' ? 'danger' : ($ad->type == 'promotion' ? 'warning' : 'info') }} mb-1">
+                                        {{ \App\Models\ListingImage::getTypes()[$ad->type] ?? $ad->type }}
+                                    </span>
+                                    @if($ad->title)<div class="small fw-bold">{{ $ad->title }}</div>@endif
+                                </div>
+                            </div>
+                            @include('frontend.listings._ad_modal', ['ad' => $ad])
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                
                 <!-- Share -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
@@ -205,4 +359,43 @@
         </div>
     </div>
 </section>
+
+<!-- BOTTOM ADS ZONE (bottom-left, bottom-right) -->
+@if($bottomAds->count() > 0)
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row g-3">
+            @foreach($bottomAds as $ad)
+                @php
+                    $colClass = match($ad->position) {
+                        'bottom-left' => 'col-md-6',
+                        'bottom-right' => 'col-md-6 ms-auto',
+                        default => 'col-md-6'
+                    };
+                    $imgHeight = match($ad->display_size) {
+                        'small' => '120px',
+                        'medium' => '180px',
+                        'large' => '240px',
+                        'extra-large' => '300px',
+                        'full-width' => '200px',
+                        default => '180px'
+                    };
+                @endphp
+                <div class="{{ $colClass }}">
+                    <div class="ad-banner position-relative overflow-hidden rounded shadow-sm" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#adModal{{ $ad->id }}">
+                        <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}" class="w-100" style="height: {{ $imgHeight }}; object-fit: cover;">
+                        <div class="ad-overlay position-absolute bottom-0 start-0 end-0 p-2 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                            <span class="badge bg-{{ $ad->type == 'offer' ? 'danger' : ($ad->type == 'promotion' ? 'warning' : 'info') }} me-1">
+                                {{ \App\Models\ListingImage::getTypes()[$ad->type] ?? $ad->type }}
+                            </span>
+                            @if($ad->title)<small>{{ $ad->title }}</small>@endif
+                        </div>
+                    </div>
+                </div>
+                @include('frontend.listings._ad_modal', ['ad' => $ad])
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 @endsection

@@ -111,6 +111,7 @@
                                         <th>ক্যাটাগরি</th>
                                         <th>স্ট্যাটাস</th>
                                         <th>তারিখ</th>
+                                        <th class="text-end">অ্যাকশন</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -132,10 +133,25 @@
                                                 @endif
                                             </td>
                                             <td>{{ $listing->created_at->format('d M Y') }}</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ route('dashboard.listings.edit', $listing) }}" class="btn btn-outline-primary" title="এডিট করুন">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    @if($listing->status == 'approved')
+                                                        <a href="{{ route('dashboard.listings.images', $listing) }}" class="btn btn-outline-warning" title="বিজ্ঞাপন/অফার যোগ করুন">
+                                                            <i class="fas fa-ad"></i>
+                                                        </a>
+                                                    @endif
+                                                    <a href="{{ route('listings.show', $listing) }}" class="btn btn-outline-success" title="দেখুন">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center py-4 text-muted">
+                                            <td colspan="5" class="text-center py-4 text-muted">
                                                 কোন তথ্য পাওয়া যায়নি। <a href="{{ route('dashboard.listings.create') }}">নতুন তথ্য যোগ করুন</a>
                                             </td>
                                         </tr>

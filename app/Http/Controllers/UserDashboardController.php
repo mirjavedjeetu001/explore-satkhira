@@ -51,13 +51,32 @@ class UserDashboardController extends Controller
     public function createListing()
     {
         $user = auth()->user();
-        $categories = Category::active()->orderBy('name')->get();
         
-        // If moderator with assigned upazila, only show their upazila
-        if ($user->isModerator() && $user->upazila_id) {
-            $upazilas = Upazila::where('id', $user->upazila_id)->get();
-        } else {
+        // Only Super Admin can see all categories and upazilas
+        if ($user->isSuperAdmin()) {
+            $categories = Category::active()->orderBy('name')->get();
             $upazilas = Upazila::active()->orderBy('name')->get();
+        } else {
+            // Filter categories based on user's approved categories
+            $approvedCategoryIds = $user->approvedCategories()->pluck('categories.id');
+            if ($approvedCategoryIds->isNotEmpty()) {
+                $categories = Category::active()->whereIn('id', $approvedCategoryIds)->orderBy('name')->get();
+            } else {
+                $categories = collect(); // Empty collection
+            }
+            
+            // Filter upazilas based on user's assigned upazilas
+            $assignedUpazilaIds = $user->activeUpazilas()->pluck('upazilas.id');
+            if ($assignedUpazilaIds->isNotEmpty()) {
+                $upazilas = Upazila::active()->whereIn('id', $assignedUpazilaIds)->orderBy('name')->get();
+            } else {
+                // Fallback to old upazila_id field if no assigned upazilas
+                if ($user->upazila_id) {
+                    $upazilas = Upazila::where('id', $user->upazila_id)->get();
+                } else {
+                    $upazilas = collect(); // Empty collection
+                }
+            }
         }
         
         return view('frontend.dashboard.listings.create', compact('categories', 'upazilas'));
@@ -107,13 +126,31 @@ class UserDashboardController extends Controller
             abort(403);
         }
 
-        $categories = Category::active()->orderBy('name')->get();
-        
-        // If moderator with assigned upazila, only show their upazila
-        if ($user->isModerator() && $user->upazila_id) {
-            $upazilas = Upazila::where('id', $user->upazila_id)->get();
-        } else {
+        // Only Super Admin can see all categories and upazilas
+        if ($user->isSuperAdmin()) {
+            $categories = Category::active()->orderBy('name')->get();
             $upazilas = Upazila::active()->orderBy('name')->get();
+        } else {
+            // Filter categories based on user's approved categories
+            $approvedCategoryIds = $user->approvedCategories()->pluck('categories.id');
+            if ($approvedCategoryIds->isNotEmpty()) {
+                $categories = Category::active()->whereIn('id', $approvedCategoryIds)->orderBy('name')->get();
+            } else {
+                $categories = collect(); // Empty collection
+            }
+            
+            // Filter upazilas based on user's assigned upazilas
+            $assignedUpazilaIds = $user->activeUpazilas()->pluck('upazilas.id');
+            if ($assignedUpazilaIds->isNotEmpty()) {
+                $upazilas = Upazila::active()->whereIn('id', $assignedUpazilaIds)->orderBy('name')->get();
+            } else {
+                // Fallback to old upazila_id field if no assigned upazilas
+                if ($user->upazila_id) {
+                    $upazilas = Upazila::where('id', $user->upazila_id)->get();
+                } else {
+                    $upazilas = collect(); // Empty collection
+                }
+            }
         }
         
         return view('frontend.dashboard.listings.edit', compact('listing', 'categories', 'upazilas'));

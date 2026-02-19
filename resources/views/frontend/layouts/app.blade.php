@@ -626,6 +626,49 @@
                             </li>
                         @endif
                     @endauth
+                    
+                    <!-- Mobile Only Items -->
+                    <li class="nav-item d-lg-none">
+                        <hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <span class="nav-link text-white-50" style="font-size: 0.85rem;">
+                            <i class="fas fa-phone-alt me-2"></i>{{ \App\Models\SiteSetting::get('site_phone', '+880 1700-000000') }}
+                        </span>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <div class="nav-link">
+                            <a href="{{ route('language.switch', 'bn') }}" class="me-2 {{ app()->getLocale() == 'bn' ? 'text-warning fw-bold' : 'text-white' }}" style="text-decoration: none;">বাংলা</a>
+                            <span class="text-white-50">|</span>
+                            <a href="{{ route('language.switch', 'en') }}" class="ms-2 {{ app()->getLocale() == 'en' ? 'text-warning fw-bold' : 'text-white' }}" style="text-decoration: none;">English</a>
+                        </div>
+                    </li>
+                    @guest
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i> {{ __('messages.login') }}
+                            </a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="{{ route('register') }}">
+                                <i class="fas fa-user-plus me-1"></i> {{ __('messages.register') }}
+                            </a>
+                        </li>
+                    @else
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="{{ route('dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-1"></i> {{ __('messages.dashboard') }}
+                            </a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <a class="nav-link" href="#" onclick="event.preventDefault(); this.closest('form').submit();">
+                                    <i class="fas fa-sign-out-alt me-1"></i> {{ __('messages.logout') }}
+                                </a>
+                            </form>
+                        </li>
+                    @endguest
                 </ul>
             </div>
         </div>

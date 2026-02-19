@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Listing extends Model
@@ -81,6 +82,27 @@ class Listing extends Model
     public function approvedComments(): MorphMany
     {
         return $this->comments()->where('status', 'approved');
+    }
+
+    // Listing Images (Offers, Promotions, Banners)
+    public function images(): HasMany
+    {
+        return $this->hasMany(ListingImage::class)->ordered();
+    }
+
+    public function approvedImages(): HasMany
+    {
+        return $this->hasMany(ListingImage::class)->approved()->active()->valid()->ordered();
+    }
+
+    public function pendingImages(): HasMany
+    {
+        return $this->hasMany(ListingImage::class)->pending()->ordered();
+    }
+
+    public function imagesByType(string $type): HasMany
+    {
+        return $this->approvedImages()->ofType($type);
     }
 
     public function scopeApproved($query)

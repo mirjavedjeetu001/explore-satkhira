@@ -64,15 +64,26 @@ class ListingController extends Controller
     public function storeComment(Request $request, Listing $listing)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'content' => 'required|string|max:1000',
             'rating' => 'nullable|integer|min:1|max:5',
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        // Use auth user's info if available
+        if (auth()->check()) {
+            $validated['user_id'] = auth()->id();
+            $validated['name'] = $validated['name'] ?? auth()->user()->name;
+            $validated['email'] = $validated['email'] ?? auth()->user()->email;
+        } else {
+            // For guest comments, require name and email
+            if (empty($validated['name']) || empty($validated['email'])) {
+                return back()->with('error', 'নাম এবং ইমেইল প্রয়োজন।');
+            }
+        }
+        
         $validated['ip_address'] = $request->ip();
         $validated['status'] = 'pending';
 

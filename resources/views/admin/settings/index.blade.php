@@ -35,7 +35,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Site Name</label>
                             <input type="text" name="settings[site_name]" class="form-control" 
-                                   value="{{ $settings['site_name'] ?? 'সাতক্ষীরা পোর্টাল' }}">
+                                   value="{{ $settings['site_name'] ?? 'Explore Satkhira' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Site Tagline</label>
