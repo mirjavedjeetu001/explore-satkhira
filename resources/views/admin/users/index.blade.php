@@ -73,7 +73,7 @@
                         <td>{{ $user->id }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=28a745&color=fff&size=35" 
+                                <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=28a745&color=fff&size=35' }}" 
                                      alt="{{ $user->name }}" class="rounded-circle me-2" width="35" height="35">
                                 {{ $user->name }}
                             </div>

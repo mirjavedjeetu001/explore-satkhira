@@ -90,6 +90,20 @@
                                         <span class="badge bg-success"><i class="fas fa-check me-1"></i>Approved</span>
                                     @else
                                         <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Pending</span>
+                                        <div class="mt-2">
+                                            <form action="{{ route('admin.users.approve-category', [$user, $cat]) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('admin.users.reject-category', [$user, $cat]) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Reject this category?')">
+                                                    <i class="fas fa-times"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -184,8 +198,16 @@
                 @if($user->status === 'pending')
                     <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="mb-2">
                         @csrf
+                        <input type="hidden" name="approve_type" value="user_only">
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-check me-2"></i>Approve User & All Categories
+                            <i class="fas fa-user-check me-2"></i>Approve User Only
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <input type="hidden" name="approve_type" value="all">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check-double me-2"></i>Approve User + All Categories
                         </button>
                     </form>
                 @endif

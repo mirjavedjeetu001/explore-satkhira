@@ -113,6 +113,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('users', AdminUserController::class);
     Route::post('users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
     Route::post('users/{user}/suspend', [AdminUserController::class, 'suspend'])->name('users.suspend');
+    Route::post('users/{user}/approve-category/{category}', [AdminUserController::class, 'approveCategory'])->name('users.approve-category');
+    Route::post('users/{user}/reject-category/{category}', [AdminUserController::class, 'rejectCategory'])->name('users.reject-category');
     
     // Upazilas Management
     Route::resource('upazilas', AdminUpazilaController::class);

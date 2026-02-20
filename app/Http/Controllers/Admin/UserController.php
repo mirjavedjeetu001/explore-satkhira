@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Upazila;
 use App\Models\User;
 use App\Mail\UserApprovedMail;
+use App\Mail\CategoryApprovedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -182,7 +183,7 @@ class UserController extends Controller
             ->with('success', 'User deleted successfully.');
     }
 
-    public function approve(User $user)
+    public function approve(Request $request, User $user)
     {
         $user->update([
             'status' => 'active',
@@ -190,13 +191,19 @@ class UserController extends Controller
             'approved_by' => auth()->id(),
         ]);
 
-        // Approve all requested categories
-        foreach ($user->categoryPermissions as $permission) {
-            $user->categoryPermissions()->updateExistingPivot($permission->id, [
-                'is_approved' => true,
-                'approved_by' => auth()->id(),
-                'approved_at' => now(),
-            ]);
+        $message = 'User approved successfully.';
+
+        // Check if we should also approve all categories
+        if ($request->input('approve_type') === 'all') {
+            // Approve all requested categories
+            foreach ($user->categoryPermissions as $permission) {
+                $user->categoryPermissions()->updateExistingPivot($permission->id, [
+                    'is_approved' => true,
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                ]);
+            }
+            $message = 'User approved successfully with all requested categories.';
         }
 
         // Send approval email
@@ -206,7 +213,7 @@ class UserController extends Controller
             \Log::error('Failed to send user approval email: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'User approved successfully with all requested categories.');
+        return back()->with('success', $message);
     }
 
     public function suspend(User $user)
@@ -217,5 +224,32 @@ class UserController extends Controller
 
         $user->update(['status' => 'suspended']);
         return back()->with('success', 'User suspended successfully.');
+    }
+
+    public function approveCategory(User $user, \App\Models\Category $category)
+    {
+        // Approve single category for user
+        $user->categoryPermissions()->updateExistingPivot($category->id, [
+            'is_approved' => true,
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+        ]);
+
+        // Send email notification with approved category
+        try {
+            Mail::to($user->email)->send(new CategoryApprovedMail($user, collect([$category])));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send category approval email: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Category "' . ($category->name_bn ?? $category->name) . '" approved for user.');
+    }
+
+    public function rejectCategory(User $user, \App\Models\Category $category)
+    {
+        // Remove the category permission request
+        $user->categoryPermissions()->detach($category->id);
+
+        return back()->with('success', 'Category "' . ($category->name_bn ?? $category->name) . '" rejected.');
     }
 }
