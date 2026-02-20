@@ -46,7 +46,7 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $mpProfile = MpProfile::active()->first();
+        $mpProfiles = MpProfile::active()->orderBy('constituency')->take(4)->get();
 
         return view('frontend.home', compact(
             'sliders',
@@ -55,7 +55,7 @@ class HomeController extends Controller
             'featuredListings',
             'latestListings',
             'latestNews',
-            'mpProfile'
+            'mpProfiles'
         ));
     }
 }

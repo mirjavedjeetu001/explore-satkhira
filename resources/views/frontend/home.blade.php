@@ -152,15 +152,15 @@
                             <div class="position-relative">
                                 <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/400/250' }}" 
                                      class="card-img-top" alt="{{ $listing->title }}" style="height: 180px; object-fit: cover;">
-                                <span class="category-badge text-white" style="background-color: {{ $listing->category->color ?? '#28a745' }}">
-                                    {{ app()->getLocale() == 'bn' ? ($listing->category->name_bn ?? $listing->category->name) : $listing->category->name }}
+                                <span class="category-badge text-white" style="background-color: {{ $listing->category?->color ?? '#28a745' }}">
+                                    {{ app()->getLocale() == 'bn' ? ($listing->category?->name_bn ?? $listing->category?->name ?? 'Unknown') : ($listing->category?->name ?? 'Unknown') }}
                                 </span>
                                 <span class="featured-badge"><i class="fas fa-star me-1"></i>{{ app()->getLocale() == 'bn' ? 'বিশেষ' : 'Featured' }}</span>
                             </div>
                             <div class="card-body">
                                 <h6 class="card-title">{{ app()->getLocale() == 'bn' ? ($listing->title_bn ?? $listing->title) : $listing->title }}</h6>
                                 <p class="text-muted small mb-2">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name }}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ app()->getLocale() == 'bn' ? ($listing->upazila?->name_bn ?? $listing->upazila?->name ?? 'Unknown') : ($listing->upazila?->name ?? 'Unknown') }}
                                 </p>
                                 <a href="{{ route('listings.show', $listing) }}" class="btn btn-outline-success btn-sm">{{ __('messages.view_details') }}</a>
                             </div>
@@ -173,28 +173,40 @@
     @endif
 
     <!-- MP Section -->
-    @if($mpProfile)
-    <section class="mp-section">
+    @if($mpProfiles->count() > 0)
+    <section class="mp-section py-5">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-4 text-center mb-4 mb-lg-0" data-aos="fade-right">
-                    <div class="mp-card">
-                        <img src="{{ $mpProfile->image ? asset('storage/' . $mpProfile->image) : 'https://ui-avatars.com/api/?name=' . urlencode($mpProfile->name) . '&background=28a745&color=fff&size=150' }}" alt="{{ $mpProfile->name }}" class="mb-3">
-                        <h4>{{ app()->getLocale() == 'bn' ? ($mpProfile->name_bn ?? $mpProfile->name) : $mpProfile->name }}</h4>
-                        <p class="mb-1">{{ $mpProfile->designation }}</p>
-                        <small>{{ $mpProfile->constituency }}</small>
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <h2 class="text-white"><i class="fas fa-user-tie me-2"></i>{{ app()->getLocale() == 'bn' ? 'মাননীয় সংসদ সদস্যগণ' : 'Honorable Members of Parliament' }}</h2>
+                <p class="text-white-50">{{ app()->getLocale() == 'bn' ? 'সংসদ সদস্যদের কাছে প্রশ্ন থাকলে করুন, আমরা পৌঁছে দিবো এবং তারা উত্তর দিলে সেটা দেখতে পারবেন' : 'Ask questions to MPs, we will forward them and you can see when they reply' }}</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                @foreach($mpProfiles as $mpProfile)
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                    <div class="mp-card-new text-center h-100">
+                        <div class="mp-image-wrapper mb-3">
+                            <img src="{{ $mpProfile->image ? asset('storage/' . $mpProfile->image) : 'https://ui-avatars.com/api/?name=' . urlencode($mpProfile->name) . '&background=28a745&color=fff&size=150' }}" 
+                                 alt="{{ $mpProfile->name }}" 
+                                 class="mp-avatar">
+                        </div>
+                        <h5 class="mb-1 text-dark fw-bold">{{ app()->getLocale() == 'bn' ? ($mpProfile->name_bn ?? $mpProfile->name) : $mpProfile->name }}</h5>
+                        <p class="text-muted mb-1 small">{{ $mpProfile->designation }}</p>
+                        <span class="badge bg-success mb-3">{{ $mpProfile->constituency }}</span>
+                        <div class="mt-auto">
+                            <a href="{{ route('mp.index') }}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-question-circle me-1"></i>{{ app()->getLocale() == 'bn' ? 'প্রশ্ন করুন' : 'Ask Question' }}
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-8" data-aos="fade-left">
-                    <h2 class="mb-4"><i class="fas fa-comments me-2"></i>{{ __('messages.ask_mp_question') }}</h2>
-                    <p class="mb-4">{{ app()->getLocale() == 'bn' ? 'আপনার এলাকার সমস্যা বা প্রশ্ন সরাসরি মাননীয় সংসদ সদস্যের কাছে পাঠান। সকল অনুমোদিত প্রশ্ন ও উত্তর সর্বসাধারণের জন্য প্রকাশ করা হবে।' : 'Send your area problems or questions directly to the Honorable MP. All approved questions and answers will be published for the public.' }}</p>
-                    <a href="{{ route('mp.index') }}" class="btn btn-warning btn-lg">
-                        <i class="fas fa-question-circle me-2"></i>{{ __('messages.ask_question') }}
-                    </a>
-                    <a href="{{ route('mp.index') }}" class="btn btn-outline-light btn-lg ms-2">
-                        <i class="fas fa-list me-2"></i>{{ __('messages.questions_answers') }}
-                    </a>
-                </div>
+                @endforeach
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="{{ route('mp.index') }}" class="btn btn-warning btn-lg px-5">
+                    <i class="fas fa-list me-2"></i>{{ app()->getLocale() == 'bn' ? 'সকল প্রশ্নোত্তর দেখুন' : 'View All Q&A' }}
+                </a>
             </div>
         </div>
     </section>
@@ -238,7 +250,7 @@
                                 </h6>
                                 <p class="text-muted small mb-2 d-flex align-items-center">
                                     <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                    {{ app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name }}
+                                    {{ app()->getLocale() == 'bn' ? ($listing->upazila?->name_bn ?? $listing->upazila?->name ?? 'Unknown') : ($listing->upazila?->name ?? 'Unknown') }}
                                 </p>
                                 @if($listing->short_description)
                                     <p class="text-muted small mb-3 listing-desc">{{ Str::limit($listing->short_description, 60) }}</p>

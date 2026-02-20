@@ -52,8 +52,8 @@ class UserDashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Only Super Admin can see all categories and upazilas
-        if ($user->isSuperAdmin()) {
+        // Admins can see all categories and upazilas
+        if ($user->isAdmin()) {
             $categories = Category::active()->orderBy('name')->get();
             $upazilas = Upazila::active()->orderBy('name')->get();
         } else {
@@ -133,8 +133,8 @@ class UserDashboardController extends Controller
             abort(403);
         }
 
-        // Only Super Admin can see all categories and upazilas
-        if ($user->isSuperAdmin()) {
+        // Admins can see all categories and upazilas
+        if ($user->isAdmin()) {
             $categories = Category::active()->orderBy('name')->get();
             $upazilas = Upazila::active()->orderBy('name')->get();
         } else {

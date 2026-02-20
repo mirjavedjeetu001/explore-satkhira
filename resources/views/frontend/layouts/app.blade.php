@@ -259,6 +259,42 @@
             border: 5px solid rgba(255,255,255,0.3);
         }
         
+        /* New MP Cards Grid */
+        .mp-card-new {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mp-card-new:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .mp-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .mp-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #28a745;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .mp-card-new .badge {
+            font-weight: 500;
+            padding: 6px 15px;
+            border-radius: 20px;
+        }
+        
         /* Footer */
         .footer {
             background: #1a3c34;
