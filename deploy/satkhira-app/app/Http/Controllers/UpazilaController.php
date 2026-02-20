@@ -15,6 +15,12 @@ class UpazilaController extends Controller
             ->ordered()
             ->withCount(['listings' => fn($q) => $q->approved()])
             ->get();
+        
+        // Add count of "all upazila" listings to each upazila count
+        $allUpazilaListingsCount = Listing::approved()->whereNull('upazila_id')->count();
+        foreach ($upazilas as $upazila) {
+            $upazila->listings_count += $allUpazilaListingsCount;
+        }
 
         return view('frontend.upazilas.index', compact('upazilas'));
     }
@@ -24,15 +30,30 @@ class UpazilaController extends Controller
         $categories = Category::active()
             ->parentCategories()
             ->ordered()
-            ->withCount(['listings' => fn($q) => $q->approved()->where('upazila_id', $upazila->id)])
+            ->withCount(['listings' => fn($q) => $q->approved()->where(function($query) use ($upazila) {
+                $query->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
+            })])
             ->get();
 
+        // Include listings for this upazila OR listings with NULL upazila_id (all upazilas)
         $query = Listing::approved()
-            ->where('upazila_id', $upazila->id)
+            ->where(function($q) use ($upazila) {
+                $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
+            })
             ->with(['category', 'user']);
 
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            // Support both category ID and slug
+            $categoryParam = $request->category;
+            if (is_numeric($categoryParam)) {
+                $query->where('category_id', $categoryParam);
+            } else {
+                // Find by slug
+                $category = Category::where('slug', $categoryParam)->first();
+                if ($category) {
+                    $query->where('category_id', $category->id);
+                }
+            }
         }
 
         if ($request->filled('search')) {
@@ -48,7 +69,9 @@ class UpazilaController extends Controller
 
         $featuredListings = Listing::approved()
             ->featured()
-            ->where('upazila_id', $upazila->id)
+            ->where(function($q) use ($upazila) {
+                $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
+            })
             ->with(['category'])
             ->take(4)
             ->get();

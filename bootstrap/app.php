@@ -17,9 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'locale' => \App\Http\Middleware\SetLocale::class,
         ]);
         
-        // Apply SetLocale middleware to all web routes
+        // Apply SetLocale and TrackVisitor middleware to all web routes
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\TrackVisitor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

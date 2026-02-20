@@ -7,11 +7,13 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Upazila;
 use App\Models\Role;
+use App\Mail\RegistrationPendingMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -51,6 +53,7 @@ class RegisteredUserController extends Controller
             'categories.*' => ['exists:categories,id'],
             'registration_purpose' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
         ], [
             'name.required' => 'নাম দিতে হবে',
             'email.required' => 'ইমেইল দিতে হবে',
@@ -63,10 +66,19 @@ class RegisteredUserController extends Controller
             'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
             'password.required' => 'পাসওয়ার্ড দিতে হবে',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
+            'avatar.image' => 'শুধুমাত্র ছবি ফাইল আপলোড করুন',
+            'avatar.mimes' => 'JPG, PNG অথবা GIF ফাইল আপলোড করুন',
+            'avatar.max' => 'ছবির সাইজ সর্বোচ্চ 2MB হতে পারবে',
         ]);
 
         // Get the default user role
         $userRole = Role::where('slug', 'user')->first();
+
+        // Handle avatar upload
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -80,6 +92,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role_id' => $userRole?->id,
             'status' => 'pending', // Account needs admin approval
+            'avatar' => $avatarPath,
         ]);
 
         // Store requested categories (not yet approved)
@@ -89,6 +102,14 @@ class RegisteredUserController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+        }
+
+        // Send registration pending email
+        try {
+            Mail::to($user->email)->send(new RegistrationPendingMail($user));
+        } catch (\Exception $e) {
+            // Log email error but don't fail registration
+            \Log::error('Failed to send registration email: ' . $e->getMessage());
         }
 
         event(new Registered($user));

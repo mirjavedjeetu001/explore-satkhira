@@ -248,6 +248,9 @@
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
+            <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
             
             <div class="nav-title">Content Management</div>
             <a href="{{ route('admin.upazilas.index') }}" class="nav-link {{ request()->routeIs('admin.upazilas.*') ? 'active' : '' }}">

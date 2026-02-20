@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormMail;
 use App\Models\Contact;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
@@ -36,7 +38,16 @@ class PageController extends Controller
             'message' => 'required|string|max:2000',
         ]);
 
-        Contact::create($validated);
+        $contact = Contact::create($validated);
+
+        // Send email notification to admin
+        try {
+            $adminEmail = SiteSetting::get('contact_email') ?? 'info@exploresatkhira.com';
+            Mail::to($adminEmail)->send(new ContactFormMail($contact));
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Log::error('Contact form email failed: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'আপনার বার্তা সফলভাবে পাঠানো হয়েছে। আমরা শীঘ্রই যোগাযোগ করব।');
     }

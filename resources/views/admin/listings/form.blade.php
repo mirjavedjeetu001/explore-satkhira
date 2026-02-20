@@ -56,9 +56,9 @@
             </div>
             
             <div class="col-md-6">
-                <label class="form-label">Upazila <span class="text-danger">*</span></label>
-                <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror" required>
-                    <option value="">Select Upazila</option>
+                <label class="form-label">Upazila</label>
+                <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror">
+                    <option value="">🌍 সকল উপজেলা (All Upazilas)</option>
                     @foreach($upazilas ?? [] as $upazila)
                         <option value="{{ $upazila->id }}" {{ old('upazila_id', $listing->upazila_id ?? '') == $upazila->id ? 'selected' : '' }}>
                             {{ $upazila->name }}
@@ -68,6 +68,7 @@
                 @error('upazila_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+                <small class="text-muted">সকল উপজেলা নির্বাচন করলে এই তথ্য সব উপজেলায় দেখাবে</small>
             </div>
             
             <div class="col-12">

@@ -7,11 +7,13 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Upazila;
 use App\Models\Role;
+use App\Mail\RegistrationPendingMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -100,6 +102,14 @@ class RegisteredUserController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+        }
+
+        // Send registration pending email
+        try {
+            Mail::to($user->email)->send(new RegistrationPendingMail($user));
+        } catch (\Exception $e) {
+            // Log email error but don't fail registration
+            \Log::error('Failed to send registration email: ' . $e->getMessage());
         }
 
         event(new Registered($user));

@@ -34,7 +34,9 @@
                         <td>{{ $contact->email }}</td>
                         <td>{{ Str::limit($contact->subject, 30) }}</td>
                         <td>
-                            @if($contact->is_read)
+                            @if($contact->status === 'replied')
+                                <span class="badge bg-success">Replied</span>
+                            @elseif($contact->status === 'read')
                                 <span class="badge bg-secondary">Read</span>
                             @else
                                 <span class="badge bg-danger">Unread</span>
@@ -54,7 +56,7 @@
                                         data-date="{{ $contact->created_at->format('d M, Y h:i A') }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                @if(!$contact->is_read)
+                                @if($contact->status === 'unread')
                                     <form action="{{ route('admin.contacts.markRead', $contact) }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-success" title="Mark as Read">

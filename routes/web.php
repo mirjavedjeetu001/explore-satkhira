@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 // Dynamic Favicon
@@ -96,6 +97,9 @@ Route::post('/listing/{listing}/comment', [ListingController::class, 'storeComme
 // Admin Panel Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboard::class, 'index'])->name('dashboard');
+    
+    // Analytics
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     
     // Users Management
     Route::resource('users', AdminUserController::class);

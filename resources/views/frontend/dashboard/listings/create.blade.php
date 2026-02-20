@@ -51,10 +51,14 @@
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label class="form-label">উপজেলা <span class="text-danger">*</span></label>
-                                    <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror" required
+                                    <label class="form-label">উপজেলা</label>
+                                    <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror"
                                             @if(auth()->user()->isModerator() && auth()->user()->upazila_id) disabled @endif>
-                                        <option value="">উপজেলা নির্বাচন করুন</option>
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
+                                            <option value="">🌍 সকল উপজেলা (All Upazilas)</option>
+                                        @else
+                                            <option value="">উপজেলা নির্বাচন করুন</option>
+                                        @endif
                                         @foreach($upazilas ?? [] as $upazila)
                                             <option value="{{ $upazila->id }}" {{ old('upazila_id', request('upazila') ?? (auth()->user()->isModerator() ? auth()->user()->upazila_id : '')) == $upazila->id ? 'selected' : '' }}>
                                                 {{ $upazila->name_bn ?? $upazila->name }}
@@ -64,6 +68,8 @@
                                     @if(auth()->user()->isModerator() && auth()->user()->upazila_id)
                                         <input type="hidden" name="upazila_id" value="{{ auth()->user()->upazila_id }}">
                                         <small class="text-info"><i class="fas fa-info-circle me-1"></i>মডারেটর হিসেবে আপনি শুধুমাত্র নির্ধারিত উপজেলায় তথ্য যোগ করতে পারবেন</small>
+                                    @elseif(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
+                                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i>সকল উপজেলা নির্বাচন করলে এই তথ্য সব উপজেলায় দেখাবে</small>
                                     @endif
                                     @error('upazila_id')
                                         <div class="invalid-feedback">{{ $message }}</div>

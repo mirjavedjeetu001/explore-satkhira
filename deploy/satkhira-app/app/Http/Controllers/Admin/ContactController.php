@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactReplyMail;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -23,8 +25,8 @@ class ContactController extends Controller
 
     public function show(Contact $contact)
     {
-        if (!$contact->is_read) {
-            $contact->update(['is_read' => true]);
+        if ($contact->status === 'unread') {
+            $contact->update(['status' => 'read']);
         }
 
         return view('admin.contacts.show', compact('contact'));
@@ -32,7 +34,7 @@ class ContactController extends Controller
 
     public function markRead(Contact $contact)
     {
-        $contact->update(['is_read' => true]);
+        $contact->update(['status' => 'read']);
         return back()->with('success', 'Marked as read.');
     }
 
@@ -49,7 +51,13 @@ class ContactController extends Controller
             'replied_by' => auth()->id(),
         ]);
 
-        // Here you would also send email to the contact
+        // Send email reply to the contact
+        try {
+            Mail::to($contact->email)->send(new ContactReplyMail($contact, $validated['reply']));
+        } catch (\Exception $e) {
+            \Log::error('Contact reply email failed: ' . $e->getMessage());
+            return back()->with('warning', 'Reply saved but email could not be sent.');
+        }
 
         return back()->with('success', 'Reply sent successfully.');
     }

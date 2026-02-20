@@ -87,16 +87,20 @@ class UserDashboardController extends Controller
         $user = auth()->user();
         
         // If moderator with assigned upazila, force their upazila
-        $upazilaRule = 'required|exists:upazilas,id';
         if ($user->isModerator() && $user->upazila_id) {
             $request->merge(['upazila_id' => $user->upazila_id]);
         }
+        
+        // Admin/SuperAdmin can select "All Upazilas" (null value)
+        $upazilaRule = ($user->isAdmin() || $user->isSuperAdmin()) 
+            ? 'nullable|exists:upazilas,id' 
+            : 'required|exists:upazilas,id';
         
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'upazila_id' => 'required|exists:upazilas,id',
+            'upazila_id' => $upazilaRule,
             'address' => 'nullable|string|max:500',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -172,11 +176,16 @@ class UserDashboardController extends Controller
             $request->merge(['upazila_id' => $user->upazila_id]);
         }
 
+        // Admin/SuperAdmin can select "All Upazilas" (null value)
+        $upazilaRule = ($user->isAdmin() || $user->isSuperAdmin()) 
+            ? 'nullable|exists:upazilas,id' 
+            : 'required|exists:upazilas,id';
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'upazila_id' => 'required|exists:upazilas,id',
+            'upazila_id' => $upazilaRule,
             'address' => 'nullable|string|max:500',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',

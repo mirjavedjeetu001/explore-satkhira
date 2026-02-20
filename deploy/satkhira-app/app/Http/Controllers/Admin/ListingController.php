@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Upazila;
+use App\Mail\ListingApprovedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ListingController extends Controller
@@ -52,7 +54,7 @@ class ListingController extends Controller
     {
         $categories = Category::active()->ordered()->get();
         $upazilas = Upazila::active()->ordered()->get();
-        return view('admin.listings.create', compact('categories', 'upazilas'));
+        return view('admin.listings.form', compact('categories', 'upazilas'));
     }
 
     public function store(Request $request)
@@ -61,7 +63,7 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'title_bn' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'upazila_id' => 'required|exists:upazilas,id',
+            'upazila_id' => 'nullable|exists:upazilas,id',
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
@@ -119,7 +121,7 @@ class ListingController extends Controller
     {
         $categories = Category::active()->ordered()->get();
         $upazilas = Upazila::active()->ordered()->get();
-        return view('admin.listings.edit', compact('listing', 'categories', 'upazilas'));
+        return view('admin.listings.form', compact('listing', 'categories', 'upazilas'));
     }
 
     public function update(Request $request, Listing $listing)
@@ -128,7 +130,7 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'title_bn' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'upazila_id' => 'required|exists:upazilas,id',
+            'upazila_id' => 'nullable|exists:upazilas,id',
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
@@ -160,12 +162,24 @@ class ListingController extends Controller
             $validated['gallery'] = $gallery;
         }
 
-        if ($validated['status'] === 'approved' && $listing->status !== 'approved') {
+        $wasNotApproved = $listing->status !== 'approved';
+        if ($validated['status'] === 'approved' && $wasNotApproved) {
             $validated['approved_at'] = now();
             $validated['approved_by'] = auth()->id();
         }
 
         $listing->update($validated);
+
+        // Send email if status changed to approved
+        if ($validated['status'] === 'approved' && $wasNotApproved) {
+            if ($listing->user && $listing->user->email) {
+                try {
+                    Mail::to($listing->user->email)->send(new ListingApprovedMail($listing));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send listing approval email: ' . $e->getMessage());
+                }
+            }
+        }
 
         return redirect()->route('admin.listings.index')
             ->with('success', 'Listing updated successfully.');
@@ -186,6 +200,15 @@ class ListingController extends Controller
             'approved_at' => now(),
             'approved_by' => auth()->id(),
         ]);
+
+        // Send email notification to listing owner
+        if ($listing->user && $listing->user->email) {
+            try {
+                Mail::to($listing->user->email)->send(new ListingApprovedMail($listing));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send listing approval email: ' . $e->getMessage());
+            }
+        }
 
         return back()->with('success', 'Listing approved successfully.');
     }

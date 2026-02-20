@@ -18,7 +18,11 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white-50">হোম</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('upazilas.show', $listing->upazila) }}" class="text-white-50">{{ $listing->upazila->name ?? 'উপজেলা' }}</a></li>
+                @if($listing->upazila)
+                    <li class="breadcrumb-item"><a href="{{ route('upazilas.show', $listing->upazila) }}" class="text-white-50">{{ $listing->upazila->name ?? 'উপজেলা' }}</a></li>
+                @else
+                    <li class="breadcrumb-item text-white-50">সকল উপজেলা</li>
+                @endif
                 <li class="breadcrumb-item"><a href="{{ route('categories.show', $listing->category) }}" class="text-white-50">{{ $listing->category->name ?? 'ক্যাটাগরি' }}</a></li>
                 <li class="breadcrumb-item active text-white">{{ Str::limit($listing->title, 30) }}</li>
             </ol>

@@ -408,6 +408,7 @@
             align-items: center;
             flex-direction: column;
             transition: opacity 0.5s ease, visibility 0.5s ease;
+            overflow: hidden;
         }
         
         .preloader.fade-out {
@@ -417,6 +418,10 @@
         
         .preloader-inner {
             text-align: center;
+            width: 100%;
+            max-width: 90vw;
+            padding: 0 15px;
+            box-sizing: border-box;
         }
         
         .preloader-logo {
@@ -425,6 +430,7 @@
             font-weight: 700;
             margin-bottom: 30px;
             animation: pulse 1.5s ease-in-out infinite;
+            word-break: break-word;
         }
         
         .preloader-logo i {
@@ -502,6 +508,79 @@
             50% { opacity: 1; }
             100% { opacity: 0; }
         }
+        
+        /* Mobile Responsive Preloader */
+        @media (max-width: 768px) {
+            .preloader-inner {
+                max-width: 85vw;
+                padding: 0 10px;
+            }
+            
+            .preloader-logo {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+            
+            .preloader-logo i {
+                margin-right: 8px;
+            }
+            
+            .preloader-spinner {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .preloader-spinner .spinner-ring {
+                border-width: 3px;
+            }
+            
+            .preloader-text {
+                font-size: 0.85rem;
+                margin-top: 15px;
+                letter-spacing: 1px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .preloader-inner {
+                max-width: 90vw;
+                padding: 0 8px;
+            }
+            
+            .preloader-logo {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+            
+            .preloader-spinner {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .preloader-spinner .spinner-ring {
+                border-width: 2px;
+            }
+            
+            .preloader-text {
+                font-size: 0.7rem;
+                margin-top: 12px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .preloader-logo {
+                font-size: 1rem;
+            }
+            
+            .preloader-spinner {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .preloader-text {
+                font-size: 0.65rem;
+            }
+        }
     </style>
     
     @stack('styles')
@@ -530,9 +609,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <i class="fas fa-phone-alt me-2"></i> {{ \App\Models\SiteSetting::get('site_phone', '+880 1700-000000') }}
+                    <i class="fas fa-phone-alt me-2"></i> {{ \App\Models\SiteSetting::get('contact_phone', '+880 1700-000000') }}
                     <span class="mx-3">|</span>
-                    <i class="fas fa-envelope me-2"></i> {{ \App\Models\SiteSetting::get('site_email', 'info@satkhira.com') }}
+                    <i class="fas fa-envelope me-2"></i> {{ \App\Models\SiteSetting::get('contact_email', 'info@satkhira.com') }}
                 </div>
                 <div class="col-md-6 text-end">
                     <!-- Language Switcher -->
@@ -632,7 +711,7 @@
                     </li>
                     <li class="nav-item d-lg-none">
                         <span class="nav-link text-white-50" style="font-size: 0.85rem;">
-                            <i class="fas fa-phone-alt me-2"></i>{{ \App\Models\SiteSetting::get('site_phone', '+880 1700-000000') }}
+                            <i class="fas fa-phone-alt me-2"></i>{{ \App\Models\SiteSetting::get('contact_phone', '+880 1700-000000') }}
                         </span>
                     </li>
                     <li class="nav-item d-lg-none">
@@ -701,14 +780,14 @@
                     <h5><i class="fas fa-leaf me-2"></i>{{ __('messages.site_name') }}</h5>
                     <p>{{ __('messages.site_tagline') }}</p>
                     <div class="social-links mt-3">
-                        @if(\App\Models\SiteSetting::get('facebook_url'))
-                            <a href="{{ \App\Models\SiteSetting::get('facebook_url') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        @if(\App\Models\SiteSetting::get('facebook'))
+                            <a href="{{ \App\Models\SiteSetting::get('facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
                         @endif
-                        @if(\App\Models\SiteSetting::get('youtube_url'))
-                            <a href="{{ \App\Models\SiteSetting::get('youtube_url') }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                        @if(\App\Models\SiteSetting::get('youtube'))
+                            <a href="{{ \App\Models\SiteSetting::get('youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
                         @endif
-                        @if(\App\Models\SiteSetting::get('twitter_url'))
-                            <a href="{{ \App\Models\SiteSetting::get('twitter_url') }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        @if(\App\Models\SiteSetting::get('twitter'))
+                            <a href="{{ \App\Models\SiteSetting::get('twitter') }}" target="_blank"><i class="fab fa-twitter"></i></a>
                         @endif
                     </div>
                 </div>
@@ -736,9 +815,12 @@
                 <div class="col-lg-3 col-md-4 mb-4">
                     <h5>{{ __('messages.contact') }}</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ \App\Models\SiteSetting::get('site_address', 'Satkhira, Bangladesh') }}</li>
-                        <li class="mb-2"><i class="fas fa-phone me-2"></i>{{ \App\Models\SiteSetting::get('site_phone') }}</li>
-                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>{{ \App\Models\SiteSetting::get('site_email') }}</li>
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ \App\Models\SiteSetting::get('contact_address', 'Satkhira, Bangladesh') }}</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>{{ \App\Models\SiteSetting::get('contact_phone') }}</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>{{ \App\Models\SiteSetting::get('contact_email') }}</li>
+                        @if(\App\Models\SiteSetting::get('whatsapp'))
+                            <li class="mb-2"><i class="fab fa-whatsapp me-2"></i>{{ \App\Models\SiteSetting::get('whatsapp') }}</li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -775,11 +857,12 @@
                     preloader.style.display = 'none';
                 }, 500);
             }
-        }, 3000);
+        }, 1500);
         
         AOS.init({
-            duration: 800,
-            once: true
+            duration: 400,
+            once: true,
+            offset: 50
         });
         
         // Auto dismiss alerts

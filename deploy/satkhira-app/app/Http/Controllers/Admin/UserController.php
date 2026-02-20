@@ -7,8 +7,10 @@ use App\Models\Category;
 use App\Models\Role;
 use App\Models\Upazila;
 use App\Models\User;
+use App\Mail\UserApprovedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -45,7 +47,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $upazilas = Upazila::active()->ordered()->get();
-        return view('admin.users.create', compact('roles', 'upazilas'));
+        return view('admin.users.form', compact('roles', 'upazilas'));
     }
 
     public function store(Request $request)
@@ -53,7 +55,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8',
             'phone' => 'nullable|string|max:20',
             'role_id' => 'required|exists:roles,id',
             'upazila_id' => 'nullable|exists:upazilas,id',
@@ -85,11 +87,11 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $user->load('categoryPermissions');
+        $user->load(['categoryPermissions', 'assignedUpazilas']);
         $roles = Role::all();
         $upazilas = Upazila::active()->ordered()->get();
         $categories = Category::active()->whereNull('parent_id')->orderBy('name')->get();
-        return view('admin.users.edit', compact('user', 'roles', 'upazilas', 'categories'));
+        return view('admin.users.form', compact('user', 'roles', 'upazilas', 'categories'));
     }
 
     public function update(Request $request, User $user)
@@ -100,12 +102,13 @@ class UserController extends Controller
             'password' => 'nullable|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'role_id' => 'required|exists:roles,id',
-            'upazila_id' => 'nullable|exists:upazilas,id',
             'status' => 'required|in:pending,active,suspended',
             'address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
             'approved_categories' => 'nullable|array',
             'approved_categories.*' => 'exists:categories,id',
+            'assigned_upazilas' => 'nullable|array',
+            'assigned_upazilas.*' => 'exists:upazilas,id',
         ]);
 
         if ($request->filled('password')) {
@@ -114,13 +117,28 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
-        if ($validated['status'] === 'active' && $user->status !== 'active') {
+        $wasNotActive = $user->status !== 'active';
+        if ($validated['status'] === 'active' && $wasNotActive) {
             $validated['approved_at'] = now();
             $validated['approved_by'] = auth()->id();
         }
 
         unset($validated['approved_categories']);
+        unset($validated['assigned_upazilas']);
         $user->update($validated);
+
+        // Send approval email if status changed to active
+        if ($validated['status'] === 'active' && $wasNotActive) {
+            try {
+                Mail::to($user->email)->send(new UserApprovedMail($user));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send user approval email: ' . $e->getMessage());
+            }
+        }
+
+        // Update upazila permissions
+        $assignedUpazilas = $request->assigned_upazilas ?? [];
+        $user->assignedUpazilas()->sync($assignedUpazilas);
 
         // Update category permissions
         if ($request->has('approved_categories')) {
@@ -179,6 +197,13 @@ class UserController extends Controller
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
             ]);
+        }
+
+        // Send approval email
+        try {
+            Mail::to($user->email)->send(new UserApprovedMail($user));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send user approval email: ' . $e->getMessage());
         }
 
         return back()->with('success', 'User approved successfully with all requested categories.');
