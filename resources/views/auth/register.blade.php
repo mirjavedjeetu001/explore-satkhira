@@ -584,13 +584,14 @@
                 <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select based on your purpose (you can select multiple)' }}</p>
                 
                 <!-- MP Question Option -->
-                <div class="category-item mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px;">
-                    <input type="checkbox" name="mp_question_only" value="1" 
-                           id="mp_question_only"
-                           {{ old('mp_question_only') ? 'checked' : '' }}>
-                    <label for="mp_question_only" style="color: white;">
-                        <i class="fas fa-question-circle"></i>
-                        {{ app()->getLocale() == 'bn' ? 'সাংসদকে প্রশ্ন করতে চাই' : 'I want to ask questions to MP' }}
+                <div class="mp-question-option mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <label for="mp_question_only" style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                        <input type="checkbox" name="mp_question_only" value="1" 
+                               id="mp_question_only"
+                               style="width: 20px; height: 20px; margin-right: 12px; accent-color: #fff;"
+                               {{ old('mp_question_only') ? 'checked' : '' }}>
+                        <i class="fas fa-comments" style="font-size: 24px; color: #fff; margin-right: 12px;"></i>
+                        <span style="color: #fff; font-size: 16px; font-weight: 600;">{{ app()->getLocale() == 'bn' ? 'সাংসদকে প্রশ্ন করতে চাই' : 'I want to ask questions to MP' }}</span>
                     </label>
                 </div>
                 
