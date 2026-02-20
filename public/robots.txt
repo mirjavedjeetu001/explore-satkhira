@@ -1,2 +1,50 @@
+# Explore Satkhira - Satkhira District Directory
+# https://exploresatkhira.com
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://exploresatkhira.com/sitemap.xml
+
+# Block admin and auth pages
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /dashboard/
+
+# Block API routes
+Disallow: /api/
+
+# Block storage and system files
+Disallow: /storage/
+Disallow: /.env
+Disallow: /vendor/
+
+# Allow important pages
+Allow: /listings
+Allow: /category/
+Allow: /upazila/
+Allow: /about
+Allow: /contact
+Allow: /mp
+Allow: /news
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing specific
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Yandex
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2

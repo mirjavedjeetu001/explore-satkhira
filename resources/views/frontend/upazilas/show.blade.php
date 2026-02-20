@@ -2,6 +2,18 @@
 
 @section('title', $upazila->name . ' - Satkhira Portal')
 
+@php
+    $upazilaName = $upazila->name;
+    $seoTitle = $upazilaName . ' উপজেলা - সাতক্ষীরা জেলা | এক্সপ্লোর সাতক্ষীরা';
+    $seoDescription = $upazilaName . ' উপজেলার সকল তথ্য। হোম টিউটর, টু-লেট, রেস্টুরেন্ট, হাসপাতাল, স্কুল, কলেজ, ডাক্তার, ফার্মেসি, ব্যাংক, সরকারি অফিস খুঁজুন ' . $upazilaName . ' উপজেলায়। ঠিকানা ও ফোন নম্বর সহ।';
+    $seoKeywords = $upazilaName . ', ' . $upazilaName . ' সাতক্ষীরা, ' . $upazilaName . ' উপজেলা, ' . $upazilaName . ' Satkhira, হোম টিউটর ' . $upazilaName . ', টু-লেট ' . $upazilaName . ', রেস্টুরেন্ট ' . $upazilaName . ', হাসপাতাল ' . $upazilaName;
+@endphp
+
+@section('seo_title', $seoTitle)
+@section('seo_description', $seoDescription)
+@section('seo_keywords', $seoKeywords)
+@section('canonical_url', route('upazilas.show', $upazila))
+
 @section('content')
 <!-- Page Header -->
 <section class="page-header py-5" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">

@@ -4,17 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="google-site-verification" content="MpDysAtFM8ui1Ken2ZbOg_JFGLQQVu_hCE2VQPT6XDk">
     
     @php
         $localeSiteName = app()->getLocale() === 'bn' 
             ? ($siteSettings['site_name_bn'] ?? __('messages.site_name'))
             : ($siteSettings['site_name'] ?? __('messages.site_name'));
+        
+        $defaultDescription = app()->getLocale() === 'bn' 
+            ? 'সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়। হোম টিউটর, টু-লেট, রেস্টুরেন্ট, হাসপাতাল, স্কুল, কলেজ, ডাক্তার, ফার্মেসি, ব্যাংক, সরকারি অফিস, পর্যটন স্পট এবং আরও অনেক কিছু খুঁজুন সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা উপজেলায়।'
+            : 'Explore Satkhira - Complete district directory of Satkhira, Bangladesh. Find home tutors, rentals, restaurants, hospitals, schools, colleges, doctors, pharmacies, banks, government offices, tourist spots in Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala.';
+        
+        $defaultKeywords = app()->getLocale() === 'bn'
+            ? 'সাতক্ষীরা, এক্সপ্লোর সাতক্ষীরা, সাতক্ষীরা জেলা, হোম টিউটর সাতক্ষীরা, টু-লেট সাতক্ষীরা, রেস্টুরেন্ট সাতক্ষীরা, হাসপাতাল সাতক্ষীরা, স্কুল সাতক্ষীরা, কলেজ সাতক্ষীরা, ডাক্তার সাতক্ষীরা, ফার্মেসি সাতক্ষীরা, ব্যাংক সাতক্ষীরা, সরকারি অফিস সাতক্ষীরা, পর্যটন স্পট সাতক্ষীরা, শপিং সেন্টার সাতক্ষীরা, সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা'
+            : 'Satkhira, Explore Satkhira, Satkhira District, Home Tutor Satkhira, To-Let Satkhira, Restaurant Satkhira, Hospital Satkhira, School Satkhira, College Satkhira, Doctor Satkhira, Pharmacy Satkhira, Bank Satkhira, Government Office Satkhira, Tourist Spots Satkhira, Shopping Center Satkhira, Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala, Bangladesh';
     @endphp
+    
     <title>@yield('title', $localeSiteName) - {{ $localeSiteName }}</title>
+    
+    <meta name="description" content="@yield('meta_description', $defaultDescription)">
+    <meta name="keywords" content="@yield('meta_keywords', $defaultKeywords)">
+    <meta name="author" content="Explore Satkhira">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="geo.region" content="BD-E">
+    <meta name="geo.placename" content="Satkhira, Bangladesh">
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', $localeSiteName) - {{ $localeSiteName }}">
+    <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:site_name" content="{{ $localeSiteName }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'bn' ? 'bn_BD' : 'en_US' }}">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', $localeSiteName) - {{ $localeSiteName }}">
+    <meta name="twitter:description" content="@yield('meta_description', $defaultDescription)">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    
+    @yield('structured_data')
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

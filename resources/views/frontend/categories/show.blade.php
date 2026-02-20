@@ -2,6 +2,18 @@
 
 @section('title', ($category->name_bn ?? $category->name) . ' - Satkhira Portal')
 
+@php
+    $categoryName = $category->name_bn ?? $category->name;
+    $seoTitle = $categoryName . ' সাতক্ষীরা - ' . ($categoryName) . ' তালিকা | এক্সপ্লোর সাতক্ষীরা';
+    $seoDescription = 'সাতক্ষীরা জেলার সকল ' . $categoryName . ' এর তালিকা। সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা উপজেলায় ' . $categoryName . ' খুঁজুন। ঠিকানা, ফোন নম্বর সহ সম্পূর্ণ তথ্য।';
+    $seoKeywords = $categoryName . ', ' . $categoryName . ' সাতক্ষীরা, ' . ($category->name ?? '') . ' Satkhira, সাতক্ষীরা ' . $categoryName . ', সাতক্ষীরা সদর ' . $categoryName . ', কালীগঞ্জ ' . $categoryName . ', শ্যামনগর ' . $categoryName;
+@endphp
+
+@section('seo_title', $seoTitle)
+@section('seo_description', $seoDescription)
+@section('seo_keywords', $seoKeywords)
+@section('canonical_url', route('categories.show', $category))
+
 @section('content')
 <!-- Page Header -->
 <section class="page-header py-5" style="background: linear-gradient(135deg, {{ $category->color ?? 'var(--primary-color)' }}, var(--secondary-color));">

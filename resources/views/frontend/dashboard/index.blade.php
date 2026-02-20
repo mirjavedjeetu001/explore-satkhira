@@ -28,8 +28,8 @@
             <div class="col-lg-3 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-4">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=28a745&color=fff&size=100" 
-                             alt="{{ auth()->user()->name }}" class="rounded-circle mb-3" width="100" height="100">
+                        <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=28a745&color=fff&size=100' }}" 
+                             alt="{{ auth()->user()->name }}" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
                         <h5 class="mb-1">{{ auth()->user()->name }}</h5>
                         <p class="text-muted small mb-0">{{ auth()->user()->email }}</p>
                         <span class="badge bg-success mt-2">{{ auth()->user()->role->display_name ?? 'User' }}</span>

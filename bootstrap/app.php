@@ -15,12 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
+            'no-cache' => \App\Http\Middleware\NoCacheMiddleware::class,
         ]);
         
-        // Apply SetLocale and TrackVisitor middleware to all web routes
+        // Apply SetLocale, TrackVisitor and NoCache middleware to all web routes
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\TrackVisitor::class,
+            \App\Http\Middleware\NoCacheMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

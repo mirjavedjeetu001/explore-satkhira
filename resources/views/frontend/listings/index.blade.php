@@ -2,6 +2,21 @@
 
 @section('title', 'সকল তথ্য')
 
+@php
+    $searchQuery = request('search');
+    $currentCategory = request('category');
+    $currentUpazila = request('upazila');
+    
+    $seoTitle = 'সাতক্ষীরা জেলার সকল তথ্য - হোম টিউটর, টু-লেট, হাসপাতাল, স্কুল | এক্সপ্লোর সাতক্ষীরা';
+    $seoDescription = 'সাতক্ষীরা জেলার সকল ব্যবসা ও সেবার তালিকা। হোম টিউটর, টু-লেট, রেস্টুরেন্ট, হাসপাতাল, স্কুল, কলেজ, ডাক্তার, ফার্মেসি, ব্যাংক, সরকারি অফিস, পর্যটন স্পট খুঁজুন। ঠিকানা ও ফোন নম্বর সহ।';
+    $seoKeywords = 'সাতক্ষীরা তথ্য, সাতক্ষীরা ডিরেক্টরি, হোম টিউটর সাতক্ষীরা, টু-লেট সাতক্ষীরা, রেস্টুরেন্ট সাতক্ষীরা, হাসপাতাল সাতক্ষীরা, স্কুল সাতক্ষীরা, কলেজ সাতক্ষীরা, ডাক্তার সাতক্ষীরা, Satkhira Directory';
+@endphp
+
+@section('seo_title', $seoTitle)
+@section('seo_description', $seoDescription)
+@section('seo_keywords', $seoKeywords)
+@section('canonical_url', route('listings.index'))
+
 @section('content')
     <!-- Breadcrumb -->
     <section class="breadcrumb-section">

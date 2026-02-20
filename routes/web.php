@@ -25,7 +25,15 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
+
+// Sitemap Routes (for SEO)
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap-listings.xml', [SitemapController::class, 'listings'])->name('sitemap.listings');
+Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
+Route::get('/sitemap-upazilas.xml', [SitemapController::class, 'upazilas'])->name('sitemap.upazilas');
+Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
 
 // Dynamic Favicon
 Route::get('/favicon.svg', [FaviconController::class, 'svg'])->name('favicon.svg');

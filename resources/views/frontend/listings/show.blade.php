@@ -9,7 +9,27 @@
     $sidebarAds = $promotionalImages->whereIn('position', ['left', 'right', 'center']);
     $bottomAds = $promotionalImages->whereIn('position', ['bottom-left', 'bottom-right']);
     $allOtherAds = $promotionalImages->whereNotIn('position', ['top-left', 'top-right', 'full-width', 'left', 'right', 'center', 'bottom-left', 'bottom-right']);
+    
+    // SEO Variables
+    $seoTitle = $listing->title . ' - ' . ($listing->category->name ?? '') . ' | ' . ($listing->upazila->name ?? 'সাতক্ষীরা');
+    $seoDescription = Str::limit(strip_tags($listing->description ?? $listing->title . ' - ' . ($listing->category->name ?? '') . ' সাতক্ষীরা জেলায়'), 160);
+    $seoImage = $listing->image ? asset('storage/' . $listing->image) : asset('images/og-image.jpg');
+    $seoKeywords = implode(', ', array_filter([
+        $listing->title,
+        $listing->category->name ?? '',
+        $listing->upazila->name ?? '',
+        'সাতক্ষীরা',
+        'Satkhira',
+        $listing->address ?? ''
+    ]));
 @endphp
+
+@section('seo_title', $seoTitle)
+@section('seo_description', $seoDescription)
+@section('seo_keywords', $seoKeywords)
+@section('seo_image', $seoImage)
+@section('canonical_url', route('listings.show', $listing))
+@section('og_type', 'business.business')
 
 @section('content')
 <!-- Page Header -->
