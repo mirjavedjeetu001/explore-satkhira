@@ -70,6 +70,17 @@
         </div>
         @endif
         
+        <!-- MP Questions Interest -->
+        @if($user->wants_mp_questions)
+        <div class="card mb-4 border-primary">
+            <div class="card-body">
+                <i class="fas fa-comments fa-2x text-primary me-2 float-start"></i>
+                <h5 class="mb-1">সাংসদকে প্রশ্ন করতে চান</h5>
+                <p class="text-muted mb-0">This user registered to ask questions to MP (Member of Parliament)</p>
+            </div>
+        </div>
+        @endif
+        
         <!-- Category Permissions -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">

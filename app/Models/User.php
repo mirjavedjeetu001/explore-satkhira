@@ -24,6 +24,7 @@ class User extends Authenticatable
         'address',
         'bio',
         'registration_purpose',
+        'wants_mp_questions',
         'requested_categories',
         'status',
         'is_verified',
@@ -42,6 +43,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_verified' => 'boolean',
+            'wants_mp_questions' => 'boolean',
             'approved_at' => 'datetime',
             'requested_categories' => 'array',
         ];

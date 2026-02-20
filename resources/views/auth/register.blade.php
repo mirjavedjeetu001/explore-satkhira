@@ -580,8 +580,21 @@
                 </div>
                 
                 <!-- Category Selection -->
-                <h5 class="section-title"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'কোন ক্যাটাগরিতে তথ্য যোগ করতে চান?' : 'Which categories do you want to contribute?' }} <span class="required">*</span></h5>
-                <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনি যে ক্যাটাগরিতে তথ্য/লিস্টিং যোগ করতে চান সেগুলো নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select the categories you want to add listings to (you can select multiple)' }}</p>
+                <h5 class="section-title"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'আপনি কি করতে চান?' : 'What do you want to do?' }} <span class="required">*</span></h5>
+                <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select based on your purpose (you can select multiple)' }}</p>
+                
+                <!-- MP Question Option -->
+                <div class="category-item mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px;">
+                    <input type="checkbox" name="mp_question_only" value="1" 
+                           id="mp_question_only"
+                           {{ old('mp_question_only') ? 'checked' : '' }}>
+                    <label for="mp_question_only" style="color: white;">
+                        <i class="fas fa-question-circle"></i>
+                        {{ app()->getLocale() == 'bn' ? 'সাংসদকে প্রশ্ন করতে চাই' : 'I want to ask questions to MP' }}
+                    </label>
+                </div>
+                
+                <p class="text-muted mb-2" style="font-size: 0.8rem;">{{ app()->getLocale() == 'bn' ? 'অথবা তথ্য/লিস্টিং যোগ করতে ক্যাটাগরি নির্বাচন করুন:' : 'Or select categories to add listings:' }}</p>
                 
                 <div class="category-grid">
                     @foreach($categories ?? [] as $category)
@@ -597,6 +610,9 @@
                     @endforeach
                 </div>
                 @error('categories')
+                    <div class="text-danger mb-3" style="font-size: 0.85rem;">{{ $message }}</div>
+                @enderror
+                @error('mp_question_only')
                     <div class="text-danger mb-3" style="font-size: 0.85rem;">{{ $message }}</div>
                 @enderror
                 

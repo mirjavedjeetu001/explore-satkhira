@@ -81,6 +81,9 @@
                         <td>{{ $user->email }}</td>
                         <td>
                             <span class="badge bg-info">{{ $user->role->name ?? 'N/A' }}</span>
+                            @if($user->wants_mp_questions)
+                                <span class="badge bg-primary" title="Wants to ask MP questions"><i class="fas fa-comments"></i></span>
+                            @endif
                         </td>
                         <td>{{ $user->upazila->name ?? 'N/A' }}</td>
                         <td>

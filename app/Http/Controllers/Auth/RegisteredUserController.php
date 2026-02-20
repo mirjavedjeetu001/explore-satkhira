@@ -42,6 +42,10 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Check if at least mp_question_only or categories is selected
+        $hasMpQuestion = $request->boolean('mp_question_only');
+        $hasCategories = !empty($request->categories);
+        
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -49,7 +53,8 @@ class RegisteredUserController extends Controller
             'nid_number' => ['nullable', 'string', 'max:20'],
             'upazila_id' => ['required', 'exists:upazilas,id'],
             'address' => ['required', 'string', 'max:500'],
-            'categories' => ['required', 'array', 'min:1'],
+            'mp_question_only' => ['nullable', 'boolean'],
+            'categories' => $hasMpQuestion ? ['nullable', 'array'] : ['required', 'array', 'min:1'],
             'categories.*' => ['exists:categories,id'],
             'registration_purpose' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -61,8 +66,8 @@ class RegisteredUserController extends Controller
             'phone.required' => 'মোবাইল নম্বর দিতে হবে',
             'upazila_id.required' => 'উপজেলা নির্বাচন করতে হবে',
             'address.required' => 'ঠিকানা দিতে হবে',
-            'categories.required' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করতে হবে',
-            'categories.min' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করতে হবে',
+            'categories.required' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করুন অথবা "সাংসদকে প্রশ্ন করতে চাই" সিলেক্ট করুন',
+            'categories.min' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করুন অথবা "সাংসদকে প্রশ্ন করতে চাই" সিলেক্ট করুন',
             'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
             'password.required' => 'পাসওয়ার্ড দিতে হবে',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
@@ -88,20 +93,23 @@ class RegisteredUserController extends Controller
             'upazila_id' => $request->upazila_id,
             'address' => $request->address,
             'registration_purpose' => $request->registration_purpose,
-            'requested_categories' => $request->categories,
+            'wants_mp_questions' => $request->boolean('mp_question_only'),
+            'requested_categories' => $request->categories ?? [],
             'password' => Hash::make($request->password),
             'role_id' => $userRole?->id,
             'status' => 'pending', // Account needs admin approval
             'avatar' => $avatarPath,
         ]);
 
-        // Store requested categories (not yet approved)
-        foreach ($request->categories as $categoryId) {
-            $user->categoryPermissions()->attach($categoryId, [
-                'is_approved' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // Store requested categories (not yet approved) - only if categories selected
+        if (!empty($request->categories)) {
+            foreach ($request->categories as $categoryId) {
+                $user->categoryPermissions()->attach($categoryId, [
+                    'is_approved' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
         // Send registration pending email
