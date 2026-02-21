@@ -205,6 +205,12 @@ class UserController extends Controller
             }
             $message = 'User approved successfully with all requested categories.';
         }
+        
+        // Check if approving as upazila moderator
+        if ($request->input('approve_type') === 'upazila_moderator') {
+            $user->update(['is_upazila_moderator' => true]);
+            $message = 'User approved as Upazila Moderator - can add data to all categories in their upazila.';
+        }
 
         // Send approval email
         try {
@@ -251,5 +257,17 @@ class UserController extends Controller
         $user->categoryPermissions()->detach($category->id);
 
         return back()->with('success', 'Category "' . ($category->name_bn ?? $category->name) . '" rejected.');
+    }
+
+    public function makeModerator(User $user)
+    {
+        $user->update(['is_upazila_moderator' => true]);
+        return back()->with('success', 'User is now an Upazila Moderator for ' . ($user->upazila->name_bn ?? $user->upazila->name ?? 'their upazila') . '.');
+    }
+
+    public function removeModerator(User $user)
+    {
+        $user->update(['is_upazila_moderator' => false]);
+        return back()->with('success', 'Moderator status removed from user.');
     }
 }

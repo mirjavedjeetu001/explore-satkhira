@@ -42,9 +42,13 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Check if at least mp_question_only or categories is selected
+        // Check if at least one option is selected
         $hasMpQuestion = $request->boolean('mp_question_only');
+        $hasCommentOnly = $request->boolean('comment_only');
         $hasCategories = !empty($request->categories);
+        
+        // If comment_only or mp_question_only is selected, categories are optional
+        $categoriesRequired = !$hasMpQuestion && !$hasCommentOnly;
         
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -54,7 +58,8 @@ class RegisteredUserController extends Controller
             'upazila_id' => ['required', 'exists:upazilas,id'],
             'address' => ['required', 'string', 'max:500'],
             'mp_question_only' => ['nullable', 'boolean'],
-            'categories' => $hasMpQuestion ? ['nullable', 'array'] : ['required', 'array', 'min:1'],
+            'comment_only' => ['nullable', 'boolean'],
+            'categories' => $categoriesRequired ? ['required', 'array', 'min:1'] : ['nullable', 'array'],
             'categories.*' => ['exists:categories,id'],
             'registration_purpose' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -66,8 +71,8 @@ class RegisteredUserController extends Controller
             'phone.required' => 'মোবাইল নম্বর দিতে হবে',
             'upazila_id.required' => 'উপজেলা নির্বাচন করতে হবে',
             'address.required' => 'ঠিকানা দিতে হবে',
-            'categories.required' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করুন অথবা "সাংসদকে প্রশ্ন করতে চাই" সিলেক্ট করুন',
-            'categories.min' => 'অন্তত একটি ক্যাটাগরি নির্বাচন করুন অথবা "সাংসদকে প্রশ্ন করতে চাই" সিলেক্ট করুন',
+            'categories.required' => 'অন্তত একটি অপশন সিলেক্ট করুন',
+            'categories.min' => 'অন্তত একটি অপশন সিলেক্ট করুন',
             'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
             'password.required' => 'পাসওয়ার্ড দিতে হবে',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
@@ -94,6 +99,7 @@ class RegisteredUserController extends Controller
             'address' => $request->address,
             'registration_purpose' => $request->registration_purpose,
             'wants_mp_questions' => $request->boolean('mp_question_only'),
+            'comment_only' => $request->boolean('comment_only'),
             'requested_categories' => $request->categories ?? [],
             'password' => Hash::make($request->password),
             'role_id' => $userRole?->id,

@@ -81,6 +81,28 @@
         </div>
         @endif
         
+        <!-- Comment Only Interest -->
+        @if($user->comment_only)
+        <div class="card mb-4 border-success">
+            <div class="card-body">
+                <i class="fas fa-comment-dots fa-2x text-success me-2 float-start"></i>
+                <h5 class="mb-1">শুধু মন্তব্য করতে চান</h5>
+                <p class="text-muted mb-0">This user registered only to comment on listings</p>
+            </div>
+        </div>
+        @endif
+        
+        <!-- Upazila Moderator Status -->
+        @if($user->is_upazila_moderator)
+        <div class="card mb-4 border-warning">
+            <div class="card-body">
+                <i class="fas fa-user-shield fa-2x text-warning me-2 float-start"></i>
+                <h5 class="mb-1">উপজেলা মডারেটর</h5>
+                <p class="text-muted mb-0">{{ $user->upazila->name_bn ?? $user->upazila->name ?? 'N/A' }} উপজেলার মডারেটর - সব ক্যাটাগরিতে তথ্য যোগ করতে পারবেন</p>
+            </div>
+        </div>
+        @endif
+        
         <!-- Category Permissions -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -219,6 +241,32 @@
                         <input type="hidden" name="approve_type" value="all">
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-check-double me-2"></i>Approve User + All Categories
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <input type="hidden" name="approve_type" value="upazila_moderator">
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-user-shield me-2"></i>Approve as Upazila Moderator
+                        </button>
+                        <small class="text-muted d-block mt-1">সব ক্যাটাগরিতে তথ্য যোগ করতে পারবেন</small>
+                    </form>
+                @endif
+                
+                @if($user->status === 'active' && !$user->is_upazila_moderator)
+                    <form action="{{ route('admin.users.make-moderator', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-user-shield me-2"></i>Make Upazila Moderator
+                        </button>
+                    </form>
+                @endif
+                
+                @if($user->is_upazila_moderator)
+                    <form action="{{ route('admin.users.remove-moderator', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-warning w-100" onclick="return confirm('Remove moderator status?')">
+                            <i class="fas fa-user-minus me-2"></i>Remove Moderator Status
                         </button>
                     </form>
                 @endif

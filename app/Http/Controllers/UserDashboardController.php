@@ -56,6 +56,16 @@ class UserDashboardController extends Controller
         if ($user->isAdmin()) {
             $categories = Category::active()->orderBy('name')->get();
             $upazilas = Upazila::active()->orderBy('name')->get();
+        } elseif ($user->is_upazila_moderator) {
+            // Upazila moderators can see ALL categories but only their upazila
+            $categories = Category::active()->orderBy('name')->get();
+            
+            // Only their upazila
+            if ($user->upazila_id) {
+                $upazilas = Upazila::where('id', $user->upazila_id)->get();
+            } else {
+                $upazilas = collect();
+            }
         } else {
             // Filter categories based on user's approved categories
             $approvedCategoryIds = $user->approvedCategories()->pluck('categories.id');

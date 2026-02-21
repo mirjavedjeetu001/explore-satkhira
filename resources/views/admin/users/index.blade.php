@@ -81,8 +81,14 @@
                         <td>{{ $user->email }}</td>
                         <td>
                             <span class="badge bg-info">{{ $user->role->name ?? 'N/A' }}</span>
+                            @if($user->is_upazila_moderator)
+                                <span class="badge bg-warning" title="Upazila Moderator"><i class="fas fa-user-shield"></i></span>
+                            @endif
                             @if($user->wants_mp_questions)
                                 <span class="badge bg-primary" title="Wants to ask MP questions"><i class="fas fa-comments"></i></span>
+                            @endif
+                            @if($user->comment_only)
+                                <span class="badge bg-success" title="Comment only"><i class="fas fa-comment-dots"></i></span>
                             @endif
                         </td>
                         <td>{{ $user->upazila->name ?? 'N/A' }}</td>

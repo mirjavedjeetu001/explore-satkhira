@@ -583,6 +583,18 @@
                 <h5 class="section-title"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'আপনি কি করতে চান?' : 'What do you want to do?' }} <span class="required">*</span></h5>
                 <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select based on your purpose (you can select multiple)' }}</p>
                 
+                <!-- Comment Only Option -->
+                <div class="comment-only-option mb-3" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <label for="comment_only" style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                        <input type="checkbox" name="comment_only" value="1" 
+                               id="comment_only"
+                               style="width: 20px; height: 20px; margin-right: 12px; accent-color: #fff;"
+                               {{ old('comment_only') ? 'checked' : '' }}>
+                        <i class="fas fa-comment-dots" style="font-size: 24px; color: #fff; margin-right: 12px;"></i>
+                        <span style="color: #fff; font-size: 16px; font-weight: 600;">{{ app()->getLocale() == 'bn' ? 'শুধু মন্তব্য করতে চাই' : 'I just want to comment' }}</span>
+                    </label>
+                </div>
+                
                 <!-- MP Question Option -->
                 <div class="mp-question-option mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
                     <label for="mp_question_only" style="display: flex; align-items: center; cursor: pointer; margin: 0;">
