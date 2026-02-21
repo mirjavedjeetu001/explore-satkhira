@@ -182,6 +182,81 @@
                             {!! nl2br(e($listing->description)) !!}
                         </div>
                         
+                        <!-- Doctor Specific Information -->
+                        @if($listing->category && $listing->category->slug === 'doctor' && $listing->extra_fields)
+                            <div class="border-top pt-4 mb-4">
+                                <h5 class="mb-3"><i class="fas fa-user-md text-danger me-2"></i>ডাক্তার সম্পর্কিত তথ্য</h5>
+                                <div class="row g-3">
+                                    @if(!empty($listing->extra_fields['hospital_name']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-hospital text-primary me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>চেম্বার/হাসপাতাল</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['hospital_name'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!empty($listing->extra_fields['specialization']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-stethoscope text-success me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>বিশেষজ্ঞতা</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['specialization'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!empty($listing->extra_fields['degrees']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-graduation-cap text-warning me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>ডিগ্রি/যোগ্যতা</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['degrees'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!empty($listing->extra_fields['diseases_treated']))
+                                        <div class="col-12">
+                                            <div class="d-flex">
+                                                <i class="fas fa-notes-medical text-info me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>যেসব রোগী দেখেন</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['diseases_treated'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!empty($listing->extra_fields['chamber_time']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-clock text-secondary me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>চেম্বার সময়</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['chamber_time'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!empty($listing->extra_fields['visit_fee']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-money-bill-wave text-success me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>ভিজিট ফি</strong>
+                                                    <p class="mb-0 text-muted">{{ $listing->extra_fields['visit_fee'] }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                        
                         <!-- Contact Info -->
                         <div class="border-top pt-4">
                             <h5 class="mb-3"><i class="fas fa-address-card text-success me-2"></i>যোগাযোগের তথ্য</h5>

@@ -220,6 +220,73 @@
                                 </div>
                             </div>
                             
+                            <!-- Doctor Specific Fields (shown only for Doctor category) -->
+                            <div class="mb-4" id="doctorFields" style="display: none;">
+                                <div class="card border-0" style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-user-md text-danger me-2"></i>ডাক্তার সম্পর্কিত তথ্য</h6>
+                                        <p class="text-muted small mb-3">এই তথ্যগুলো শুধুমাত্র ডাক্তার ক্যাটাগরির জন্য প্রযোজ্য</p>
+                                        
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label">কোন হাসপাতালে চেম্বার/বসেন <span class="text-danger">*</span></label>
+                                                <input type="text" name="hospital_name" class="form-control @error('hospital_name') is-invalid @enderror" 
+                                                       value="{{ old('hospital_name', $listing->extra_fields['hospital_name'] ?? '') }}" placeholder="যেমন: সাতক্ষীরা সদর হাসপাতাল, ইসলামী ব্যাংক মেডিকেল সেন্টার">
+                                                @error('hospital_name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                                <small class="text-muted">একাধিক হাসপাতাল থাকলে কমা দিয়ে আলাদা করুন</small>
+                                            </div>
+                                            
+                                            <div class="col-12">
+                                                <label class="form-label">বিশেষজ্ঞতা / কি কি বিষয়ে অভিজ্ঞ <span class="text-danger">*</span></label>
+                                                <input type="text" name="specialization" class="form-control @error('specialization') is-invalid @enderror" 
+                                                       value="{{ old('specialization', $listing->extra_fields['specialization'] ?? '') }}" placeholder="যেমন: মেডিসিন, শিশু রোগ, হৃদরোগ, চর্ম রোগ">
+                                                @error('specialization')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-12">
+                                                <label class="form-label">কি কি রোগী দেখেন</label>
+                                                <textarea name="diseases_treated" class="form-control @error('diseases_treated') is-invalid @enderror" 
+                                                          rows="2" placeholder="যেমন: জ্বর, সর্দি-কাশি, ডায়াবেটিস, উচ্চ রক্তচাপ, গ্যাস্ট্রিক সমস্যা">{{ old('diseases_treated', $listing->extra_fields['diseases_treated'] ?? '') }}</textarea>
+                                                @error('diseases_treated')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">ডিগ্রি / যোগ্যতা</label>
+                                                <input type="text" name="degrees" class="form-control @error('degrees') is-invalid @enderror" 
+                                                       value="{{ old('degrees', $listing->extra_fields['degrees'] ?? '') }}" placeholder="যেমন: MBBS, BCS (Health), FCPS">
+                                                @error('degrees')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">চেম্বার সময়</label>
+                                                <input type="text" name="chamber_time" class="form-control @error('chamber_time') is-invalid @enderror" 
+                                                       value="{{ old('chamber_time', $listing->extra_fields['chamber_time'] ?? '') }}" placeholder="যেমন: সন্ধ্যা ৫টা - রাত ৯টা">
+                                                @error('chamber_time')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">ভিজিট ফি</label>
+                                                <input type="text" name="visit_fee" class="form-control @error('visit_fee') is-invalid @enderror" 
+                                                       value="{{ old('visit_fee', $listing->extra_fields['visit_fee'] ?? '') }}" placeholder="যেমন: ৫০০ টাকা">
+                                                @error('visit_fee')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-save me-1"></i>আপডেট করুন
@@ -239,6 +306,38 @@
 
 @push('scripts')
 <script>
+// Doctor category specific fields toggle
+const categorySelect = document.getElementById('category_id');
+const doctorFields = document.getElementById('doctorFields');
+
+// Category data with slug mapping
+const categoryData = {
+    @foreach($categories as $category)
+    '{{ $category->id }}': '{{ $category->slug }}',
+    @endforeach
+};
+
+function toggleDoctorFields() {
+    const selectedId = categorySelect.value;
+    const selectedSlug = categoryData[selectedId] || '';
+    
+    if (selectedSlug === 'doctor') {
+        doctorFields.style.display = 'block';
+        // Make hospital and specialization required
+        doctorFields.querySelector('input[name="hospital_name"]').required = true;
+        doctorFields.querySelector('input[name="specialization"]').required = true;
+    } else {
+        doctorFields.style.display = 'none';
+        // Remove required
+        doctorFields.querySelector('input[name="hospital_name"]').required = false;
+        doctorFields.querySelector('input[name="specialization"]').required = false;
+    }
+}
+
+categorySelect.addEventListener('change', toggleDoctorFields);
+// Check on page load (in case of existing doctor listing)
+document.addEventListener('DOMContentLoaded', toggleDoctorFields);
+
 document.getElementById('imageInput').addEventListener('change', function(e) {
     const preview = document.getElementById('imagePreview');
     const currentImages = document.getElementById('currentImages');

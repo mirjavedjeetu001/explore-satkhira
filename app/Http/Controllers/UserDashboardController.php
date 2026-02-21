@@ -106,7 +106,14 @@ class UserDashboardController extends Controller
             ? 'nullable|exists:upazilas,id' 
             : 'required|exists:upazilas,id';
         
-        $validated = $request->validate([
+        // Check if Doctor category is selected (slug = 'doctor')
+        $isDoctorCategory = false;
+        if ($request->category_id) {
+            $category = \App\Models\Category::find($request->category_id);
+            $isDoctorCategory = $category && $category->slug === 'doctor';
+        }
+        
+        $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
@@ -120,11 +127,38 @@ class UserDashboardController extends Controller
             'map_embed' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-        ]);
+        ];
+        
+        // Add doctor-specific validation rules
+        if ($isDoctorCategory) {
+            $rules['hospital_name'] = 'required|string|max:500';
+            $rules['specialization'] = 'required|string|max:500';
+            $rules['diseases_treated'] = 'nullable|string|max:1000';
+            $rules['degrees'] = 'nullable|string|max:255';
+            $rules['chamber_time'] = 'nullable|string|max:255';
+            $rules['visit_fee'] = 'nullable|string|max:100';
+        }
+        
+        $validated = $request->validate($rules);
 
         $validated['user_id'] = auth()->id();
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         $validated['status'] = 'pending'; // Needs admin approval
+        
+        // Handle doctor-specific extra fields
+        if ($isDoctorCategory) {
+            $validated['extra_fields'] = [
+                'hospital_name' => $request->hospital_name,
+                'specialization' => $request->specialization,
+                'diseases_treated' => $request->diseases_treated,
+                'degrees' => $request->degrees,
+                'chamber_time' => $request->chamber_time,
+                'visit_fee' => $request->visit_fee,
+            ];
+            // Remove these from validated array as they're now in extra_fields
+            unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
+                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee']);
+        }
 
         // Handle multiple images
         if ($request->hasFile('images')) {
@@ -204,8 +238,15 @@ class UserDashboardController extends Controller
         $upazilaRule = ($user->isAdmin() || $user->isSuperAdmin()) 
             ? 'nullable|exists:upazilas,id' 
             : 'required|exists:upazilas,id';
+        
+        // Check if Doctor category is selected (slug = 'doctor')
+        $isDoctorCategory = false;
+        if ($request->category_id) {
+            $category = \App\Models\Category::find($request->category_id);
+            $isDoctorCategory = $category && $category->slug === 'doctor';
+        }
 
-        $validated = $request->validate([
+        $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
@@ -219,7 +260,37 @@ class UserDashboardController extends Controller
             'map_embed' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-        ]);
+        ];
+        
+        // Add doctor-specific validation rules
+        if ($isDoctorCategory) {
+            $rules['hospital_name'] = 'required|string|max:500';
+            $rules['specialization'] = 'required|string|max:500';
+            $rules['diseases_treated'] = 'nullable|string|max:1000';
+            $rules['degrees'] = 'nullable|string|max:255';
+            $rules['chamber_time'] = 'nullable|string|max:255';
+            $rules['visit_fee'] = 'nullable|string|max:100';
+        }
+
+        $validated = $request->validate($rules);
+        
+        // Handle doctor-specific extra fields
+        if ($isDoctorCategory) {
+            $validated['extra_fields'] = [
+                'hospital_name' => $request->hospital_name,
+                'specialization' => $request->specialization,
+                'diseases_treated' => $request->diseases_treated,
+                'degrees' => $request->degrees,
+                'chamber_time' => $request->chamber_time,
+                'visit_fee' => $request->visit_fee,
+            ];
+            // Remove these from validated array as they're now in extra_fields
+            unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
+                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee']);
+        } else {
+            // Clear extra_fields if category changed from doctor to something else
+            $validated['extra_fields'] = null;
+        }
 
         // Handle multiple images
         if ($request->hasFile('images')) {
