@@ -39,6 +39,28 @@ class UserController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('upazila')) {
+            $query->where('upazila_id', $request->upazila);
+        }
+
+        // Filter by moderator type
+        if ($request->filled('moderator_type')) {
+            switch ($request->moderator_type) {
+                case 'upazila_moderator':
+                    $query->where('is_upazila_moderator', true);
+                    break;
+                case 'own_business_moderator':
+                    $query->where('is_own_business_moderator', true);
+                    break;
+                case 'wants_upazila':
+                    $query->where('wants_upazila_moderator', true)->where('is_upazila_moderator', false);
+                    break;
+                case 'wants_own_business':
+                    $query->where('wants_own_business_moderator', true)->where('is_own_business_moderator', false);
+                    break;
+            }
+        }
+
         $users = $query->latest()->paginate(15);
         $roles = Role::all();
         $upazilas = Upazila::active()->ordered()->get();

@@ -149,6 +149,13 @@ class ListingController extends Controller
             'price_to' => 'nullable|numeric|min:0',
             'status' => 'required|in:pending,approved,rejected',
             'is_featured' => 'boolean',
+            // Doctor specific fields
+            'hospital_name' => 'nullable|string|max:500',
+            'specialization' => 'nullable|string|max:500',
+            'diseases_treated' => 'nullable|string|max:1000',
+            'degrees' => 'nullable|string|max:500',
+            'chamber_time' => 'nullable|string|max:255',
+            'visit_fee' => 'nullable|string|max:100',
         ]);
 
         if ($request->hasFile('image')) {
@@ -162,6 +169,18 @@ class ListingController extends Controller
             }
             $validated['gallery'] = $gallery;
         }
+
+        // Handle doctor extra_fields
+        $category = \App\Models\Category::find($validated['category_id']);
+        // Save extra_fields for all categories (admin can edit any listing)
+        $validated['extra_fields'] = [
+            'hospital_name' => $request->input('hospital_name'),
+            'specialization' => $request->input('specialization'),
+            'diseases_treated' => $request->input('diseases_treated'),
+            'degrees' => $request->input('degrees'),
+            'chamber_time' => $request->input('chamber_time'),
+            'visit_fee' => $request->input('visit_fee'),
+        ];
 
         $wasNotApproved = $listing->status !== 'approved';
         if ($validated['status'] === 'approved' && $wasNotApproved) {

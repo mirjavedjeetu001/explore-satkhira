@@ -107,6 +107,52 @@
             border-radius: 5px;
         }
         
+        /* Mega Dropdown Menu for Categories */
+        .dropdown-mega {
+            position: relative;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega {
+            min-width: 400px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            left: 50% !important;
+            transform: translateX(-50%);
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .dropdown-item {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .dropdown-item:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .dropdown-mega .dropdown-menu-mega {
+                min-width: 100%;
+                left: 0 !important;
+                transform: none;
+                position: absolute;
+            }
+            
+            .dropdown-mega .dropdown-menu-mega .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         /* Top Bar */
         .top-bar {
             background: #1a3c34;
@@ -937,17 +983,19 @@
                             @endforeach
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown dropdown-mega">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-th-large me-1"></i> {{ __('messages.categories') }}
                         </a>
-                        <ul class="dropdown-menu">
-                            @foreach(\App\Models\Category::active()->parentCategories()->inMenu()->ordered()->get() as $category)
-                                <li><a class="dropdown-item" href="{{ route('categories.show', $category) }}">
-                                    <i class="fas {{ $category->icon }} me-2" style="color: {{ $category->color }}"></i>
-                                    {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
-                                </a></li>
-                            @endforeach
+                        <ul class="dropdown-menu dropdown-menu-mega">
+                            <div class="category-grid">
+                                @foreach(\App\Models\Category::active()->parentCategories()->inMenu()->ordered()->get() as $category)
+                                    <a class="dropdown-item" href="{{ route('categories.show', $category) }}">
+                                        <i class="fas {{ $category->icon }} me-2" style="color: {{ $category->color }}"></i>
+                                        {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
+                                    </a>
+                                @endforeach
+                            </div>
                         </ul>
                     </li>
                     <li class="nav-item">

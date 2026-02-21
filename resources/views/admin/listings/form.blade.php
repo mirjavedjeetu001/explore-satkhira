@@ -160,6 +160,85 @@
             </div>
             
             <div class="col-12">
+                <label class="form-label"><i class="fas fa-map-marked-alt me-1"></i>Google Map Embed HTML</label>
+                <textarea name="map_embed" class="form-control @error('map_embed') is-invalid @enderror" 
+                          rows="3" placeholder="Google Maps থেকে Embed HTML কোড পেস্ট করুন...">{{ old('map_embed', $listing->map_embed ?? '') }}</textarea>
+                @error('map_embed')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">Google Maps এ যান → Share → Embed a map → HTML কপি করুন</small>
+            </div>
+            
+            <!-- Extra Fields (All Categories) -->
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title"><i class="fas fa-info-circle text-primary me-2"></i>অতিরিক্ত তথ্য (Extra Information)</h6>
+                        
+                        @php
+                            $extraFields = isset($listing) ? ($listing->extra_fields ?? []) : [];
+                        @endphp
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">হাসপাতাল / চেম্বারের নাম</label>
+                                <input type="text" name="hospital_name" class="form-control @error('hospital_name') is-invalid @enderror" 
+                                       value="{{ old('hospital_name', $extraFields['hospital_name'] ?? '') }}" placeholder="যেমন: সাতক্ষীরা সদর হাসপাতাল">
+                                @error('hospital_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">বিশেষজ্ঞতা / Specialization</label>
+                                <input type="text" name="specialization" class="form-control @error('specialization') is-invalid @enderror" 
+                                       value="{{ old('specialization', $extraFields['specialization'] ?? '') }}" placeholder="যেমন: মেডিসিন, শিশু রোগ">
+                                @error('specialization')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">ডিগ্রি / Degrees</label>
+                                <input type="text" name="degrees" class="form-control @error('degrees') is-invalid @enderror" 
+                                       value="{{ old('degrees', $extraFields['degrees'] ?? '') }}" placeholder="যেমন: MBBS, FCPS">
+                                @error('degrees')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">কি কি রোগী দেখেন / Diseases Treated</label>
+                                <textarea name="diseases_treated" class="form-control @error('diseases_treated') is-invalid @enderror" 
+                                          rows="2" placeholder="যেমন: জ্বর, সর্দি-কাশি, ডায়াবেটিস">{{ old('diseases_treated', $extraFields['diseases_treated'] ?? '') }}</textarea>
+                                @error('diseases_treated')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">চেম্বার সময় / Chamber Time</label>
+                                <input type="text" name="chamber_time" class="form-control @error('chamber_time') is-invalid @enderror" 
+                                       value="{{ old('chamber_time', $extraFields['chamber_time'] ?? '') }}" placeholder="যেমন: সন্ধ্যা ৫টা - রাত ৯টা">
+                                @error('chamber_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">ভিজিট ফি / Visit Fee</label>
+                                <input type="text" name="visit_fee" class="form-control @error('visit_fee') is-invalid @enderror" 
+                                       value="{{ old('visit_fee', $extraFields['visit_fee'] ?? '') }}" placeholder="যেমন: ৫০০ টাকা">
+                                @error('visit_fee')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12">
                 <hr>
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-save me-2"></i>{{ isset($listing) ? 'Update Listing' : 'Create Listing' }}
