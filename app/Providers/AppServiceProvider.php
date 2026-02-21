@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\SiteSetting;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Use Bootstrap 5 pagination
+        Paginator::useBootstrapFive();
+        
         // Share site settings globally with all views
         View::composer('*', function ($view) {
             $siteSettings = cache()->rememberForever('site_settings_all', function () {

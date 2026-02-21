@@ -39,7 +39,7 @@ class HomeController extends Controller
         $latestListings = Listing::approved()
             ->with(['category', 'upazila'])
             ->latest()
-            ->take(12)
+            ->take(6)
             ->get();
 
         $latestNews = News::active()
