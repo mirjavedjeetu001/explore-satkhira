@@ -131,12 +131,13 @@ class UserDashboardController extends Controller
         
         // Add doctor-specific validation rules
         if ($isDoctorCategory) {
-            $rules['hospital_name'] = 'required|string|max:500';
-            $rules['specialization'] = 'required|string|max:500';
+            $rules['hospital_name'] = 'nullable|string|max:500';
+            $rules['specialization'] = 'nullable|string|max:500';
             $rules['diseases_treated'] = 'nullable|string|max:1000';
             $rules['degrees'] = 'nullable|string|max:255';
             $rules['chamber_time'] = 'nullable|string|max:255';
             $rules['visit_fee'] = 'nullable|string|max:100';
+            $rules['serial_number'] = 'nullable|string|max:50';
         }
         
         $validated = $request->validate($rules);
@@ -154,10 +155,11 @@ class UserDashboardController extends Controller
                 'degrees' => $request->degrees,
                 'chamber_time' => $request->chamber_time,
                 'visit_fee' => $request->visit_fee,
+                'serial_number' => $request->serial_number,
             ];
             // Remove these from validated array as they're now in extra_fields
             unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
-                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee']);
+                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee'], $validated['serial_number']);
         }
 
         // Handle multiple images
@@ -264,12 +266,13 @@ class UserDashboardController extends Controller
         
         // Add doctor-specific validation rules
         if ($isDoctorCategory) {
-            $rules['hospital_name'] = 'required|string|max:500';
-            $rules['specialization'] = 'required|string|max:500';
+            $rules['hospital_name'] = 'nullable|string|max:500';
+            $rules['specialization'] = 'nullable|string|max:500';
             $rules['diseases_treated'] = 'nullable|string|max:1000';
             $rules['degrees'] = 'nullable|string|max:255';
             $rules['chamber_time'] = 'nullable|string|max:255';
             $rules['visit_fee'] = 'nullable|string|max:100';
+            $rules['serial_number'] = 'nullable|string|max:50';
         }
 
         $validated = $request->validate($rules);
@@ -283,10 +286,11 @@ class UserDashboardController extends Controller
                 'degrees' => $request->degrees,
                 'chamber_time' => $request->chamber_time,
                 'visit_fee' => $request->visit_fee,
+                'serial_number' => $request->serial_number,
             ];
             // Remove these from validated array as they're now in extra_fields
             unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
-                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee']);
+                  $validated['degrees'], $validated['chamber_time'], $validated['visit_fee'], $validated['serial_number']);
         } else {
             // Clear extra_fields if category changed from doctor to something else
             $validated['extra_fields'] = null;

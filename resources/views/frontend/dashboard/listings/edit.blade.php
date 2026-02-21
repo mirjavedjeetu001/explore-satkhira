@@ -229,7 +229,7 @@
                                         
                                         <div class="row g-3">
                                             <div class="col-12">
-                                                <label class="form-label">কোন হাসপাতালে চেম্বার/বসেন <span class="text-danger">*</span></label>
+                                                <label class="form-label">কোন হাসপাতালে চেম্বার/বসেন</label>
                                                 <input type="text" name="hospital_name" class="form-control @error('hospital_name') is-invalid @enderror" 
                                                        value="{{ old('hospital_name', $listing->extra_fields['hospital_name'] ?? '') }}" placeholder="যেমন: সাতক্ষীরা সদর হাসপাতাল, ইসলামী ব্যাংক মেডিকেল সেন্টার">
                                                 @error('hospital_name')
@@ -239,7 +239,7 @@
                                             </div>
                                             
                                             <div class="col-12">
-                                                <label class="form-label">বিশেষজ্ঞতা / কি কি বিষয়ে অভিজ্ঞ <span class="text-danger">*</span></label>
+                                                <label class="form-label">বিশেষজ্ঞতা / কি কি বিষয়ে অভিজ্ঞ</label>
                                                 <input type="text" name="specialization" class="form-control @error('specialization') is-invalid @enderror" 
                                                        value="{{ old('specialization', $listing->extra_fields['specialization'] ?? '') }}" placeholder="যেমন: মেডিসিন, শিশু রোগ, হৃদরোগ, চর্ম রোগ">
                                                 @error('specialization')
@@ -282,6 +282,16 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">সিরিয়ালের জন্য নম্বর</label>
+                                                <input type="text" name="serial_number" class="form-control @error('serial_number') is-invalid @enderror" 
+                                                       value="{{ old('serial_number', $listing->extra_fields['serial_number'] ?? '') }}" placeholder="যেমন: 01712-345678">
+                                                @error('serial_number')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                                <small class="text-muted">রোগীরা এই নম্বরে কল করে সিরিয়াল নিতে পারবে</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -323,14 +333,8 @@ function toggleDoctorFields() {
     
     if (selectedSlug === 'doctor') {
         doctorFields.style.display = 'block';
-        // Make hospital and specialization required
-        doctorFields.querySelector('input[name="hospital_name"]').required = true;
-        doctorFields.querySelector('input[name="specialization"]').required = true;
     } else {
         doctorFields.style.display = 'none';
-        // Remove required
-        doctorFields.querySelector('input[name="hospital_name"]').required = false;
-        doctorFields.querySelector('input[name="specialization"]').required = false;
     }
 }
 

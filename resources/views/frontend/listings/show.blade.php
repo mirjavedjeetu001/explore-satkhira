@@ -253,6 +253,22 @@
                                             </div>
                                         </div>
                                     @endif
+                                    @if(!empty($listing->extra_fields['serial_number']))
+                                        <div class="col-md-6">
+                                            <div class="d-flex">
+                                                <i class="fas fa-phone-volume text-primary me-3 mt-1"></i>
+                                                <div>
+                                                    <strong>সিরিয়ালের জন্য নম্বর</strong>
+                                                    <p class="mb-0">
+                                                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $listing->extra_fields['serial_number']) }}" class="text-decoration-none text-primary fw-bold">
+                                                            {{ $listing->extra_fields['serial_number'] }}
+                                                        </a>
+                                                    </p>
+                                                    <small class="text-muted">এই নম্বরে কল করে সিরিয়াল নিন</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endif

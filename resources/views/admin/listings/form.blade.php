@@ -233,6 +233,16 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">সিরিয়ালের জন্য নম্বর / Serial Number</label>
+                                <input type="text" name="serial_number" class="form-control @error('serial_number') is-invalid @enderror" 
+                                       value="{{ old('serial_number', $extraFields['serial_number'] ?? '') }}" placeholder="যেমন: 01712-345678">
+                                @error('serial_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">রোগীরা এই নম্বরে কল করে সিরিয়াল নিতে পারবে</small>
+                            </div>
                         </div>
                     </div>
                 </div>

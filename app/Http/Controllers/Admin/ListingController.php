@@ -156,6 +156,7 @@ class ListingController extends Controller
             'degrees' => 'nullable|string|max:500',
             'chamber_time' => 'nullable|string|max:255',
             'visit_fee' => 'nullable|string|max:100',
+            'serial_number' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('image')) {
@@ -180,6 +181,7 @@ class ListingController extends Controller
             'degrees' => $request->input('degrees'),
             'chamber_time' => $request->input('chamber_time'),
             'visit_fee' => $request->input('visit_fee'),
+            'serial_number' => $request->input('serial_number'),
         ];
 
         $wasNotApproved = $listing->status !== 'approved';
