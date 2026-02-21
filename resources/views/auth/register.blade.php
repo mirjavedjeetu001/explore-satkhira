@@ -455,6 +455,159 @@
                 font-size: 1.5rem;
             }
         }
+        
+        @media (max-width: 576px) {
+            body {
+                padding: 10px 0;
+            }
+            
+            .register-container {
+                margin: 5px;
+                border-radius: 16px;
+            }
+            
+            .register-left {
+                padding: 20px 15px;
+            }
+            
+            .register-left .brand h1 {
+                font-size: 1.2rem;
+            }
+            
+            .register-left .tagline {
+                font-size: 0.85rem;
+            }
+            
+            .register-left .feature-item {
+                font-size: 0.8rem;
+                margin-bottom: 10px;
+            }
+            
+            .register-left .feature-item i {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+                min-width: 32px;
+            }
+            
+            .register-left .feature-item span {
+                font-size: 0.8rem;
+            }
+            
+            .register-right {
+                padding: 20px 15px;
+            }
+            
+            .register-right h2 {
+                font-size: 1.3rem;
+            }
+            
+            .register-right .subtitle {
+                font-size: 0.85rem;
+            }
+            
+            .info-box {
+                font-size: 0.8rem;
+                padding: 10px 12px;
+            }
+            
+            .section-title {
+                font-size: 0.9rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .form-label {
+                font-size: 0.85rem;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .category-item label {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .category-item label i {
+                font-size: 1rem;
+                margin-right: 6px;
+            }
+            
+            .avatar-preview {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .avatar-upload-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .btn-register {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            .comment-only-option,
+            .mp-question-option,
+            .upazila-moderator-option,
+            .own-business-option {
+                padding: 12px 15px;
+            }
+            
+            .comment-only-option label span,
+            .mp-question-option label span,
+            .upazila-moderator-option label span,
+            .own-business-option label span {
+                font-size: 14px;
+            }
+            
+            .comment-only-option label i,
+            .mp-question-option label i,
+            .upazila-moderator-option label i,
+            .own-business-option label i {
+                font-size: 20px;
+                margin-right: 10px;
+            }
+            
+            .terms-text {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .register-container {
+                margin: 3px;
+            }
+            
+            .register-left, .register-right {
+                padding: 15px 12px;
+            }
+            
+            .register-left .brand h1 {
+                font-size: 1.1rem;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .category-item label {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>

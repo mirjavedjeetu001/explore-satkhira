@@ -461,6 +461,196 @@
             
             .search-box {
                 margin-top: 20px;
+                padding: 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .category-card, .upazila-card, .listing-card {
+                margin-bottom: 15px;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .footer h5 {
+                font-size: 1.1rem;
+            }
+            
+            .btn-lg {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-slider .carousel-item {
+                height: 280px;
+            }
+            
+            .hero-slider .carousel-caption {
+                padding: 10px;
+            }
+            
+            .hero-slider .carousel-caption h2 {
+                font-size: 1.3rem;
+                margin-bottom: 8px;
+            }
+            
+            .hero-slider .carousel-caption p {
+                font-size: 0.85rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            .search-box {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .search-box .form-select-lg,
+            .search-box .form-control-lg {
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
+            
+            .search-box .btn-lg {
+                padding: 10px 15px;
+            }
+            
+            .section-header {
+                margin-bottom: 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section-header p {
+                font-size: 0.85rem;
+            }
+            
+            .category-card {
+                padding: 15px;
+            }
+            
+            .category-card h5 {
+                font-size: 0.9rem;
+            }
+            
+            .category-card .icon-wrapper {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .category-card .icon-wrapper i {
+                font-size: 1.2rem;
+            }
+            
+            .listing-card .card-title {
+                font-size: 0.95rem;
+            }
+            
+            .listing-card .card-body {
+                padding: 12px;
+            }
+            
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            .py-5 {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-toggler {
+                padding: 4px 8px;
+            }
+            
+            .footer {
+                padding: 30px 0 15px;
+            }
+            
+            .footer h5 {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .footer p, .footer a {
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                font-size: 0.9rem;
+            }
+            
+            .btn-lg {
+                padding: 8px 16px;
+                font-size: 0.95rem;
+            }
+            
+            .mp-card-new {
+                padding: 15px;
+            }
+            
+            .mp-avatar {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .mp-card-new h5 {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .hero-slider .carousel-item {
+                height: 240px;
+            }
+            
+            .hero-slider .carousel-caption h2 {
+                font-size: 1.1rem;
+            }
+            
+            .hero-slider .carousel-caption p {
+                font-size: 0.8rem;
+            }
+            
+            .hero-slider .carousel-caption .btn {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .category-card {
+                padding: 12px;
+            }
+            
+            .category-card h5 {
+                font-size: 0.85rem;
+            }
+            
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
             }
         }
         

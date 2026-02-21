@@ -332,6 +332,95 @@
                 height: 55px;
             }
         }
+        
+        @media (max-width: 576px) {
+            body {
+                padding: 10px 0;
+            }
+            
+            .login-container {
+                margin: 5px;
+                border-radius: 16px;
+            }
+            
+            .login-left {
+                padding: 25px 15px;
+            }
+            
+            .login-right {
+                padding: 25px 15px;
+            }
+            
+            .login-left .brand h1 {
+                font-size: 1.3rem;
+            }
+            
+            .login-left .tagline {
+                font-size: 0.85rem;
+            }
+            
+            .login-left .feature-item {
+                margin-bottom: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .login-left .feature-item i {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+                min-width: 35px;
+            }
+            
+            .login-right h2 {
+                font-size: 1.4rem;
+            }
+            
+            .login-right .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .form-floating .form-control {
+                height: 50px;
+                font-size: 0.95rem;
+            }
+            
+            .form-floating label {
+                font-size: 0.9rem;
+            }
+            
+            .btn-login {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            .alert {
+                font-size: 0.85rem;
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .login-container {
+                margin: 3px;
+            }
+            
+            .login-left, .login-right {
+                padding: 20px 12px;
+            }
+            
+            .login-left .brand h1 {
+                font-size: 1.2rem;
+            }
+            
+            .login-right h2 {
+                font-size: 1.2rem;
+            }
+            
+            .form-floating .form-control {
+                height: 48px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
