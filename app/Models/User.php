@@ -27,6 +27,7 @@ class User extends Authenticatable
         'wants_mp_questions',
         'comment_only',
         'is_upazila_moderator',
+        'is_own_business_moderator',
         'requested_categories',
         'status',
         'is_verified',
@@ -48,6 +49,7 @@ class User extends Authenticatable
             'wants_mp_questions' => 'boolean',
             'comment_only' => 'boolean',
             'is_upazila_moderator' => 'boolean',
+            'is_own_business_moderator' => 'boolean',
             'approved_at' => 'datetime',
             'requested_categories' => 'array',
         ];

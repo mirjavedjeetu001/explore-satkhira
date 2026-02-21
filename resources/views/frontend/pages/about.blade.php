@@ -264,6 +264,58 @@
     </section>
     @endif
 
+    <!-- Own Business Moderators Section -->
+    @if(isset($ownBusinessModerators) && $ownBusinessModerators->count() > 0)
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2>নিজস্ব ব্যবসা মডারেটরস</h2>
+                <p class="text-muted">Own Business Moderators</p>
+                <div class="underline mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #17a2b8, #138496); border-radius: 2px;"></div>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                @foreach($ownBusinessModerators as $moderator)
+                    <div class="col-lg-3 col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <div class="team-card text-center moderator-card">
+                            <div class="moderator-badge" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                                <i class="fas fa-store"></i> ব্যবসা মডারেটর
+                            </div>
+                            <div class="team-image-wrapper">
+                                @if($moderator->avatar)
+                                    <img src="{{ asset('storage/' . $moderator->avatar) }}" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="team-image">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($moderator->name) }}&background=17a2b8&color=fff&size=150" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="team-image">
+                                @endif
+                            </div>
+                            <div class="team-info">
+                                <h5 class="team-name">{{ $moderator->name }}</h5>
+                                @if($moderator->approvedCategories->count() > 0)
+                                    <span class="team-role" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                                        <i class="fas fa-th-large me-1"></i>{{ $moderator->approvedCategories->pluck('name_bn')->first() ?? $moderator->approvedCategories->pluck('name')->first() }}
+                                    </span>
+                                @endif
+                                @if($moderator->phone)
+                                    <div class="team-contact mt-2">
+                                        <div class="contact-item">
+                                            <i class="fas fa-phone-alt text-info"></i>
+                                            <a href="tel:{{ $moderator->phone }}" class="text-dark">{{ $moderator->phone }}</a>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Contact CTA -->
     <section class="py-5 bg-success text-white">
         <div class="container text-center" data-aos="fade-up">

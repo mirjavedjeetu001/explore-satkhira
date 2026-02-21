@@ -36,6 +36,8 @@
                         <p class="text-muted small mb-0">{{ auth()->user()->email }}</p>
                         @if(auth()->user()->is_upazila_moderator)
                             <span class="badge bg-warning text-dark mt-2"><i class="fas fa-shield-alt me-1"></i>উপজেলা মডারেটর</span>
+                        @elseif(auth()->user()->is_own_business_moderator)
+                            <span class="badge bg-info mt-2"><i class="fas fa-store me-1"></i>নিজস্ব ব্যবসা মডারেটর</span>
                         @else
                             <span class="badge bg-success mt-2">{{ auth()->user()->role->display_name ?? 'User' }}</span>
                         @endif

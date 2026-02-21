@@ -103,6 +103,17 @@
         </div>
         @endif
         
+        <!-- Own Business Moderator Status -->
+        @if($user->is_own_business_moderator)
+        <div class="card mb-4 border-info">
+            <div class="card-body">
+                <i class="fas fa-store fa-2x text-info me-2 float-start"></i>
+                <h5 class="mb-1">নিজস্ব ব্যবসা মডারেটর</h5>
+                <p class="text-muted mb-0">নিজের ব্যবসার তথ্য মডারেট করতে পারবেন - অনুমোদিত ক্যাটাগরি: {{ $user->approvedCategories->pluck('name_bn')->join(', ') ?: 'N/A' }}</p>
+            </div>
+        </div>
+        @endif
+        
         <!-- Category Permissions -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -267,6 +278,25 @@
                         @csrf
                         <button type="submit" class="btn btn-outline-warning w-100" onclick="return confirm('Remove moderator status?')">
                             <i class="fas fa-user-minus me-2"></i>Remove Moderator Status
+                        </button>
+                    </form>
+                @endif
+                
+                @if($user->status === 'active' && !$user->is_own_business_moderator && $user->approvedCategories()->count() > 0)
+                    <form action="{{ route('admin.users.make-own-business-moderator', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="fas fa-store me-2"></i>Make Own Business Moderator
+                        </button>
+                        <small class="text-muted d-block mt-1">নিজের ব্যবসার তথ্য মডারেট করতে পারবেন</small>
+                    </form>
+                @endif
+                
+                @if($user->is_own_business_moderator)
+                    <form action="{{ route('admin.users.remove-own-business-moderator', $user) }}" method="POST" class="mb-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-info w-100" onclick="return confirm('নিজস্ব ব্যবসা মডারেটর স্ট্যাটাস সরাতে চান?')">
+                            <i class="fas fa-store-slash me-2"></i>Remove Own Business Moderator
                         </button>
                     </form>
                 @endif

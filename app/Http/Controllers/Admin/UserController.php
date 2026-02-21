@@ -303,4 +303,38 @@ class UserController extends Controller
         
         return back()->with('success', 'Moderator status removed from user.');
     }
+
+    public function makeOwnBusinessModerator(User $user)
+    {
+        $user->update(['is_own_business_moderator' => true]);
+        
+        // Also add to team_members table for admin tracking
+        if (!TeamMember::where('user_id', $user->id)->where('website_role', 'own_business_moderator')->exists()) {
+            TeamMember::create([
+                'user_id' => $user->id,
+                'website_role' => 'own_business_moderator',
+                'website_role_bn' => 'নিজস্ব ব্যবসা মডারেটর',
+                'designation' => 'Own Business Moderator',
+                'designation_bn' => 'নিজস্ব ব্যবসা মডারেটর',
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'is_active' => true,
+                'display_order' => 200,
+            ]);
+        }
+        
+        return back()->with('success', 'ব্যবহারকারীকে নিজস্ব ব্যবসা মডারেটর হিসেবে সেট করা হয়েছে।');
+    }
+
+    public function removeOwnBusinessModerator(User $user)
+    {
+        $user->update(['is_own_business_moderator' => false]);
+        
+        // Also remove from team_members table
+        TeamMember::where('user_id', $user->id)
+            ->where('website_role', 'own_business_moderator')
+            ->delete();
+        
+        return back()->with('success', 'নিজস্ব ব্যবসা মডারেটর স্ট্যাটাস সরানো হয়েছে।');
+    }
 }

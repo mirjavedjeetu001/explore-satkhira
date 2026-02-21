@@ -24,18 +24,28 @@ class PageController extends Controller
             ->orderBy('name')
             ->get();
         
-        // Get team members, but exclude those who are upazila moderators
-        $upazilaModeratorsUserIds = $upazilaModerators->pluck('id')->toArray();
+        // Get own business moderators
+        $ownBusinessModerators = User::where('is_own_business_moderator', true)
+            ->where('status', 'active')
+            ->with(['approvedCategories', 'upazila'])
+            ->orderBy('name')
+            ->get();
+        
+        // Get user IDs to exclude from team members
+        $excludeUserIds = array_merge(
+            $upazilaModerators->pluck('id')->toArray(),
+            $ownBusinessModerators->pluck('id')->toArray()
+        );
         
         $teamMembers = TeamMember::with('user')
             ->active()
             ->ordered()
-            ->whereHas('user', function($q) use ($upazilaModeratorsUserIds) {
-                $q->whereNotIn('id', $upazilaModeratorsUserIds);
+            ->whereHas('user', function($q) use ($excludeUserIds) {
+                $q->whereNotIn('id', $excludeUserIds);
             })
             ->get();
         
-        return view('frontend.pages.about', compact('settings', 'teamMembers', 'upazilaModerators'));
+        return view('frontend.pages.about', compact('settings', 'teamMembers', 'upazilaModerators', 'ownBusinessModerators'));
     }
 
     public function contact()

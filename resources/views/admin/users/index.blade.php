@@ -84,6 +84,9 @@
                             @if($user->is_upazila_moderator)
                                 <span class="badge bg-warning" title="Upazila Moderator"><i class="fas fa-user-shield"></i></span>
                             @endif
+                            @if($user->is_own_business_moderator)
+                                <span class="badge bg-info" title="Own Business Moderator"><i class="fas fa-store"></i></span>
+                            @endif
                             @if($user->wants_mp_questions)
                                 <span class="badge bg-primary" title="Wants to ask MP questions"><i class="fas fa-comments"></i></span>
                             @endif
