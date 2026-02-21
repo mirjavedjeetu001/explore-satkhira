@@ -685,7 +685,7 @@
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-store" style="color: #fee140;"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'ব্যবসা মডারেটর - শুধু ১টি ক্যাটাগরি' : 'Business Mod - only 1 category' }}</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'ব্যবসা মডারেটর - নিজের ব্যবসার জন্য (১টি ক্যাটাগরি)' : 'Business Mod - for own business (1 category)' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-th-list" style="color: #28a745;"></i>
@@ -846,7 +846,7 @@
                         <i class="fas fa-store" style="font-size: 24px; color: #fff; margin-right: 12px;"></i>
                         <div>
                             <span style="color: #fff; font-size: 16px; font-weight: 600;">{{ app()->getLocale() == 'bn' ? 'নিজের ব্যবসার মডারেটর হতে চাই' : 'I want to be Own Business Moderator' }}</span>
-                            <small style="display: block; color: rgba(255,255,255,0.8); font-size: 12px;">{{ app()->getLocale() == 'bn' ? 'নিজের ব্যবসার তথ্য যোগ ও পরিচালনা করতে পারবেন' : 'You can add and manage your own business information' }}</small>
+                            <small style="display: block; color: rgba(255,255,255,0.8); font-size: 12px;">{{ app()->getLocale() == 'bn' ? 'নিজের দোকান/প্রতিষ্ঠানের তথ্য দিতে চাইলে এটি সিলেক্ট করুন (শুধু ১টি ক্যাটাগরি নির্বাচন করবেন)' : 'Select this if you want to add your own shop/business info (select only 1 category)' }}</small>
                         </div>
                     </label>
                 </div>
