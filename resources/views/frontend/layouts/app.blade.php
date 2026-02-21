@@ -61,10 +61,16 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- AOS Animation - Disabled for performance -->
+    <!-- <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> -->
     
     <style>
+        /* Disable AOS animations - show everything immediately */
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
         :root {
             --primary-color: #28a745;
             --secondary-color: #1a5f2a;
@@ -1186,11 +1192,12 @@
             }
         }, 1500);
         
-        AOS.init({
-            duration: 400,
-            once: true,
-            offset: 50
-        });
+        // AOS animations disabled for better mobile performance
+        // AOS.init({
+        //     duration: 400,
+        //     once: true,
+        //     offset: 50
+        // });
         
         // Auto dismiss alerts
         setTimeout(function() {
