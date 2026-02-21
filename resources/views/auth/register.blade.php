@@ -466,25 +466,55 @@
             </div>
             
             <div class="features">
+                <h6 style="color: #7bed9f; margin-bottom: 15px; font-weight: 600;">
+                    <i class="fas fa-clipboard-list me-2"></i>{{ app()->getLocale() == 'bn' ? 'রেজিস্ট্রেশনের নিয়মাবলী' : 'Registration Rules' }}
+                </h6>
+                
                 <div class="feature-item">
-                    <i class="fas fa-user-plus"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'বিনামূল্যে অ্যাকাউন্ট তৈরি করুন' : 'Create free account' }}</span>
+                    <i class="fas fa-camera"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'প্রোফাইল ছবি আবশ্যক (JPG/PNG, সর্বোচ্চ 2MB)' : 'Profile picture required (JPG/PNG, max 2MB)' }}</span>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-edit"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'আপনার এলাকার তথ্য যোগ করুন' : 'Add your area information' }}</span>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'উপজেলা ও পূর্ণ ঠিকানা দিতে হবে' : 'Upazila & full address required' }}</span>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'অ্যাডমিন অনুমোদনের পর অ্যাক্সেস' : 'Access after admin approval' }}</span>
+                    <i class="fas fa-user-check"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'অ্যাডমিন অনুমোদন করলে লগইন করতে পারবেন' : 'Login after admin approval' }}</span>
+                </div>
+                
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+                
+                <h6 style="color: #7bed9f; margin-bottom: 15px; font-weight: 600;">
+                    <i class="fas fa-th-large me-2"></i>{{ app()->getLocale() == 'bn' ? 'অপশন বুঝুন' : 'Understand Options' }}
+                </h6>
+                
+                <div class="feature-item">
+                    <i class="fas fa-comment-dots" style="color: #38ef7d;"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'শুধু মন্তব্য - তথ্যে মন্তব্য করতে পারবেন' : 'Comment only - can comment on listings' }}</span>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-tags"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'নির্দিষ্ট ক্যাটাগরিতে কাজ করুন' : 'Work in specific categories' }}</span>
+                    <i class="fas fa-comments" style="color: #764ba2;"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'সাংসদ প্রশ্ন - MP কে প্রশ্ন করতে পারবেন' : 'MP Question - can ask MP' }}</span>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'নিরাপদ ও বিশ্বস্ত প্ল্যাটফর্ম' : 'Safe and trusted platform' }}</span>
+                    <i class="fas fa-user-shield" style="color: #f5576c;"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'উপজেলা মডারেটর - সব ক্যাটাগরিতে তথ্য দিতে পারবেন' : 'Upazila Mod - all categories' }}</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-store" style="color: #fee140;"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'ব্যবসা মডারেটর - শুধু ১টি ক্যাটাগরি' : 'Business Mod - only 1 category' }}</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-th-list" style="color: #28a745;"></i>
+                    <span>{{ app()->getLocale() == 'bn' ? 'সাধারণ - নির্বাচিত ক্যাটাগরিতে তথ্য দিন' : 'Normal - add in selected categories' }}</span>
+                </div>
+                
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+                
+                <div class="feature-item" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                    <i class="fas fa-lightbulb" style="color: #ffc107;"></i>
+                    <span style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'টিপস: মডারেটর না হলে শুধু ক্যাটাগরি সিলেক্ট করুন' : 'Tip: If not moderator, just select categories' }}</span>
                 </div>
             </div>
         </div>
