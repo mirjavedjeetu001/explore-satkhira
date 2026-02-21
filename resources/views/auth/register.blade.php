@@ -40,7 +40,7 @@
         }
         
         .register-container {
-            max-width: 1200px;
+            max-width: 1100px;
             width: 100%;
             margin: 20px;
             display: flex;
@@ -52,9 +52,9 @@
         }
         
         .register-left {
-            flex: 0 0 350px;
+            flex: 0 0 320px;
             background: linear-gradient(135deg, #0a4a24 0%, #0d5c2e 100%);
-            padding: 50px 35px;
+            padding: 40px 25px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -85,9 +85,9 @@
         
         .register-left .brand h1 {
             color: #fff;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .register-left .brand h1 i {
@@ -96,8 +96,8 @@
         
         .register-left .tagline {
             color: rgba(255,255,255,0.8);
-            font-size: 0.95rem;
-            margin-bottom: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
         
         .register-left .features {
@@ -107,40 +107,59 @@
         
         .register-left .feature-item {
             display: flex;
-            align-items: center;
-            margin-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 12px;
             color: rgba(255,255,255,0.9);
         }
         
         .register-left .feature-item i {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
             background: rgba(255,255,255,0.15);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 0.9rem;
+            margin-right: 10px;
+            font-size: 0.85rem;
             color: #7bed9f;
         }
         
         .register-left .feature-item span {
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
         
         .register-right {
             flex: 1;
             background: #fff;
-            padding: 40px 50px;
+            padding: 35px 40px;
             max-height: 90vh;
             overflow-y: auto;
         }
         
+        .register-right::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .register-right::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .register-right::-webkit-scrollbar-thumb {
+            background: #28a745;
+            border-radius: 4px;
+        }
+        
+        .register-right::-webkit-scrollbar-thumb:hover {
+            background: #1a5f2a;
+        }
+        
         .register-right h2 {
             color: #1a5f2a;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 8px;
         }
@@ -154,9 +173,9 @@
         .section-title {
             color: #1a5f2a;
             font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
             border-bottom: 2px solid #e9ecef;
         }
         
@@ -167,8 +186,8 @@
         .form-control, .form-select {
             border: 2px solid #e9ecef;
             border-radius: 10px;
-            padding: 12px 15px;
-            font-size: 0.95rem;
+            padding: 10px 14px;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
         }
         
@@ -180,8 +199,8 @@
         .form-label {
             font-weight: 500;
             color: #495057;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
         }
         
         .form-label .required {
@@ -195,9 +214,15 @@
         
         .form-row .col {
             flex: 1;
+            min-width: 0;
         }
         
         .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 10px;
@@ -216,18 +241,18 @@
         .category-item label {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 10px 12px;
             background: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .category-item label i {
-            margin-right: 10px;
-            font-size: 1.1rem;
+            margin-right: 8px;
+            font-size: 1rem;
             color: #6c757d;
         }
         
@@ -247,17 +272,17 @@
         
         .btn-register {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(135deg, #1a7f40 0%, #28a745 100%);
             border: none;
             border-radius: 12px;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
         .btn-register::before {
@@ -284,7 +309,7 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 20px 0;
+            margin: 15px 0;
             color: #adb5bd;
         }
         
@@ -296,8 +321,8 @@
         }
         
         .divider span {
-            padding: 0 15px;
-            font-size: 0.9rem;
+            padding: 0 12px;
+            font-size: 0.85rem;
         }
         
         .login-link {
@@ -339,10 +364,10 @@
         .info-box {
             background: #e8f5e9;
             border-left: 4px solid #28a745;
-            padding: 12px 15px;
+            padding: 10px 14px;
             border-radius: 0 10px 10px 0;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
             color: #2e7d32;
         }
         
@@ -356,8 +381,8 @@
         }
         
         .avatar-preview {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: #f8f9fa;
             border: 3px dashed #e9ecef;
@@ -381,11 +406,11 @@
         
         .avatar-upload-btn {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: linear-gradient(135deg, #1a7f40, #28a745);
             color: #fff;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -404,7 +429,7 @@
             body {
                 overflow: auto;
                 min-height: auto;
-                padding: 20px 0;
+                padding: 15px 0;
             }
             
             .register-container {
@@ -414,7 +439,7 @@
             
             .register-left {
                 flex: 0 0 auto;
-                padding: 25px 20px;
+                padding: 20px 18px;
             }
             
             .register-right {
@@ -423,23 +448,27 @@
             }
             
             .register-left .brand h1 {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
             }
             
             .register-left .tagline {
-                font-size: 0.9rem;
-                margin-bottom: 20px;
+                font-size: 0.85rem;
+                margin-bottom: 15px;
             }
             
             .register-left .feature-item {
-                margin-bottom: 12px;
-                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+            
+            .register-left .feature-item span {
+                font-size: 0.8rem;
             }
             
             .register-left .feature-item i {
-                width: 35px;
-                height: 35px;
-                font-size: 0.9rem;
+                width: 30px;
+                height: 30px;
+                min-width: 30px;
+                font-size: 0.8rem;
             }
             
             .form-row {
@@ -452,7 +481,7 @@
             }
             
             .register-right h2 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
         }
         
