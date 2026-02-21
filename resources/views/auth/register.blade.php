@@ -685,7 +685,7 @@
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-store" style="color: #fee140;"></i>
-                    <span>{{ app()->getLocale() == 'bn' ? 'ব্যবসা মডারেটর - নিজের ব্যবসার জন্য (১টি ক্যাটাগরি)' : 'Business Mod - for own business (1 category)' }}</span>
+                    <span>{{ app()->getLocale() == 'bn' ? 'ব্যবসা মডারেটর - নিজ ব্যবসা (মাত্র একটি ক্যাটাগরি)' : 'Business Mod - own business (only one category)' }}</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-th-list" style="color: #28a745;"></i>
