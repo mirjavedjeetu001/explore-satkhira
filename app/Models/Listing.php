@@ -39,6 +39,9 @@ class Listing extends Model
         'views',
         'approved_at',
         'approved_by',
+        'rejection_reason',
+        'rejected_at',
+        'rejected_by',
     ];
 
     protected $casts = [
@@ -52,6 +55,7 @@ class Listing extends Model
         'price_from' => 'decimal:2',
         'price_to' => 'decimal:2',
         'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -72,6 +76,11 @@ class Listing extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejectedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 
     public function comments(): MorphMany

@@ -252,6 +252,26 @@ class UserDashboardController extends Controller
         return redirect()->route('dashboard.listings')->with('success', 'তথ্য সফলভাবে মুছে ফেলা হয়েছে।');
     }
 
+    public function resubmitListing(Listing $listing)
+    {
+        if ($listing->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($listing->status !== 'rejected') {
+            return redirect()->route('dashboard.listings')->with('error', 'শুধুমাত্র বাতিল হওয়া তথ্য পুনরায় জমা দেওয়া যায়।');
+        }
+
+        $listing->update([
+            'status' => 'pending',
+            'rejection_reason' => null,
+            'rejected_at' => null,
+            'rejected_by' => null,
+        ]);
+
+        return redirect()->route('dashboard.listings')->with('success', 'তথ্যটি পুনরায় জমা দেওয়া হয়েছে এবং অনুমোদনের জন্য অপেক্ষমাণ।');
+    }
+
     public function questions()
     {
         $questions = auth()->user()->mpQuestions()

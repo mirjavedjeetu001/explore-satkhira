@@ -107,6 +107,13 @@
                                                         <span class="badge bg-success">প্রকাশিত</span>
                                                     @else
                                                         <span class="badge bg-danger">বাতিল</span>
+                                                        @if($listing->rejection_reason)
+                                                            <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-1" 
+                                                                    data-bs-toggle="modal" data-bs-target="#rejectionModal{{ $listing->id }}"
+                                                                    title="বাতিলের কারণ দেখুন">
+                                                                <i class="fas fa-info-circle"></i>
+                                                            </button>
+                                                        @endif
                                                     @endif
                                                 </td>
                                                 <td>{{ $listing->created_at->format('d M Y') }}</td>
@@ -114,6 +121,14 @@
                                                     <a href="{{ route('dashboard.listings.edit', $listing) }}" class="btn btn-sm btn-outline-primary" title="সম্পাদনা">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @if($listing->status == 'rejected')
+                                                        <form action="{{ route('dashboard.listings.resubmit', $listing) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-outline-success" title="পুনরায় জমা দিন">
+                                                                <i class="fas fa-redo"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                     @if($listing->status == 'approved')
                                                     <a href="{{ route('dashboard.listings.images', $listing) }}" class="btn btn-sm btn-outline-info" title="ছবি ও প্রচার">
                                                         <i class="fas fa-images"></i>
@@ -153,4 +168,48 @@
         </div>
     </div>
 </section>
+
+<!-- Rejection Reason Modals -->
+@foreach($listings as $listing)
+    @if($listing->status == 'rejected' && $listing->rejection_reason)
+    <div class="modal fade" id="rejectionModal{{ $listing->id }}" tabindex="-1" aria-labelledby="rejectionModalLabel{{ $listing->id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="rejectionModalLabel{{ $listing->id }}">
+                        <i class="fas fa-times-circle me-2"></i>বাতিলের কারণ
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>শিরোনাম:</strong> {{ $listing->title }}
+                    </p>
+                    <div class="alert alert-danger mb-3">
+                        <strong><i class="fas fa-exclamation-triangle me-1"></i>বাতিলের কারণ:</strong>
+                        <p class="mb-0 mt-2">{{ $listing->rejection_reason }}</p>
+                    </div>
+                    @if($listing->rejected_at)
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-calendar me-1"></i>বাতিলের তারিখ: {{ $listing->rejected_at->format('d M Y, h:i A') }}
+                    </p>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">বন্ধ করুন</button>
+                    <a href="{{ route('dashboard.listings.edit', $listing) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>সম্পাদনা করুন
+                    </a>
+                    <form action="{{ route('dashboard.listings.resubmit', $listing) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-redo me-1"></i>পুনরায় জমা দিন
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+@endforeach
 @endsection

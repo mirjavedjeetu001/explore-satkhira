@@ -81,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/listings/{listing}/edit', [UserDashboardController::class, 'editListing'])->name('dashboard.listings.edit');
     Route::put('/dashboard/listings/{listing}', [UserDashboardController::class, 'updateListing'])->name('dashboard.listings.update');
     Route::delete('/dashboard/listings/{listing}', [UserDashboardController::class, 'destroyListing'])->name('dashboard.listings.destroy');
+    Route::post('/dashboard/listings/{listing}/resubmit', [UserDashboardController::class, 'resubmitListing'])->name('dashboard.listings.resubmit');
     
     // Listing Images (Offers, Promotions, Banners)
     Route::get('/dashboard/listings/{listing}/images', [ListingImageController::class, 'index'])->name('dashboard.listings.images');

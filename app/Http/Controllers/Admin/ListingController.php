@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Upazila;
 use App\Mail\ListingApprovedMail;
+use App\Mail\ListingRejectedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -213,10 +214,29 @@ class ListingController extends Controller
         return back()->with('success', 'Listing approved successfully.');
     }
 
-    public function reject(Listing $listing)
+    public function reject(Request $request, Listing $listing)
     {
-        $listing->update(['status' => 'rejected']);
-        return back()->with('success', 'Listing rejected.');
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        $listing->update([
+            'status' => 'rejected',
+            'rejection_reason' => $validated['rejection_reason'],
+            'rejected_at' => now(),
+            'rejected_by' => auth()->id(),
+        ]);
+
+        // Send email notification to listing owner
+        if ($listing->user && $listing->user->email) {
+            try {
+                Mail::to($listing->user->email)->send(new ListingRejectedMail($listing, $validated['rejection_reason']));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send listing rejection email: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'তথ্যটি বাতিল করা হয়েছে এবং ব্যবহারকারীকে ইমেইল পাঠানো হয়েছে।');
     }
 
     public function toggleFeatured(Listing $listing)

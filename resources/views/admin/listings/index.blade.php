@@ -110,12 +110,16 @@
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.listings.reject', $listing) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning" title="Reject">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-warning" title="Reject" 
+                                            onclick="openRejectModal({{ $listing->id }}, '{{ addslashes($listing->title) }}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                @endif
+                                @if($listing->status == 'rejected' && $listing->rejection_reason)
+                                    <button type="button" class="btn btn-secondary" title="View Rejection Reason"
+                                            onclick="alert('বাতিলের কারণ:\n{{ addslashes($listing->rejection_reason) }}')">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
                                 @endif
                                 <a href="{{ route('listings.show', $listing) }}" class="btn btn-info" title="View" target="_blank">
                                     <i class="fas fa-eye"></i>
@@ -152,4 +156,49 @@
         </div>
     @endif
 </div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="rejectModalLabel">
+                    <i class="fas fa-times-circle me-2"></i>তথ্য বাতিল করুন
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectForm" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>শিরোনাম:</strong> <span id="rejectListingTitle"></span>
+                    </p>
+                    <div class="mb-3">
+                        <label for="rejection_reason" class="form-label">বাতিলের কারণ <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" 
+                                  placeholder="তথ্যটি কেন বাতিল করা হচ্ছে তা লিখুন..." required></textarea>
+                        <div class="form-text">এই কারণটি ব্যবহারকারীকে ইমেইলে পাঠানো হবে।</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">বাতিল</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-times me-1"></i>তথ্য বাতিল করুন
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function openRejectModal(listingId, title) {
+    document.getElementById('rejectListingTitle').textContent = title;
+    document.getElementById('rejectForm').action = '/admin/listings/' + listingId + '/reject';
+    document.getElementById('rejection_reason').value = '';
+    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+}
+</script>
+@endpush
 @endsection
