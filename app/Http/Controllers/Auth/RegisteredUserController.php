@@ -46,9 +46,26 @@ class RegisteredUserController extends Controller
         $hasMpQuestion = $request->boolean('mp_question_only');
         $hasCommentOnly = $request->boolean('comment_only');
         $hasCategories = !empty($request->categories);
+        $wantsUpazilaModerator = $request->boolean('wants_upazila_moderator');
+        $wantsOwnBusinessModerator = $request->boolean('wants_own_business_moderator');
         
-        // If comment_only or mp_question_only is selected, categories are optional
+        // If comment_only or mp_question_only is selected (without moderator options), categories are optional
         $categoriesRequired = !$hasMpQuestion && !$hasCommentOnly;
+        
+        // If wants upazila moderator or own business moderator, categories are required
+        if ($wantsUpazilaModerator || $wantsOwnBusinessModerator) {
+            $categoriesRequired = true;
+        }
+        
+        // Validation rules for categories based on type
+        $categoriesRules = ['nullable', 'array'];
+        if ($categoriesRequired) {
+            $categoriesRules = ['required', 'array', 'min:1'];
+        }
+        if ($wantsOwnBusinessModerator) {
+            // Own business moderator can only select ONE category
+            $categoriesRules = ['required', 'array', 'size:1'];
+        }
         
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -59,7 +76,9 @@ class RegisteredUserController extends Controller
             'address' => ['required', 'string', 'max:500'],
             'mp_question_only' => ['nullable', 'boolean'],
             'comment_only' => ['nullable', 'boolean'],
-            'categories' => $categoriesRequired ? ['required', 'array', 'min:1'] : ['nullable', 'array'],
+            'wants_upazila_moderator' => ['nullable', 'boolean'],
+            'wants_own_business_moderator' => ['nullable', 'boolean'],
+            'categories' => $categoriesRules,
             'categories.*' => ['exists:categories,id'],
             'registration_purpose' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -71,8 +90,9 @@ class RegisteredUserController extends Controller
             'phone.required' => 'মোবাইল নম্বর দিতে হবে',
             'upazila_id.required' => 'উপজেলা নির্বাচন করতে হবে',
             'address.required' => 'ঠিকানা দিতে হবে',
-            'categories.required' => 'অন্তত একটি অপশন সিলেক্ট করুন',
-            'categories.min' => 'অন্তত একটি অপশন সিলেক্ট করুন',
+            'categories.required' => 'অন্তত একটি ক্যাটাগরি সিলেক্ট করুন',
+            'categories.min' => 'অন্তত একটি ক্যাটাগরি সিলেক্ট করুন',
+            'categories.size' => 'নিজের ব্যবসার মডারেটর হতে শুধুমাত্র একটি ক্যাটাগরি সিলেক্ট করুন',
             'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
             'password.required' => 'পাসওয়ার্ড দিতে হবে',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
@@ -100,6 +120,8 @@ class RegisteredUserController extends Controller
             'registration_purpose' => $request->registration_purpose,
             'wants_mp_questions' => $request->boolean('mp_question_only'),
             'comment_only' => $request->boolean('comment_only'),
+            'wants_upazila_moderator' => $request->boolean('wants_upazila_moderator'),
+            'wants_own_business_moderator' => $request->boolean('wants_own_business_moderator'),
             'requested_categories' => $request->categories ?? [],
             'password' => Hash::make($request->password),
             'role_id' => $userRole?->id,

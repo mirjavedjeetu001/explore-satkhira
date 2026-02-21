@@ -92,6 +92,54 @@
         </div>
         @endif
         
+        <!-- Wants Upazila Moderator -->
+        @if($user->wants_upazila_moderator && !$user->is_upazila_moderator)
+        <div class="card mb-4 border-danger">
+            <div class="card-body">
+                <i class="fas fa-user-shield fa-2x text-danger me-2 float-start"></i>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 text-danger"><i class="fas fa-exclamation-circle me-2"></i>উপজেলা মডারেটর হতে আবেদন করেছেন</h5>
+                        <p class="text-muted mb-0">{{ $user->upazila->name_bn ?? $user->upazila->name ?? 'N/A' }} উপজেলার মডারেটর হতে আবেদন করেছেন</p>
+                    </div>
+                    <form action="{{ route('admin.users.make-upazila-moderator', $user) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-check me-1"></i>মডারেটর করুন
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endif
+        
+        <!-- Wants Own Business Moderator -->
+        @if($user->wants_own_business_moderator && !$user->is_own_business_moderator)
+        <div class="card mb-4 border-warning">
+            <div class="card-body">
+                <i class="fas fa-store fa-2x text-warning me-2 float-start"></i>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 text-warning"><i class="fas fa-exclamation-circle me-2"></i>নিজস্ব ব্যবসা মডারেটর হতে আবেদন করেছেন</h5>
+                        <p class="text-muted mb-0">নিজের ব্যবসার তথ্য পরিচালনা করতে চান - অনুরোধকৃত ক্যাটাগরি: 
+                            @php
+                                $requestedCatIds = $user->requested_categories ?? [];
+                                $requestedCats = \App\Models\Category::whereIn('id', $requestedCatIds)->get();
+                            @endphp
+                            {{ $requestedCats->pluck('name_bn')->join(', ') ?: 'N/A' }}
+                        </p>
+                    </div>
+                    <form action="{{ route('admin.users.make-own-business-moderator', $user) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-check me-1"></i>মডারেটর করুন
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endif
+        
         <!-- Upazila Moderator Status -->
         @if($user->is_upazila_moderator)
         <div class="card mb-4 border-warning">

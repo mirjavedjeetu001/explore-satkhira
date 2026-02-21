@@ -582,11 +582,8 @@
                 <!-- Category Selection -->
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="section-title mb-0"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'আপনি কি করতে চান?' : 'What do you want to do?' }} <span class="required">*</span></h5>
-                    <button type="button" id="selectAllCategories" class="btn btn-sm btn-success">
-                        <i class="fas fa-check-double me-1"></i>{{ app()->getLocale() == 'bn' ? 'সব সিলেক্ট' : 'Select All' }}
-                    </button>
                 </div>
-                <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select based on your purpose (you can select multiple)' }}</p>
+                <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন' : 'Select based on your purpose' }}</p>
                 
                 <!-- Comment Only Option -->
                 <div class="comment-only-option mb-3" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
@@ -612,9 +609,39 @@
                     </label>
                 </div>
                 
-                <!-- Category Selection -->
-                <div class="category-section p-3 mb-3" style="background: #f8f9fa; border-radius: 12px; border: 1px solid #e9ecef;">
-                    <p class="mb-3 fw-bold" style="font-size: 0.9rem;"><i class="fas fa-th-list me-2 text-success"></i>{{ app()->getLocale() == 'bn' ? 'তথ্য যোগ করতে ক্যাটাগরি নির্বাচন করুন:' : 'Select categories to add listings:' }}</p>
+                <!-- Upazila Moderator Option -->
+                <div class="upazila-moderator-option mb-3" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <label for="wants_upazila_moderator" style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                        <input type="checkbox" name="wants_upazila_moderator" value="1" 
+                               id="wants_upazila_moderator"
+                               style="width: 20px; height: 20px; margin-right: 12px; accent-color: #fff;"
+                               {{ old('wants_upazila_moderator') ? 'checked' : '' }}>
+                        <i class="fas fa-user-shield" style="font-size: 24px; color: #fff; margin-right: 12px;"></i>
+                        <div>
+                            <span style="color: #fff; font-size: 16px; font-weight: 600;">{{ app()->getLocale() == 'bn' ? 'উপজেলা মডারেটর হতে চাই' : 'I want to be Upazila Moderator' }}</span>
+                            <small style="display: block; color: rgba(255,255,255,0.8); font-size: 12px;">{{ app()->getLocale() == 'bn' ? 'আপনার উপজেলার সকল তথ্য যোগ ও পরিচালনা করতে পারবেন' : 'You can add and manage all information of your upazila' }}</small>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- Own Business Moderator Option -->
+                <div class="own-business-option mb-3" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; padding: 15px 20px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <label for="wants_own_business_moderator" style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                        <input type="checkbox" name="wants_own_business_moderator" value="1" 
+                               id="wants_own_business_moderator"
+                               style="width: 20px; height: 20px; margin-right: 12px; accent-color: #fff;"
+                               {{ old('wants_own_business_moderator') ? 'checked' : '' }}>
+                        <i class="fas fa-store" style="font-size: 24px; color: #fff; margin-right: 12px;"></i>
+                        <div>
+                            <span style="color: #fff; font-size: 16px; font-weight: 600;">{{ app()->getLocale() == 'bn' ? 'নিজের ব্যবসার মডারেটর হতে চাই' : 'I want to be Own Business Moderator' }}</span>
+                            <small style="display: block; color: rgba(255,255,255,0.8); font-size: 12px;">{{ app()->getLocale() == 'bn' ? 'নিজের ব্যবসার তথ্য যোগ ও পরিচালনা করতে পারবেন' : 'You can add and manage your own business information' }}</small>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- Category Selection (only for listing contributors) -->
+                <div class="category-section p-3 mb-3" id="categorySection" style="background: #f8f9fa; border-radius: 12px; border: 1px solid #e9ecef;">
+                    <p class="mb-3 fw-bold" style="font-size: 0.9rem;"><i class="fas fa-th-list me-2 text-success"></i><span id="categoryLabel">{{ app()->getLocale() == 'bn' ? 'তথ্য যোগ করতে ক্যাটাগরি নির্বাচন করুন:' : 'Select categories to add listings:' }}</span></p>
                     
                     <div class="category-grid">
                         @foreach($categories ?? [] as $category)
@@ -702,28 +729,117 @@
             }
         });
         
-        // Select All - includes comment, MP question, and all categories
-        document.getElementById('selectAllCategories').addEventListener('click', function() {
-            const categoryCheckboxes = document.querySelectorAll('input[name="categories[]"]');
-            const commentCheckbox = document.getElementById('comment_only');
-            const mpQuestionCheckbox = document.getElementById('mp_question_only');
+        // Moderator type handling
+        const upazilaModerator = document.getElementById('wants_upazila_moderator');
+        const ownBusinessModerator = document.getElementById('wants_own_business_moderator');
+        const categoryCheckboxes = document.querySelectorAll('input[name="categories[]"]');
+        const categorySection = document.getElementById('categorySection');
+        const categoryLabel = document.getElementById('categoryLabel');
+        const commentOnly = document.getElementById('comment_only');
+        const mpQuestionOnly = document.getElementById('mp_question_only');
+        
+        const bnLang = '{{ app()->getLocale() }}' === 'bn';
+        
+        function updateCategoryState() {
+            const isUpazilaMod = upazilaModerator.checked;
+            const isOwnBusinessMod = ownBusinessModerator.checked;
+            const isCommentOnly = commentOnly.checked;
+            const isMpQuestion = mpQuestionOnly.checked;
             
-            // Check if all are already selected
-            const allCategoriesChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
-            const allChecked = allCategoriesChecked && commentCheckbox.checked && mpQuestionCheckbox.checked;
+            // Hide category section if comment only or MP question only
+            if (isCommentOnly || isMpQuestion) {
+                // If only comment or MP question is selected, hide categories
+                if (!isUpazilaMod && !isOwnBusinessMod) {
+                    categorySection.style.display = 'none';
+                    categoryCheckboxes.forEach(cb => {
+                        cb.checked = false;
+                        cb.disabled = false;
+                    });
+                    return;
+                }
+            }
             
-            // Toggle all checkboxes
-            categoryCheckboxes.forEach(checkbox => {
-                checkbox.checked = !allChecked;
-            });
-            commentCheckbox.checked = !allChecked;
-            mpQuestionCheckbox.checked = !allChecked;
+            categorySection.style.display = 'block';
             
-            // Update button text
-            this.innerHTML = allChecked 
-                ? '<i class="fas fa-check-double me-1"></i>{{ app()->getLocale() == "bn" ? "সব সিলেক্ট" : "Select All" }}'
-                : '<i class="fas fa-times me-1"></i>{{ app()->getLocale() == "bn" ? "সব বাদ" : "Deselect All" }}';
+            if (isUpazilaMod) {
+                // Upazila Moderator - select all categories and disable them
+                categoryLabel.textContent = bnLang 
+                    ? 'উপজেলা মডারেটর হিসেবে সকল ক্যাটাগরিতে কাজ করতে পারবেন:' 
+                    : 'As Upazila Moderator, you can work in all categories:';
+                categoryCheckboxes.forEach(cb => {
+                    cb.checked = true;
+                    cb.disabled = true;
+                });
+                // Uncheck own business moderator
+                ownBusinessModerator.checked = false;
+            } else if (isOwnBusinessMod) {
+                // Own Business Moderator - only ONE category selection allowed
+                categoryLabel.textContent = bnLang 
+                    ? 'আপনার ব্যবসার ক্যাটাগরি নির্বাচন করুন (শুধু একটি):' 
+                    : 'Select your business category (only one):';
+                categoryCheckboxes.forEach(cb => {
+                    cb.disabled = false;
+                });
+                // Ensure only one is selected
+                enforceOneCategory();
+                // Uncheck upazila moderator
+                upazilaModerator.checked = false;
+            } else {
+                // Normal mode - multiple categories allowed
+                categoryLabel.textContent = bnLang 
+                    ? 'তথ্য যোগ করতে ক্যাটাগরি নির্বাচন করুন:' 
+                    : 'Select categories to add listings:';
+                categoryCheckboxes.forEach(cb => {
+                    cb.disabled = false;
+                });
+            }
+        }
+        
+        function enforceOneCategory() {
+            // Count checked categories
+            const checkedCategories = Array.from(categoryCheckboxes).filter(cb => cb.checked);
+            if (checkedCategories.length > 1) {
+                // Uncheck all except the last one
+                checkedCategories.slice(0, -1).forEach(cb => cb.checked = false);
+            }
+        }
+        
+        // Event listeners for moderator options
+        upazilaModerator.addEventListener('change', function() {
+            if (this.checked) {
+                // Uncheck comment only and own business
+                ownBusinessModerator.checked = false;
+            }
+            updateCategoryState();
         });
+        
+        ownBusinessModerator.addEventListener('change', function() {
+            if (this.checked) {
+                // Uncheck upazila moderator
+                upazilaModerator.checked = false;
+            }
+            updateCategoryState();
+        });
+        
+        commentOnly.addEventListener('change', updateCategoryState);
+        mpQuestionOnly.addEventListener('change', updateCategoryState);
+        
+        // Category checkbox handler for own business moderator
+        categoryCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (ownBusinessModerator.checked && this.checked) {
+                    // If own business moderator, only allow one category
+                    categoryCheckboxes.forEach(otherCb => {
+                        if (otherCb !== this) {
+                            otherCb.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Initialize state on page load
+        updateCategoryState();
     </script>
 </body>
 </html>

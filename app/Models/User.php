@@ -28,6 +28,8 @@ class User extends Authenticatable
         'comment_only',
         'is_upazila_moderator',
         'is_own_business_moderator',
+        'wants_upazila_moderator',
+        'wants_own_business_moderator',
         'requested_categories',
         'status',
         'is_verified',
@@ -50,6 +52,8 @@ class User extends Authenticatable
             'comment_only' => 'boolean',
             'is_upazila_moderator' => 'boolean',
             'is_own_business_moderator' => 'boolean',
+            'wants_upazila_moderator' => 'boolean',
+            'wants_own_business_moderator' => 'boolean',
             'approved_at' => 'datetime',
             'requested_categories' => 'array',
         ];

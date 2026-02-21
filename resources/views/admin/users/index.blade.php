@@ -83,9 +83,13 @@
                             <span class="badge bg-info">{{ $user->role->name ?? 'N/A' }}</span>
                             @if($user->is_upazila_moderator)
                                 <span class="badge bg-warning" title="Upazila Moderator"><i class="fas fa-user-shield"></i></span>
+                            @elseif($user->wants_upazila_moderator)
+                                <span class="badge bg-danger" title="উপজেলা মডারেটর হতে আবেদন করেছেন"><i class="fas fa-user-shield"></i> আবেদন</span>
                             @endif
                             @if($user->is_own_business_moderator)
                                 <span class="badge bg-info" title="Own Business Moderator"><i class="fas fa-store"></i></span>
+                            @elseif($user->wants_own_business_moderator)
+                                <span class="badge bg-warning text-dark" title="নিজস্ব ব্যবসা মডারেটর হতে আবেদন করেছেন"><i class="fas fa-store"></i> আবেদন</span>
                             @endif
                             @if($user->wants_mp_questions)
                                 <span class="badge bg-primary" title="Wants to ask MP questions"><i class="fas fa-comments"></i></span>
