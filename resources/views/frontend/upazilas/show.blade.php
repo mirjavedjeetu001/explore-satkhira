@@ -39,7 +39,7 @@
         <div class="d-flex flex-wrap justify-content-center gap-2">
             @php
                 // Count includes listings with this upazila_id OR null (all upazilas)
-                $totalCount = App\\Models\\Listing::approved()->where(function($q) use ($upazila) {
+                $totalCount = \App\Models\Listing::approved()->where(function($q) use ($upazila) {
                     $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
                 })->count();
             @endphp
@@ -50,7 +50,7 @@
             @foreach($categories ?? [] as $category)
                 @php
                     // Count includes listings with this upazila_id OR null (all upazilas) for each category
-                    $count = App\\Models\\Listing::approved()
+                    $count = \App\Models\Listing::approved()
                         ->where(function($q) use ($upazila) {
                             $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
                         })
