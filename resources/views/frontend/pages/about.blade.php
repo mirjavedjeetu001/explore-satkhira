@@ -214,6 +214,56 @@
     </section>
     @endif
 
+    <!-- Upazila Moderators Section -->
+    @if(isset($upazilaModerators) && $upazilaModerators->count() > 0)
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2>আমাদের উপজেলা মডারেটরস</h2>
+                <p class="text-muted">Our Upazila Moderators</p>
+                <div class="underline mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #f39c12, #e67e22); border-radius: 2px;"></div>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                @foreach($upazilaModerators as $moderator)
+                    <div class="col-lg-3 col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <div class="team-card text-center moderator-card">
+                            <div class="moderator-badge">
+                                <i class="fas fa-user-shield"></i> মডারেটর
+                            </div>
+                            <div class="team-image-wrapper">
+                                @if($moderator->avatar)
+                                    <img src="{{ asset('storage/' . $moderator->avatar) }}" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="team-image">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($moderator->name) }}&background=f39c12&color=fff&size=150" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="team-image">
+                                @endif
+                            </div>
+                            <div class="team-info">
+                                <h5 class="team-name">{{ $moderator->name }}</h5>
+                                <span class="team-role" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ $moderator->upazila->name_bn ?? $moderator->upazila->name ?? 'N/A' }}
+                                </span>
+                                @if($moderator->phone)
+                                    <div class="team-contact mt-2">
+                                        <div class="contact-item">
+                                            <i class="fas fa-phone-alt text-warning"></i>
+                                            <a href="tel:{{ $moderator->phone }}" class="text-dark">{{ $moderator->phone }}</a>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Contact CTA -->
     <section class="py-5 bg-success text-white">
         <div class="container text-center" data-aos="fade-up">
@@ -228,137 +278,324 @@
 
 @push('styles')
 <style>
-    /* Team Card Styles */
+    /* Premium Team Card Styles */
     .team-card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        padding: 30px 20px;
-        transition: all 0.3s ease;
+        background: linear-gradient(145deg, #ffffff 0%, #f8fdf9 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(40, 167, 69, 0.08),
+                    0 4px 12px rgba(0, 0, 0, 0.05),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        padding: 35px 25px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         height: 100%;
+        position: relative;
+        border: 1px solid rgba(40, 167, 69, 0.1);
+        overflow: hidden;
+    }
+    
+    .team-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #28a745, #20c997, #28a745);
+        background-size: 200% 100%;
+        animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
     
     .team-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 50px rgba(40, 167, 69, 0.15);
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 25px 60px rgba(40, 167, 69, 0.18),
+                    0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: rgba(40, 167, 69, 0.3);
+    }
+    
+    .team-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(40, 167, 69, 0.03) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+    
+    .team-card:hover::after {
+        opacity: 1;
     }
     
     .team-image-wrapper {
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 20px;
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 25px;
         position: relative;
     }
     
     .team-image-wrapper::before {
         content: '';
         position: absolute;
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        background: linear-gradient(135deg, #28a745, #20c997);
+        top: -6px;
+        left: -6px;
+        right: -6px;
+        bottom: -6px;
+        background: linear-gradient(135deg, #28a745, #20c997, #28a745);
+        background-size: 200% 200%;
         border-radius: 50%;
         z-index: 0;
+        animation: gradientRotate 4s ease infinite;
+        box-shadow: 0 4px 20px rgba(40, 167, 69, 0.35);
+    }
+    
+    @keyframes gradientRotate {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .team-image-wrapper::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border: 2px dashed rgba(40, 167, 69, 0.2);
+        border-radius: 50%;
+        animation: spin 20s linear infinite;
+    }
+    
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
     }
     
     .team-image {
-        width: 120px;
-        height: 120px;
+        width: 130px;
+        height: 130px;
         border-radius: 50%;
         object-fit: cover;
         position: relative;
         z-index: 1;
-        border: 4px solid #fff;
+        border: 5px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .team-card:hover .team-image {
+        transform: scale(1.05);
     }
     
     .team-info {
-        padding-top: 10px;
+        padding-top: 15px;
     }
     
     .team-name {
-        font-weight: 700;
+        font-weight: 800;
         color: #1a5f2a;
-        margin-bottom: 5px;
-        font-size: 1.1rem;
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+        letter-spacing: -0.5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
     
     .team-role {
         display: inline-block;
-        background: linear-gradient(135deg, #28a745, #20c997);
+        background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #28a745 100%);
+        background-size: 200% 100%;
         color: #fff;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin-bottom: 10px;
+        padding: 6px 16px;
+        border-radius: 25px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        animation: shimmer 3s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .team-designation {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
+        color: #555;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        font-weight: 500;
     }
     
     .team-bio {
-        color: #888;
-        font-size: 0.85rem;
-        line-height: 1.5;
-        margin-bottom: 15px;
+        color: #777;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
     }
     
     .team-social {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
     }
     
     .social-link {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: #f0f0f0;
+        background: linear-gradient(145deg, #f5f5f5, #e8e8e8);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #666;
         text-decoration: none;
         transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     }
     
     .social-link:hover {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745, #20c997);
         color: #fff;
-        transform: scale(1.1);
+        transform: scale(1.15) rotate(5deg);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
     }
     
     .social-link i {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
     
     .team-contact {
-        font-size: 0.85rem;
+        font-size: 0.88rem;
     }
     
     .team-contact .contact-item {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        margin-bottom: 4px;
+        gap: 8px;
+        margin-bottom: 6px;
+        padding: 5px 12px;
+        background: rgba(40, 167, 69, 0.05);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .team-contact .contact-item:hover {
+        background: rgba(40, 167, 69, 0.12);
     }
     
     .team-contact .contact-item i {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
     
     .team-contact .contact-item a {
         text-decoration: none;
         transition: color 0.3s;
+        font-weight: 500;
     }
     
     .team-contact .contact-item a:hover {
         color: #28a745 !important;
+    }
+    
+    /* Premium Moderator Card Styles */
+    .moderator-card {
+        position: relative;
+        background: linear-gradient(145deg, #fffdfb 0%, #fff8f0 100%);
+        border: 2px solid rgba(243, 156, 18, 0.3);
+    }
+    
+    .moderator-card::before {
+        background: linear-gradient(90deg, #f39c12, #e67e22, #f39c12);
+        background-size: 200% 100%;
+    }
+    
+    .moderator-card:hover {
+        border-color: rgba(243, 156, 18, 0.5);
+        box-shadow: 0 25px 60px rgba(243, 156, 18, 0.2),
+                    0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .moderator-card::after {
+        background: radial-gradient(circle, rgba(243, 156, 18, 0.05) 0%, transparent 70%);
+    }
+    
+    .moderator-card .team-image-wrapper::before {
+        background: linear-gradient(135deg, #f39c12, #e67e22, #f39c12);
+        background-size: 200% 200%;
+        box-shadow: 0 4px 20px rgba(243, 156, 18, 0.4);
+    }
+    
+    .moderator-card .team-image-wrapper::after {
+        border-color: rgba(243, 156, 18, 0.25);
+    }
+    
+    .moderator-card .team-name {
+        color: #c17a00;
+    }
+    
+    .moderator-card .team-role {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #f39c12 100%);
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.35);
+    }
+    
+    .moderator-card .social-link:hover {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+    }
+    
+    .moderator-card .team-contact .contact-item {
+        background: rgba(243, 156, 18, 0.08);
+    }
+    
+    .moderator-card .team-contact .contact-item:hover {
+        background: rgba(243, 156, 18, 0.15);
+    }
+    
+    .moderator-card .team-contact .contact-item a:hover {
+        color: #e67e22 !important;
+    }
+    
+    .moderator-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 25px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 10;
+    }
+    
+    .moderator-badge i {
+        margin-right: 5px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .team-card {
+            padding: 25px 18px;
+        }
+        .team-image-wrapper,
+        .team-image {
+            width: 110px;
+            height: 110px;
+        }
+        .team-name {
+            font-size: 1.05rem;
+        }
+        .team-role {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+        }
     }
 </style>
 @endpush

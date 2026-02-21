@@ -12,9 +12,11 @@
                 <p class="text-white-50 mb-0">আপনার জমা দেওয়া সকল তথ্য এখানে দেখুন এবং পরিচালনা করুন</p>
             </div>
             <div class="col-md-4 text-md-end">
-                <a href="{{ route('dashboard.listings.create') }}" class="btn btn-light">
-                    <i class="fas fa-plus me-1"></i>নতুন তথ্য যোগ করুন
-                </a>
+                @if(!auth()->user()->comment_only && (auth()->user()->approvedCategories()->count() > 0 || auth()->user()->is_upazila_moderator || auth()->user()->isAdmin()))
+                    <a href="{{ route('dashboard.listings.create') }}" class="btn btn-light">
+                        <i class="fas fa-plus me-1"></i>নতুন তথ্য যোগ করুন
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -38,12 +40,16 @@
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-tachometer-alt me-2"></i>ড্যাশবোর্ড
                         </a>
-                        <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action active">
-                            <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
-                        </a>
-                        <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
-                        </a>
+                        @if(!auth()->user()->comment_only)
+                            <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action active">
+                                <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
+                            </a>
+                        @endif
+                        @if(auth()->user()->wants_mp_questions)
+                            <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>

@@ -95,6 +95,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::put('/dashboard/password', [UserDashboardController::class, 'changePassword'])->name('dashboard.password');
     
+    // Access Request
+    Route::get('/dashboard/request-access', [UserDashboardController::class, 'requestAccess'])->name('dashboard.request-access');
+    Route::post('/dashboard/request-access', [UserDashboardController::class, 'storeAccessRequest'])->name('dashboard.request-access.store');
+    
     // MP question posting
     Route::post('/mp/question', [MpController::class, 'askQuestion'])->name('mp.question');
 });

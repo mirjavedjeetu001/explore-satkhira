@@ -281,4 +281,58 @@ class UserDashboardController extends Controller
 
         return back()->with('success', 'Password changed successfully.');
     }
+
+    public function requestAccess()
+    {
+        $user = auth()->user();
+        $categories = Category::active()->orderBy('name')->get();
+        
+        // Get user's current category requests (pending ones)
+        $pendingRequests = $user->categoryPermissions()
+            ->wherePivot('is_approved', false)
+            ->get();
+        
+        return view('frontend.dashboard.request-access', compact('categories', 'pendingRequests'));
+    }
+
+    public function storeAccessRequest(Request $request)
+    {
+        $user = auth()->user();
+        
+        $validated = $request->validate([
+            'wants_mp_questions' => 'nullable|boolean',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
+            'reason' => 'required|string|max:1000',
+        ], [
+            'reason.required' => 'অ্যাক্সেস চাওয়ার কারণ লিখুন',
+        ]);
+        
+        // Update wants_mp_questions if requested
+        if ($request->boolean('wants_mp_questions') && !$user->wants_mp_questions) {
+            $user->update(['wants_mp_questions' => true]);
+        }
+        
+        // Add category permission requests
+        if (!empty($validated['categories'])) {
+            foreach ($validated['categories'] as $categoryId) {
+                // Only add if not already exists
+                if (!$user->categoryPermissions()->where('category_id', $categoryId)->exists()) {
+                    $user->categoryPermissions()->attach($categoryId, [
+                        'is_approved' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        }
+        
+        // Update registration purpose with access request reason
+        $user->update([
+            'registration_purpose' => $user->registration_purpose . "\n\n[অতিরিক্ত অ্যাক্সেস অনুরোধ: " . now()->format('d M Y') . "]\n" . $validated['reason'],
+        ]);
+        
+        return redirect()->route('dashboard')
+            ->with('success', 'আপনার অ্যাক্সেস অনুরোধ পাঠানো হয়েছে। অ্যাডমিন অনুমোদনের পর আপনাকে জানানো হবে।');
+    }
 }

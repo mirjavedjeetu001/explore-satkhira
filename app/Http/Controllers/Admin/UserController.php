@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Role;
+use App\Models\TeamMember;
 use App\Models\Upazila;
 use App\Models\User;
 use App\Mail\UserApprovedMail;
 use App\Mail\CategoryApprovedMail;
+use App\Mail\ModeratorApprovedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -103,6 +105,7 @@ class UserController extends Controller
             'password' => 'nullable|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'role_id' => 'required|exists:roles,id',
+            'upazila_id' => 'required|exists:upazilas,id',
             'status' => 'required|in:pending,active,suspended',
             'address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
@@ -262,12 +265,42 @@ class UserController extends Controller
     public function makeModerator(User $user)
     {
         $user->update(['is_upazila_moderator' => true]);
+        
+        // Also add to team_members table for admin tracking
+        if (!TeamMember::where('user_id', $user->id)->exists()) {
+            TeamMember::create([
+                'user_id' => $user->id,
+                'website_role' => 'upazila_moderator',
+                'website_role_bn' => 'উপজেলা মডারেটর',
+                'designation' => 'Upazila Moderator - ' . ($user->upazila->name ?? 'N/A'),
+                'designation_bn' => 'উপজেলা মডারেটর - ' . ($user->upazila->name_bn ?? $user->upazila->name ?? 'N/A'),
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'is_active' => true,
+                'display_order' => 100,
+            ]);
+        }
+        
+        // Send congratulations email to the new moderator
+        try {
+            $user->load('upazila');
+            Mail::to($user->email)->send(new ModeratorApprovedMail($user));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send moderator approval email: ' . $e->getMessage());
+        }
+        
         return back()->with('success', 'User is now an Upazila Moderator for ' . ($user->upazila->name_bn ?? $user->upazila->name ?? 'their upazila') . '.');
     }
 
     public function removeModerator(User $user)
     {
         $user->update(['is_upazila_moderator' => false]);
+        
+        // Also remove from team_members table
+        TeamMember::where('user_id', $user->id)
+            ->where('website_role', 'upazila_moderator')
+            ->delete();
+        
         return back()->with('success', 'Moderator status removed from user.');
     }
 }

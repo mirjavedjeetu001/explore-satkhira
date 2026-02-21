@@ -580,7 +580,12 @@
                 </div>
                 
                 <!-- Category Selection -->
-                <h5 class="section-title"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'আপনি কি করতে চান?' : 'What do you want to do?' }} <span class="required">*</span></h5>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="section-title mb-0"><i class="fas fa-th-large"></i>{{ app()->getLocale() == 'bn' ? 'আপনি কি করতে চান?' : 'What do you want to do?' }} <span class="required">*</span></h5>
+                    <button type="button" id="selectAllCategories" class="btn btn-sm btn-success">
+                        <i class="fas fa-check-double me-1"></i>{{ app()->getLocale() == 'bn' ? 'সব সিলেক্ট' : 'Select All' }}
+                    </button>
+                </div>
                 <p class="text-muted mb-3" style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'আপনার উদ্দেশ্য অনুযায়ী নির্বাচন করুন (একাধিক নির্বাচন করতে পারবেন)' : 'Select based on your purpose (you can select multiple)' }}</p>
                 
                 <!-- Comment Only Option -->
@@ -607,20 +612,23 @@
                     </label>
                 </div>
                 
-                <p class="text-muted mb-2" style="font-size: 0.8rem;">{{ app()->getLocale() == 'bn' ? 'অথবা তথ্য/লিস্টিং যোগ করতে ক্যাটাগরি নির্বাচন করুন:' : 'Or select categories to add listings:' }}</p>
-                
-                <div class="category-grid">
-                    @foreach($categories ?? [] as $category)
-                        <div class="category-item">
-                            <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
-                                   id="cat_{{ $category->id }}"
-                                   {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
-                            <label for="cat_{{ $category->id }}">
-                                <i class="{{ $category->icon ?: 'fas fa-folder' }}"></i>
-                                {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
-                            </label>
-                        </div>
-                    @endforeach
+                <!-- Category Selection -->
+                <div class="category-section p-3 mb-3" style="background: #f8f9fa; border-radius: 12px; border: 1px solid #e9ecef;">
+                    <p class="mb-3 fw-bold" style="font-size: 0.9rem;"><i class="fas fa-th-list me-2 text-success"></i>{{ app()->getLocale() == 'bn' ? 'তথ্য যোগ করতে ক্যাটাগরি নির্বাচন করুন:' : 'Select categories to add listings:' }}</p>
+                    
+                    <div class="category-grid">
+                        @foreach($categories ?? [] as $category)
+                            <div class="category-item">
+                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
+                                       id="cat_{{ $category->id }}"
+                                       {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                                <label for="cat_{{ $category->id }}">
+                                    <i class="{{ $category->icon ?: 'fas fa-folder' }}"></i>
+                                    {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
                 @error('categories')
                     <div class="text-danger mb-3" style="font-size: 0.85rem;">{{ $message }}</div>
@@ -692,6 +700,29 @@
                 };
                 reader.readAsDataURL(file);
             }
+        });
+        
+        // Select All - includes comment, MP question, and all categories
+        document.getElementById('selectAllCategories').addEventListener('click', function() {
+            const categoryCheckboxes = document.querySelectorAll('input[name="categories[]"]');
+            const commentCheckbox = document.getElementById('comment_only');
+            const mpQuestionCheckbox = document.getElementById('mp_question_only');
+            
+            // Check if all are already selected
+            const allCategoriesChecked = Array.from(categoryCheckboxes).every(cb => cb.checked);
+            const allChecked = allCategoriesChecked && commentCheckbox.checked && mpQuestionCheckbox.checked;
+            
+            // Toggle all checkboxes
+            categoryCheckboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+            commentCheckbox.checked = !allChecked;
+            mpQuestionCheckbox.checked = !allChecked;
+            
+            // Update button text
+            this.innerHTML = allChecked 
+                ? '<i class="fas fa-check-double me-1"></i>{{ app()->getLocale() == "bn" ? "সব সিলেক্ট" : "Select All" }}'
+                : '<i class="fas fa-times me-1"></i>{{ app()->getLocale() == "bn" ? "সব বাদ" : "Deselect All" }}';
         });
     </script>
 </body>

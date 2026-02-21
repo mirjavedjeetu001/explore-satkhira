@@ -42,7 +42,13 @@
                         <td><strong>{{ $upazila->name }}</strong></td>
                         <td><code>{{ $upazila->slug }}</code></td>
                         <td><span class="badge bg-info">{{ $upazila->listings_count ?? 0 }}</span></td>
-                        <td><span class="badge bg-secondary">{{ $upazila->users_count ?? 0 }}</span></td>
+                        <td>
+                            @if(($upazila->moderators_count ?? 0) > 0)
+                                <span class="badge bg-warning text-dark">{{ $upazila->moderators_count }}</span>
+                            @else
+                                <span class="badge bg-secondary">0</span>
+                            @endif
+                        </td>
                         <td>
                             @if($upazila->is_active)
                                 <span class="badge badge-active">Active</span>

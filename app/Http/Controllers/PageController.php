@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\TeamMember;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -15,12 +16,26 @@ class PageController extends Controller
     public function about()
     {
         $settings = SiteSetting::where('group', 'about')->pluck('value', 'key');
+        
+        // Get upazila moderators first
+        $upazilaModerators = User::where('is_upazila_moderator', true)
+            ->where('status', 'active')
+            ->with('upazila')
+            ->orderBy('name')
+            ->get();
+        
+        // Get team members, but exclude those who are upazila moderators
+        $upazilaModeratorsUserIds = $upazilaModerators->pluck('id')->toArray();
+        
         $teamMembers = TeamMember::with('user')
             ->active()
             ->ordered()
+            ->whereHas('user', function($q) use ($upazilaModeratorsUserIds) {
+                $q->whereNotIn('id', $upazilaModeratorsUserIds);
+            })
             ->get();
         
-        return view('frontend.pages.about', compact('settings', 'teamMembers'));
+        return view('frontend.pages.about', compact('settings', 'teamMembers', 'upazilaModerators'));
     }
 
     public function contact()

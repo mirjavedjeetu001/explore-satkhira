@@ -230,6 +230,33 @@
                 margin-left: 0;
             }
         }
+
+        /* Pagination Fix */
+        .pagination {
+            margin-bottom: 0;
+            flex-wrap: wrap;
+        }
+        .pagination .page-item .page-link {
+            color: #28a745;
+            border-color: #dee2e6;
+            padding: 8px 14px;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #e9ecef;
+            color: #1a5f2a;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+        nav[aria-label="Pagination Navigation"] svg {
+            width: 18px;
+            height: 18px;
+        }
     </style>
     
     @stack('styles')

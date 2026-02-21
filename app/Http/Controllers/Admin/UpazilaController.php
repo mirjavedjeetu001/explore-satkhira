@@ -12,7 +12,10 @@ class UpazilaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Upazila::withCount(['listings' => fn($q) => $q->approved()]);
+        $query = Upazila::withCount([
+            'listings' => fn($q) => $q->approved(),
+            'users as moderators_count' => fn($q) => $q->where('is_upazila_moderator', true)
+        ]);
 
         if ($request->filled('search')) {
             $search = $request->search;

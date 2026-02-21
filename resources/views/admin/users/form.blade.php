@@ -46,6 +46,22 @@
             </div>
             
             <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-map-marker-alt text-warning me-1"></i>User's Upazila <span class="text-danger">*</span></label>
+                <select name="upazila_id" class="form-select @error('upazila_id') is-invalid @enderror" required>
+                    <option value="">Select Upazila</option>
+                    @foreach($upazilas ?? [] as $upazila)
+                        <option value="{{ $upazila->id }}" {{ old('upazila_id', $user->upazila_id ?? '') == $upazila->id ? 'selected' : '' }}>
+                            {{ $upazila->name_bn ?? $upazila->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small class="text-muted">This is the user's primary upazila location</small>
+                @error('upazila_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="col-md-6">
                 <label class="form-label">Password {{ isset($user) ? '(Leave blank to keep current)' : '' }} <span class="text-danger">{{ isset($user) ? '' : '*' }}</span></label>
                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" 
                        {{ isset($user) ? '' : 'required' }}>

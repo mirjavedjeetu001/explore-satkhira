@@ -44,6 +44,11 @@ class TeamMemberController extends Controller
         ]);
 
         TeamMember::create($request->all());
+        
+        // If website_role is upazila_moderator, update the user's flag
+        if ($request->website_role === 'upazila_moderator') {
+            User::where('id', $request->user_id)->update(['is_upazila_moderator' => true]);
+        }
 
         return back()->with('success', 'টিম মেম্বার যোগ করা হয়েছে।');
     }
@@ -66,13 +71,31 @@ class TeamMemberController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Check if website_role changed to/from upazila_moderator
+        $oldRole = $teamMember->website_role;
+        $newRole = $request->website_role;
+        
         $teamMember->update($request->all());
+        
+        // Update user's is_upazila_moderator flag based on role change
+        if ($oldRole !== $newRole && $teamMember->user) {
+            if ($newRole === 'upazila_moderator') {
+                $teamMember->user->update(['is_upazila_moderator' => true]);
+            } elseif ($oldRole === 'upazila_moderator') {
+                $teamMember->user->update(['is_upazila_moderator' => false]);
+            }
+        }
 
         return back()->with('success', 'টিম মেম্বার আপডেট করা হয়েছে।');
     }
 
     public function destroy(TeamMember $teamMember)
     {
+        // If this was an upazila_moderator, update the user's flag
+        if ($teamMember->website_role === 'upazila_moderator' && $teamMember->user) {
+            $teamMember->user->update(['is_upazila_moderator' => false]);
+        }
+        
         $teamMember->delete();
         return back()->with('success', 'টিম মেম্বার সরিয়ে দেওয়া হয়েছে।');
     }

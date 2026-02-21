@@ -18,6 +18,12 @@ class Role extends Model
         'permissions' => 'array',
     ];
 
+    // Accessor for display_name - returns name if display_name column doesn't exist
+    public function getDisplayNameAttribute()
+    {
+        return $this->attributes['display_name'] ?? $this->attributes['name'] ?? 'User';
+    }
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

@@ -29,12 +29,16 @@
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-tachometer-alt me-2"></i>ড্যাশবোর্ড
                         </a>
-                        <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
-                        </a>
-                        <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
-                        </a>
+                        @if(!auth()->user()->comment_only)
+                            <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
+                            </a>
+                        @endif
+                        @if(auth()->user()->wants_mp_questions)
+                            <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action active">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>

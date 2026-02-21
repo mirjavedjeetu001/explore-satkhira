@@ -12,9 +12,11 @@
                 <p class="text-white-50 mb-0">আপনার ড্যাশবোর্ড থেকে সকল কার্যক্রম পরিচালনা করুন</p>
             </div>
             <div class="col-md-4 text-md-end">
-                <a href="{{ route('dashboard.listings.create') }}" class="btn btn-light">
-                    <i class="fas fa-plus me-1"></i>নতুন তথ্য যোগ করুন
-                </a>
+                @if(!auth()->user()->comment_only && (auth()->user()->approvedCategories()->count() > 0 || auth()->user()->is_upazila_moderator || auth()->user()->isAdmin()))
+                    <a href="{{ route('dashboard.listings.create') }}" class="btn btn-light">
+                        <i class="fas fa-plus me-1"></i>নতুন তথ্য যোগ করুন
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -38,15 +40,24 @@
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <i class="fas fa-tachometer-alt me-2"></i>ড্যাশবোর্ড
                         </a>
-                        <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.listings*') ? 'active' : '' }}">
-                            <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
-                        </a>
-                        <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.my-questions') ? 'active' : '' }}">
-                            <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
-                        </a>
+                        @if(!auth()->user()->comment_only)
+                            <a href="{{ route('dashboard.listings') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.listings*') ? 'active' : '' }}">
+                                <i class="fas fa-list me-2"></i>আমার তথ্যসমূহ
+                            </a>
+                        @endif
+                        @if(auth()->user()->wants_mp_questions)
+                            <a href="{{ route('dashboard.my-questions') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.my-questions') ? 'active' : '' }}">
+                                <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.profile') ? 'active' : '' }}">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>
+                        @if(auth()->user()->comment_only && !auth()->user()->wants_mp_questions && auth()->user()->approvedCategories()->count() == 0)
+                            <a href="{{ route('dashboard.request-access') }}" class="list-group-item list-group-item-action list-group-item-warning {{ request()->routeIs('dashboard.request-access') ? 'active' : '' }}">
+                                <i class="fas fa-unlock-alt me-2"></i>অতিরিক্ত অ্যাক্সেস চাই
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
