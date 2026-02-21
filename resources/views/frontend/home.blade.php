@@ -85,20 +85,57 @@
                 <div class="underline"></div>
             </div>
             
-            <div class="row g-4">
-                @foreach($categories as $category)
-                    <div class="col-lg-3 col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                        <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
-                            <div class="category-card">
-                                <div class="icon-wrapper" style="background-color: {{ $category->color }}">
-                                    <i class="fas {{ $category->icon }}"></i>
-                                </div>
-                                <h5>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
-                                <p class="listing-count mb-0">{{ $category->listings_count }} {{ app()->getLocale() == 'bn' ? 'টি তথ্য' : 'listings' }}</p>
+            <!-- Category Flip Container -->
+            <div class="category-flip-container">
+                <!-- Front Side - Top 4 Categories -->
+                <div class="category-flip-front" id="categoryFront">
+                    <div class="row g-4">
+                        @foreach($categories->take(4) as $category)
+                            <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                                <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
+                                    <div class="category-card">
+                                        <div class="icon-wrapper" style="background-color: {{ $category->color }}">
+                                            <i class="fas {{ $category->icon }}"></i>
+                                        </div>
+                                        <h5>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
+                                        <p class="listing-count mb-0">{{ $category->listings_count }} {{ app()->getLocale() == 'bn' ? 'টি তথ্য' : 'listings' }}</p>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
+                        @endforeach
                     </div>
-                @endforeach
+                    @if($categories->count() > 4)
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-success btn-lg" onclick="flipCategories()">
+                                <i class="fas fa-th-large me-2"></i>{{ app()->getLocale() == 'bn' ? 'আরও ক্যাটাগরি দেখুন' : 'View More Categories' }} <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    @endif
+                </div>
+                
+                <!-- Back Side - Remaining Categories -->
+                <div class="category-flip-back" id="categoryBack" style="display: none;">
+                    <div class="row g-4">
+                        @foreach($categories->skip(4) as $category)
+                            <div class="col-lg-3 col-md-4 col-6">
+                                <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
+                                    <div class="category-card">
+                                        <div class="icon-wrapper" style="background-color: {{ $category->color }}">
+                                            <i class="fas {{ $category->icon }}"></i>
+                                        </div>
+                                        <h5>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
+                                        <p class="listing-count mb-0">{{ $category->listings_count }} {{ app()->getLocale() == 'bn' ? 'টি তথ্য' : 'listings' }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-success btn-lg" onclick="flipCategories()">
+                            <i class="fas fa-arrow-left me-2"></i>{{ app()->getLocale() == 'bn' ? 'জনপ্রিয় ক্যাটাগরি দেখুন' : 'Back to Popular' }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -323,3 +360,49 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+function flipCategories() {
+    const front = document.getElementById('categoryFront');
+    const back = document.getElementById('categoryBack');
+    
+    if (front.style.display !== 'none') {
+        front.style.opacity = '0';
+        front.style.transform = 'rotateY(90deg)';
+        setTimeout(() => {
+            front.style.display = 'none';
+            back.style.display = 'block';
+            back.style.opacity = '0';
+            back.style.transform = 'rotateY(-90deg)';
+            setTimeout(() => {
+                back.style.opacity = '1';
+                back.style.transform = 'rotateY(0)';
+            }, 50);
+        }, 300);
+    } else {
+        back.style.opacity = '0';
+        back.style.transform = 'rotateY(90deg)';
+        setTimeout(() => {
+            back.style.display = 'none';
+            front.style.display = 'block';
+            front.style.opacity = '0';
+            front.style.transform = 'rotateY(-90deg)';
+            setTimeout(() => {
+                front.style.opacity = '1';
+                front.style.transform = 'rotateY(0)';
+            }, 50);
+        }, 300);
+    }
+}
+</script>
+<style>
+.category-flip-container {
+    perspective: 1000px;
+}
+.category-flip-front, .category-flip-back {
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+}
+</style>
+@endpush

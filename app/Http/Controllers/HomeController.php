@@ -20,7 +20,9 @@ class HomeController extends Controller
             ->inMenu()
             ->ordered()
             ->withCount(['listings' => fn($q) => $q->approved()])
-            ->get();
+            ->get()
+            ->sortByDesc('listings_count')
+            ->values();
 
         $upazilas = Upazila::active()
             ->ordered()

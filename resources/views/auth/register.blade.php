@@ -746,23 +746,20 @@
             const isCommentOnly = commentOnly.checked;
             const isMpQuestion = mpQuestionOnly.checked;
             
-            // Hide category section if comment only or MP question only
-            if (isCommentOnly || isMpQuestion) {
-                // If only comment or MP question is selected, hide categories
-                if (!isUpazilaMod && !isOwnBusinessMod) {
-                    categorySection.style.display = 'none';
-                    categoryCheckboxes.forEach(cb => {
-                        cb.checked = false;
-                        cb.disabled = false;
-                    });
-                    return;
-                }
+            // Hide category section if comment only or MP question only (without moderator options)
+            if ((isCommentOnly || isMpQuestion) && !isUpazilaMod && !isOwnBusinessMod) {
+                categorySection.style.display = 'none';
+                categoryCheckboxes.forEach(cb => {
+                    cb.checked = false;
+                    cb.disabled = false;
+                });
+                return;
             }
             
             categorySection.style.display = 'block';
             
             if (isUpazilaMod) {
-                // Upazila Moderator - select all categories and disable them
+                // Upazila Moderator - select ALL options including comment and MP questions
                 categoryLabel.textContent = bnLang 
                     ? 'উপজেলা মডারেটর হিসেবে সকল ক্যাটাগরিতে কাজ করতে পারবেন:' 
                     : 'As Upazila Moderator, you can work in all categories:';
@@ -770,17 +767,23 @@
                     cb.checked = true;
                     cb.disabled = true;
                 });
+                // Also check comment and MP question
+                commentOnly.checked = true;
+                mpQuestionOnly.checked = true;
                 // Uncheck own business moderator
                 ownBusinessModerator.checked = false;
             } else if (isOwnBusinessMod) {
-                // Own Business Moderator - only ONE category selection allowed
+                // Own Business Moderator - only check comment, allow ONE category selection
                 categoryLabel.textContent = bnLang 
                     ? 'আপনার ব্যবসার ক্যাটাগরি নির্বাচন করুন (শুধু একটি):' 
                     : 'Select your business category (only one):';
                 categoryCheckboxes.forEach(cb => {
                     cb.disabled = false;
                 });
-                // Ensure only one is selected
+                // Only check comment (not MP question)
+                commentOnly.checked = true;
+                mpQuestionOnly.checked = false;
+                // Ensure only one category is selected
                 enforceOneCategory();
                 // Uncheck upazila moderator
                 upazilaModerator.checked = false;
@@ -807,7 +810,7 @@
         // Event listeners for moderator options
         upazilaModerator.addEventListener('change', function() {
             if (this.checked) {
-                // Uncheck comment only and own business
+                // Uncheck own business moderator
                 ownBusinessModerator.checked = false;
             }
             updateCategoryState();
