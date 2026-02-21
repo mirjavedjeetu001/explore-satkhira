@@ -22,7 +22,7 @@ class AdminMiddleware
                 ->with('error', 'Your account is not active.');
         }
 
-        if (!$user->isAdmin() && !$user->isModerator()) {
+        if (!$user->isAdmin()) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 

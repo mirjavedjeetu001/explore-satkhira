@@ -111,8 +111,57 @@
             <!-- Main Content -->
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm mb-4">
-                    <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/800/400' }}" 
-                         class="card-img-top" alt="{{ $listing->title }}" style="max-height: 400px; object-fit: cover;">
+                    @php
+                        $allImages = [];
+                        if ($listing->image) {
+                            $allImages[] = $listing->image;
+                        }
+                        if ($listing->gallery && is_array($listing->gallery)) {
+                            $allImages = array_merge($allImages, $listing->gallery);
+                        }
+                    @endphp
+                    
+                    @if(count($allImages) > 1)
+                        <!-- Image Carousel -->
+                        <div id="listingCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                @foreach($allImages as $index => $img)
+                                    <button type="button" data-bs-target="#listingCarousel" data-bs-slide-to="{{ $index }}" 
+                                            class="{{ $index === 0 ? 'active' : '' }}" aria-current="{{ $index === 0 ? 'true' : 'false' }}"></button>
+                                @endforeach
+                            </div>
+                            <div class="carousel-inner">
+                                @foreach($allImages as $index => $img)
+                                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                        <img src="{{ asset('storage/' . $img) }}" class="d-block w-100" alt="{{ $listing->title }}" 
+                                             style="max-height: 400px; object-fit: cover;">
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <!-- Thumbnail Gallery -->
+                        <div class="d-flex gap-2 p-2 bg-light justify-content-center flex-wrap">
+                            @foreach($allImages as $index => $img)
+                                <img src="{{ asset('storage/' . $img) }}" 
+                                     class="rounded cursor-pointer listing-thumb {{ $index === 0 ? 'border border-success border-2' : 'border' }}" 
+                                     style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                     data-bs-target="#listingCarousel" data-bs-slide-to="{{ $index }}"
+                                     onclick="document.querySelectorAll('.listing-thumb').forEach(t => t.classList.remove('border-success', 'border-2')); this.classList.add('border-success', 'border-2');">
+                            @endforeach
+                        </div>
+                    @else
+                        <!-- Single Image -->
+                        <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/800/400' }}" 
+                             class="card-img-top" alt="{{ $listing->title }}" style="max-height: 400px; object-fit: cover;">
+                    @endif
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>

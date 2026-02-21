@@ -131,20 +131,40 @@
                             </div>
                             
                             <div class="mb-4">
-                                <label for="image" class="form-label">ছবি</label>
-                                @if($listing->image)
-                                    <div class="mb-2">
-                                        <img src="{{ asset('storage/' . $listing->image) }}" alt="{{ $listing->title }}" 
-                                             class="rounded" style="max-height: 150px;">
-                                        <p class="text-muted small mt-1">বর্তমান ছবি</p>
+                                <label for="images" class="form-label">ছবি</label>
+                                
+                                <!-- Current Images -->
+                                <div class="mb-3">
+                                    <p class="text-muted small mb-2">বর্তমান ছবিসমূহ:</p>
+                                    <div class="d-flex flex-wrap gap-2" id="currentImages">
+                                        @if($listing->image)
+                                            <div class="position-relative">
+                                                <img src="{{ asset('storage/' . $listing->image) }}" alt="{{ $listing->title }}" 
+                                                     class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #28a745;">
+                                                <span class="position-absolute top-0 start-0 badge bg-success" style="font-size: 0.6rem;">প্রধান</span>
+                                            </div>
+                                        @endif
+                                        @if($listing->gallery && is_array($listing->gallery))
+                                            @foreach($listing->gallery as $galleryImage)
+                                                <div class="position-relative">
+                                                    <img src="{{ asset('storage/' . $galleryImage) }}" alt="Gallery" 
+                                                         class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #dee2e6;">
+                                                </div>
+                                            @endforeach
+                                        @endif
                                     </div>
-                                @endif
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                                       id="image" name="image" accept="image/*">
-                                <small class="text-muted">সর্বোচ্চ 2MB, JPG/PNG ফরম্যাট। নতুন ছবি আপলোড করলে পুরনো ছবি প্রতিস্থাপিত হবে।</small>
-                                @error('image')
+                                </div>
+                                
+                                <input type="file" class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" 
+                                       id="imageInput" name="images[]" accept="image/*" multiple>
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>নতুন ছবি আপলোড করলে পুরনো সব ছবি প্রতিস্থাপিত হবে। একাধিক ছবি নির্বাচন করতে পারবেন (সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)</small>
+                                @error('images')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                @error('images.*')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div id="imagePreview" class="mt-2 d-flex flex-wrap gap-2"></div>
                             </div>
                             
                             <!-- Google Map Section -->
@@ -216,3 +236,49 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    const currentImages = document.getElementById('currentImages');
+    preview.innerHTML = '';
+    
+    const files = e.target.files;
+    if (files.length > 5) {
+        alert('সর্বোচ্চ ৫টি ছবি নির্বাচন করতে পারবেন!');
+        e.target.value = '';
+        return;
+    }
+    
+    if (files.length > 0) {
+        currentImages.style.display = 'none';
+    } else {
+        currentImages.style.display = 'flex';
+    }
+    
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 2 * 1024 * 1024) {
+            alert('প্রতিটি ছবি সর্বোচ্চ 2MB হতে পারবে!');
+            e.target.value = '';
+            preview.innerHTML = '';
+            currentImages.style.display = 'flex';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const div = document.createElement('div');
+            div.className = 'position-relative';
+            div.innerHTML = `
+                <img src="${event.target.result}" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid ${i === 0 ? '#28a745' : '#dee2e6'};">
+                ${i === 0 ? '<span class="position-absolute top-0 start-0 badge bg-success" style="font-size: 0.6rem;">প্রধান</span>' : ''}
+            `;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+@endpush

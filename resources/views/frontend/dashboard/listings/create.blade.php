@@ -121,13 +121,17 @@
                                     @enderror
                                 </div>
                                 
-                                <div class="col-md-6">
-                                    <label class="form-label">ছবি</label>
-                                    <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
-                                    @error('image')
+                                <div class="col-12">
+                                    <label class="form-label">ছবি <span class="text-danger">*</span></label>
+                                    <input type="file" name="images[]" id="imageInput" class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" accept="image/*" multiple required>
+                                    @error('images')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Max 2MB, JPG/PNG format</small>
+                                    @error('images.*')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>সর্বনিম্ন ১টি ছবি আবশ্যক। একাধিক ছবি নির্বাচন করতে পারবেন (সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)</small>
+                                    <div id="imagePreview" class="mt-2 d-flex flex-wrap gap-2"></div>
                                 </div>
                                 
                                 <!-- Google Map Section -->
@@ -201,3 +205,41 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    
+    const files = e.target.files;
+    if (files.length > 5) {
+        alert('সর্বোচ্চ ৫টি ছবি নির্বাচন করতে পারবেন!');
+        e.target.value = '';
+        return;
+    }
+    
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 2 * 1024 * 1024) {
+            alert('প্রতিটি ছবি সর্বোচ্চ 2MB হতে পারবে!');
+            e.target.value = '';
+            preview.innerHTML = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const div = document.createElement('div');
+            div.className = 'position-relative';
+            div.innerHTML = `
+                <img src="${event.target.result}" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid ${i === 0 ? '#28a745' : '#dee2e6'};">
+                ${i === 0 ? '<span class="position-absolute top-0 start-0 badge bg-success" style="font-size: 0.6rem;">প্রধান</span>' : ''}
+            `;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+@endpush

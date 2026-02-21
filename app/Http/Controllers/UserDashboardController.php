@@ -115,7 +115,8 @@ class UserDashboardController extends Controller
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'image' => 'nullable|image|max:2048',
+            'images' => 'required|array|min:1|max:5',
+            'images.*' => 'image|max:2048',
             'map_embed' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -125,9 +126,22 @@ class UserDashboardController extends Controller
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         $validated['status'] = 'pending'; // Needs admin approval
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('listings', 'public');
+        // Handle multiple images
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            // First image becomes the primary image
+            $validated['image'] = $images[0]->store('listings', 'public');
+            
+            // Remaining images go to gallery
+            $gallery = [];
+            for ($i = 1; $i < count($images); $i++) {
+                $gallery[] = $images[$i]->store('listings', 'public');
+            }
+            if (!empty($gallery)) {
+                $validated['gallery'] = $gallery;
+            }
         }
+        unset($validated['images']);
 
         Listing::create($validated);
 
@@ -200,15 +214,27 @@ class UserDashboardController extends Controller
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'image' => 'nullable|image|max:2048',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|max:2048',
             'map_embed' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('listings', 'public');
+        // Handle multiple images
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            // First image becomes the primary image
+            $validated['image'] = $images[0]->store('listings', 'public');
+            
+            // Remaining images go to gallery
+            $gallery = [];
+            for ($i = 1; $i < count($images); $i++) {
+                $gallery[] = $images[$i]->store('listings', 'public');
+            }
+            $validated['gallery'] = !empty($gallery) ? $gallery : null;
         }
+        unset($validated['images']);
 
         $listing->update($validated);
 

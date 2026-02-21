@@ -23,7 +23,11 @@
                              alt="{{ $user->name }}" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
                         <h5 class="mb-1">{{ $user->name }}</h5>
                         <p class="text-muted small mb-0">{{ $user->email }}</p>
-                        <span class="badge bg-success mt-2">{{ $user->role->display_name ?? 'User' }}</span>
+                        @if($user->is_upazila_moderator)
+                            <span class="badge bg-warning text-dark mt-2"><i class="fas fa-shield-alt me-1"></i>উপজেলা মডারেটর</span>
+                        @else
+                            <span class="badge bg-success mt-2">{{ $user->role->display_name ?? 'User' }}</span>
+                        @endif
                     </div>
                     <div class="list-group list-group-flush">
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
