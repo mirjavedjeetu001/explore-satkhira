@@ -95,7 +95,7 @@
                                                     @endif
                                                 </td>
                                                 <td><span class="badge bg-secondary">{{ $listing->category->name ?? 'N/A' }}</span></td>
-                                                <td>{{ $listing->upazila->name ?? 'N/A' }}</td>
+                                                <td>{{ $listing->upazila->name ?? 'সকল উপজেলা' }}</td>
                                                 <td>
                                                     @if($listing->status == 'pending')
                                                         <span class="badge bg-warning text-dark">অপেক্ষমাণ</span>

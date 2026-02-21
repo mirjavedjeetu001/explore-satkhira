@@ -118,7 +118,7 @@
                             <img src="{{ $listing->image ? asset('storage/' . $listing->image) : 'https://picsum.photos/seed/' . $listing->id . '/400/180' }}" 
                                  class="card-img-top" alt="{{ $listing->title }}" style="height: 180px; object-fit: cover;">
                             <span class="badge bg-info position-absolute top-0 end-0 m-2">
-                                <i class="fas fa-map-marker-alt me-1"></i>{{ $listing->upazila->name ?? 'N/A' }}
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ $listing->upazila->name ?? 'সকল উপজেলা' }}
                             </span>
                             @if($listing->is_featured)
                                 <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">

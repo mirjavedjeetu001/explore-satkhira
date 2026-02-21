@@ -37,13 +37,25 @@
 <section class="py-4 bg-light border-bottom">
     <div class="container">
         <div class="d-flex flex-wrap justify-content-center gap-2">
+            @php
+                // Count includes listings with this upazila_id OR null (all upazilas)
+                $totalCount = App\\Models\\Listing::approved()->where(function($q) use ($upazila) {
+                    $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
+                })->count();
+            @endphp
             <a href="{{ route('upazilas.show', $upazila) }}" 
                class="btn {{ !request('category') ? 'btn-success' : 'btn-outline-success' }}">
-                <i class="fas fa-th-large me-1"></i>সকল ({{ $upazila->listings()->approved()->count() }})
+                <i class="fas fa-th-large me-1"></i>সকল ({{ $totalCount }})
             </a>
             @foreach($categories ?? [] as $category)
                 @php
-                    $count = $upazila->listings()->approved()->where('category_id', $category->id)->count();
+                    // Count includes listings with this upazila_id OR null (all upazilas) for each category
+                    $count = App\\Models\\Listing::approved()
+                        ->where(function($q) use ($upazila) {
+                            $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
+                        })
+                        ->where('category_id', $category->id)
+                        ->count();
                 @endphp
                 <a href="{{ route('upazilas.show', ['upazila' => $upazila, 'category' => $category->slug]) }}" 
                    class="btn {{ request('category') == $category->slug ? 'btn-success' : 'btn-outline-success' }}">

@@ -117,7 +117,7 @@
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
                                 <span class="badge bg-success me-2">{{ $listing->category->name ?? 'N/A' }}</span>
-                                <span class="badge bg-secondary">{{ $listing->upazila->name ?? 'N/A' }}</span>
+                                <span class="badge bg-secondary">{{ $listing->upazila->name ?? 'সকল উপজেলা' }}</span>
                                 @if($listing->is_featured)
                                     <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> ফিচার্ড</span>
                                 @endif
