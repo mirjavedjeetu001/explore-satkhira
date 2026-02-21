@@ -197,7 +197,7 @@
                             <div class="card-body">
                                 <h6 class="card-title">{{ app()->getLocale() == 'bn' ? ($listing->title_bn ?? $listing->title) : $listing->title }}</h6>
                                 <p class="text-muted small mb-2">
-                                    <i class="fas fa-map-marker-alt me-1"></i>{{ app()->getLocale() == 'bn' ? ($listing->upazila?->name_bn ?? $listing->upazila?->name ?? 'Unknown') : ($listing->upazila?->name ?? 'Unknown') }}
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ $listing->upazila ? (app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name) : (app()->getLocale() == 'bn' ? 'সকল উপজেলা' : 'All Upazilas') }}
                                 </p>
                                 <a href="{{ route('listings.show', $listing) }}" class="btn btn-outline-success btn-sm">{{ __('messages.view_details') }}</a>
                             </div>
@@ -287,7 +287,7 @@
                                 </h6>
                                 <p class="text-muted small mb-2 d-flex align-items-center">
                                     <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                    {{ app()->getLocale() == 'bn' ? ($listing->upazila?->name_bn ?? $listing->upazila?->name ?? 'Unknown') : ($listing->upazila?->name ?? 'Unknown') }}
+                                    {{ $listing->upazila ? (app()->getLocale() == 'bn' ? ($listing->upazila->name_bn ?? $listing->upazila->name) : $listing->upazila->name) : (app()->getLocale() == 'bn' ? 'সকল উপজেলা' : 'All Upazilas') }}
                                 </p>
                                 @if($listing->short_description)
                                     <p class="text-muted small mb-3 listing-desc">{{ Str::limit($listing->short_description, 60) }}</p>
@@ -403,6 +403,75 @@ function flipCategories() {
 .category-flip-front, .category-flip-back {
     transition: all 0.3s ease;
     transform-style: preserve-3d;
+}
+
+/* Consistent Listing Card Styling */
+.listing-card-new {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.listing-card-new:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.listing-card-new .listing-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.listing-card-new:hover .listing-img {
+    transform: scale(1.05);
+}
+
+.listing-card-new .card-body {
+    padding: 15px;
+}
+
+.listing-card-new .listing-title {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    height: 2.8em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.listing-card-new .listing-title a:hover {
+    color: #28a745 !important;
+}
+
+.listing-card-new .listing-desc {
+    height: 2.6em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Featured Listings Cards */
+.listing-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.listing-card .card-body {
+    padding: 15px;
+}
+
+.listing-card .card-title {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    height: 2.8em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 </style>
 @endpush
