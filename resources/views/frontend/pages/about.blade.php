@@ -354,13 +354,13 @@
         height: 5px;
         background: linear-gradient(90deg, #28a745, #20c997, #28a745);
         background-size: 200% 100%;
-        animation: shimmer 3s ease-in-out infinite;
+        /* animation disabled for performance */
     }
     
-    @keyframes shimmer {
+    /* @keyframes shimmer {
         0%, 100% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
-    }
+    } */
     
     .team-card:hover {
         transform: translateY(-12px) scale(1.02);
@@ -404,14 +404,14 @@
         background-size: 200% 200%;
         border-radius: 50%;
         z-index: 0;
-        animation: gradientRotate 4s ease infinite;
+        /* animation disabled for performance */
         box-shadow: 0 4px 20px rgba(40, 167, 69, 0.35);
     }
     
-    @keyframes gradientRotate {
+    /* @keyframes gradientRotate {
         0%, 100% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
-    }
+    } */
     
     .team-image-wrapper::after {
         content: '';
@@ -422,12 +422,12 @@
         bottom: -10px;
         border: 2px dashed rgba(40, 167, 69, 0.2);
         border-radius: 50%;
-        animation: spin 20s linear infinite;
+        /* animation disabled for performance */
     }
     
-    @keyframes spin {
+    /* @keyframes spin {
         100% { transform: rotate(360deg); }
-    }
+    } */
     
     .team-image {
         width: 130px;
@@ -469,7 +469,7 @@
         font-weight: 600;
         margin-bottom: 12px;
         box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        animation: shimmer 3s ease-in-out infinite;
+        /* animation disabled for performance */
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
