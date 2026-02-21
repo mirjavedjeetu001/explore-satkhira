@@ -82,7 +82,7 @@ class RegisteredUserController extends Controller
             'categories.*' => ['exists:categories,id'],
             'registration_purpose' => ['required', 'string', 'max:1000'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,gif', 'max:2048'],
         ], [
             'name.required' => 'নাম দিতে হবে',
             'email.required' => 'ইমেইল দিতে হবে',
@@ -96,6 +96,7 @@ class RegisteredUserController extends Controller
             'registration_purpose.required' => 'রেজিস্ট্রেশনের উদ্দেশ্য লিখতে হবে',
             'password.required' => 'পাসওয়ার্ড দিতে হবে',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না',
+            'avatar.required' => 'প্রোফাইল ছবি আপলোড করতে হবে',
             'avatar.image' => 'শুধুমাত্র ছবি ফাইল আপলোড করুন',
             'avatar.mimes' => 'JPG, PNG অথবা GIF ফাইল আপলোড করুন',
             'avatar.max' => 'ছবির সাইজ সর্বোচ্চ 2MB হতে পারবে',

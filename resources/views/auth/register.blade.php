@@ -514,7 +514,7 @@
                 
                 <!-- Profile Picture Upload -->
                 <div class="mb-4 text-center">
-                    <label class="form-label d-block">{{ app()->getLocale() == 'bn' ? 'প্রোফাইল ছবি' : 'Profile Picture' }} <span class="text-muted">({{ app()->getLocale() == 'bn' ? 'ঐচ্ছিক' : 'Optional' }})</span></label>
+                    <label class="form-label d-block">{{ app()->getLocale() == 'bn' ? 'প্রোফাইল ছবি' : 'Profile Picture' }} <span class="required">*</span></label>
                     <div class="avatar-upload-wrapper">
                         <div class="avatar-preview" id="avatarPreview">
                             <i class="fas fa-user fa-3x text-muted"></i>

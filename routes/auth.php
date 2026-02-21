@@ -57,8 +57,7 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::match(['get', 'post'], 'logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
         ->name('logout');
-    
-    Route::get('logout', [AuthenticatedSessionController::class, 'destroy']);
 });
