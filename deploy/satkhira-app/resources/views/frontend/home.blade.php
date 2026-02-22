@@ -169,12 +169,12 @@
                         </div>
                     </div>
                     <div class="col-lg-3 text-center text-lg-end mt-3 mt-lg-0">
-                        <div class="d-flex flex-column gap-2 align-items-center align-items-lg-end">
-                            <button type="button" class="btn btn-ramadan btn-sm" data-bs-toggle="modal" data-bs-target="#ramadanScheduleModal">
-                                <i class="fas fa-calendar-alt me-1"></i>সময়সূচী
+                        <div class="d-flex flex-column flex-lg-row gap-2 justify-content-center justify-content-lg-end flex-wrap">
+                            <button type="button" class="btn btn-ramadan" data-bs-toggle="modal" data-bs-target="#ramadanScheduleModal">
+                                <i class="fas fa-calendar-alt me-2"></i>পুরা মাসের সময়সূচী
                             </button>
-                            <button type="button" class="btn btn-ramadan-share btn-sm" onclick="generateShareImage()">
-                                <i class="fas fa-download me-1"></i>ডাউনলোড
+                            <button type="button" class="btn btn-ramadan-share" onclick="generateShareImage()">
+                                <i class="fas fa-download me-2"></i>শেয়ার করুন
                             </button>
                         </div>
                     </div>
@@ -428,36 +428,46 @@
         background: linear-gradient(135deg, #d4af37, #c9a227);
         color: #1a472a;
         border: none;
-        padding: 8px 16px;
-        border-radius: 20px;
+        padding: 12px 25px;
+        border-radius: 25px;
         font-weight: 600;
-        font-size: 0.85rem;
         transition: all 0.3s ease;
-        box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
     }
     
     .btn-ramadan:hover {
         background: linear-gradient(135deg, #e5c158, #d4af37);
         color: #1a472a;
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
     }
     
     .btn-ramadan-share {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
         color: #fff;
-        border: 1px solid rgba(212, 175, 55, 0.6);
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: 500;
-        font-size: 0.8rem;
+        border: 2px solid #d4af37;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
         transition: all 0.3s ease;
     }
     
     .btn-ramadan-share:hover {
-        background: rgba(212, 175, 55, 0.3);
-        color: #fff;
-        border-color: #d4af37;
+        background: #d4af37;
+        color: #1a472a;
+        transform: translateY(-2px);
+    }
+    
+    @media (min-width: 992px) {
+        .btn-ramadan {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-ramadan-share {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
     }
     
     /* Modal Styles */
