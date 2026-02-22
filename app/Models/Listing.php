@@ -205,4 +205,92 @@ class Listing extends Model
     {
         return $this->approvedComments()->whereNotNull('rating')->avg('rating') ?? 0;
     }
+
+    /**
+     * Find similar/duplicate listings based on phone or title
+     */
+    public static function findSimilar($phone = null, $title = null, $categoryId = null, $excludeId = null)
+    {
+        $similar = [
+            'exact_phone' => [],
+            'similar_title' => [],
+        ];
+
+        $query = self::with(['category', 'upazila', 'user']);
+        
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        // Find exact phone matches (most reliable)
+        if ($phone) {
+            // Normalize phone - remove spaces, dashes, +88, etc
+            $normalizedPhone = preg_replace('/[^0-9]/', '', $phone);
+            if (strlen($normalizedPhone) >= 10) {
+                // Get last 10 digits
+                $phoneEnd = substr($normalizedPhone, -10);
+                
+                $phoneMatches = (clone $query)
+                    ->whereRaw("REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+88', ''), '+', '') LIKE ?", ['%' . $phoneEnd])
+                    ->where('status', '!=', 'rejected')
+                    ->get();
+                
+                $similar['exact_phone'] = $phoneMatches;
+            }
+        }
+
+        // Find similar titles (using LIKE for simple matching)
+        if ($title && strlen($title) > 5) {
+            $titleQuery = (clone $query)
+                ->where('status', '!=', 'rejected')
+                ->where(function($q) use ($title, $categoryId) {
+                    // Clean title for searching
+                    $words = array_filter(explode(' ', $title), fn($w) => strlen($w) > 3);
+                    
+                    if (count($words) >= 2) {
+                        foreach (array_slice($words, 0, 3) as $word) {
+                            $q->orWhere('title', 'like', '%' . $word . '%')
+                              ->orWhere('title_bn', 'like', '%' . $word . '%');
+                        }
+                    }
+                    
+                    // Also match if category same
+                    if ($categoryId) {
+                        $q->orWhere(function($sub) use ($title, $categoryId) {
+                            $sub->where('category_id', $categoryId)
+                                ->where(function($inner) use ($title) {
+                                    $inner->where('title', 'like', '%' . substr($title, 0, 20) . '%')
+                                          ->orWhere('title_bn', 'like', '%' . substr($title, 0, 20) . '%');
+                                });
+                        });
+                    }
+                });
+            
+            $titleMatches = $titleQuery->limit(10)->get();
+            
+            // Filter to only include reasonably similar ones
+            $similar['similar_title'] = $titleMatches->filter(function($listing) use ($title, $similar) {
+                // Don't include if already in phone matches
+                if ($similar['exact_phone']->contains('id', $listing->id)) {
+                    return false;
+                }
+                
+                // Calculate simple similarity
+                $similarity = 0;
+                similar_text(strtolower($title), strtolower($listing->title), $similarity);
+                
+                return $similarity > 50; // 50% similarity threshold
+            })->values();
+        }
+
+        return $similar;
+    }
+
+    /**
+     * Check if this listing has potential duplicates
+     */
+    public function getDuplicates()
+    {
+        return self::findSimilar($this->phone, $this->title, $this->category_id, $this->id);
+    }
 }

@@ -64,6 +64,123 @@
     </div>
     @endif
 
+    <!-- Duplicate Check Section -->
+    @php
+        $duplicates = $listing->getDuplicates();
+        $hasPhoneDuplicates = $duplicates['exact_phone']->isNotEmpty();
+        $hasTitleDuplicates = $duplicates['similar_title']->isNotEmpty();
+        $hasDuplicates = $hasPhoneDuplicates || $hasTitleDuplicates;
+    @endphp
+    
+    @if($hasDuplicates)
+    <div class="card mb-4 border-{{ $hasPhoneDuplicates ? 'danger' : 'warning' }}">
+        <div class="card-header bg-{{ $hasPhoneDuplicates ? 'danger' : 'warning' }} text-{{ $hasPhoneDuplicates ? 'white' : 'dark' }}">
+            <h5 class="mb-0">
+                <i class="fas {{ $hasPhoneDuplicates ? 'fa-copy' : 'fa-question-circle' }} me-2"></i>
+                {{ $hasPhoneDuplicates ? '⚠️ সম্ভাব্য ডুপ্লিকেট!' : 'একই রকম তথ্য পাওয়া গেছে' }}
+            </h5>
+        </div>
+        <div class="card-body">
+            @if($hasPhoneDuplicates)
+            <div class="mb-3">
+                <h6 class="text-danger"><i class="fas fa-phone me-1"></i> একই ফোন নম্বর ({{ $listing->phone }}):</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>শিরোনাম</th>
+                                <th>ক্যাটাগরি</th>
+                                <th>উপজেলা</th>
+                                <th>স্ট্যাটাস</th>
+                                <th>যুক্ত করেছেন</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($duplicates['exact_phone'] as $dup)
+                            <tr>
+                                <td>{{ $dup->title }}</td>
+                                <td>{{ $dup->category->name ?? '-' }}</td>
+                                <td>{{ $dup->upazila->name ?? 'সকল' }}</td>
+                                <td>
+                                    @if($dup->status == 'approved')
+                                        <span class="badge bg-success">অনুমোদিত</span>
+                                    @elseif($dup->status == 'pending')
+                                        <span class="badge bg-warning">পেন্ডিং</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $dup->status }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $dup->user->name ?? 'N/A' }}</td>
+                                <td>
+                                    <a href="{{ route('admin.listings.show', $dup) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if($dup->status == 'approved')
+                                        <a href="{{ route('listings.show', $dup) }}" class="btn btn-sm btn-outline-success" target="_blank">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+            
+            @if($hasTitleDuplicates)
+            <div>
+                <h6 class="text-warning"><i class="fas fa-heading me-1"></i> একই রকম শিরোনাম:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>শিরোনাম</th>
+                                <th>ফোন</th>
+                                <th>ক্যাটাগরি</th>
+                                <th>স্ট্যাটাস</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($duplicates['similar_title'] as $dup)
+                            <tr>
+                                <td>{{ $dup->title }}</td>
+                                <td>{{ $dup->phone ?? '-' }}</td>
+                                <td>{{ $dup->category->name ?? '-' }}</td>
+                                <td>
+                                    @if($dup->status == 'approved')
+                                        <span class="badge bg-success">অনুমোদিত</span>
+                                    @elseif($dup->status == 'pending')
+                                        <span class="badge bg-warning">পেন্ডিং</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $dup->status }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.listings.show', $dup) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+            
+            @if($listing->status == 'pending' && $hasPhoneDuplicates)
+            <div class="mt-3 pt-3 border-top">
+                <p class="text-muted mb-2"><i class="fas fa-info-circle me-1"></i> এটি ডুপ্লিকেট হলে, "Duplicate/ডুপ্লিকেট" কারণ দিয়ে Reject করুন।</p>
+            </div>
+            @endif
+        </div>
+    </div>
+    @endif
+
     <div class="row">
         <!-- Main Content -->
         <div class="col-lg-8">
@@ -307,6 +424,26 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label class="form-label">দ্রুত কারণ নির্বাচন করুন:</label>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm quick-reject" data-reason="ডুপ্লিকেট - এই তথ্য আগে থেকেই আমাদের পোর্টালে আছে।">
+                                <i class="fas fa-copy me-1"></i> ডুপ্লিকেট
+                            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm quick-reject" data-reason="অসম্পূর্ণ তথ্য - অনুগ্রহ করে সকল প্রয়োজনীয় তথ্য দিন।">
+                                <i class="fas fa-exclamation-circle me-1"></i> অসম্পূর্ণ
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm quick-reject" data-reason="ভুল তথ্য - দেওয়া তথ্যগুলো সঠিক নয়।">
+                                <i class="fas fa-times-circle me-1"></i> ভুল তথ্য
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm quick-reject" data-reason="ভুল ক্যাটাগরি - অনুগ্রহ করে সঠিক ক্যাটাগরি নির্বাচন করুন।">
+                                <i class="fas fa-folder-minus me-1"></i> ভুল ক্যাটাগরি
+                            </button>
+                            <button type="button" class="btn btn-outline-dark btn-sm quick-reject" data-reason="নিম্নমানের ছবি - অনুগ্রহ করে ভালো মানের স্পষ্ট ছবি দিন।">
+                                <i class="fas fa-image me-1"></i> খারাপ ছবি
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
                         <label for="rejection_reason" class="form-label">Rejection Reason</label>
                         <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3" 
                                   placeholder="Enter reason for rejection (optional)"></textarea>
@@ -320,4 +457,14 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.querySelectorAll('.quick-reject').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById('rejection_reason').value = this.dataset.reason;
+    });
+});
+</script>
+@endpush
 @endsection

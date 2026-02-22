@@ -25,10 +25,19 @@
                         <form action="{{ route('dashboard.listings.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             
+                            <!-- Duplicate Warning Alert -->
+                            <div id="duplicateWarning" class="alert alert-warning d-none mb-4" role="alert">
+                                <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>সতর্কতা: সম্ভাব্য ডুপ্লিকেট!</h6>
+                                <p class="mb-2">এই তথ্য আগে থেকেই থাকতে পারে। অনুগ্রহ করে নিচের তালিকা দেখুন:</p>
+                                <div id="duplicateList"></div>
+                                <hr>
+                                <p class="mb-0 small"><i class="fas fa-info-circle me-1"></i>যদি এটি ভিন্ন তথ্য হয়, তাহলে সাবমিট করতে পারবেন। অ্যাডমিন পর্যালোচনা করবেন।</p>
+                            </div>
+                            
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">শিরোনাম (Title) <span class="text-danger">*</span></label>
-                                    <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" 
+                                    <input type="text" name="title" id="titleInput" class="form-control @error('title') is-invalid @enderror" 
                                            value="{{ old('title') }}" required placeholder="যেমন: সাতক্ষীরা সদর হাসপাতাল">
                                     @error('title')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -130,7 +139,7 @@
                                 
                                 <div class="col-md-6">
                                     <label class="form-label">ফোন নম্বর</label>
-                                    <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" 
+                                    <input type="text" name="phone" id="phoneInput" class="form-control @error('phone') is-invalid @enderror" 
                                            value="{{ old('phone') }}" placeholder="01XXXXXXXXX">
                                     @error('phone')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -408,5 +417,96 @@ document.getElementById('imageInput').addEventListener('change', function(e) {
         reader.readAsDataURL(file);
     }
 });
+
+// Duplicate Check System
+let duplicateCheckTimeout;
+const titleInput = document.getElementById('titleInput');
+const phoneInput = document.getElementById('phoneInput');
+const duplicateWarning = document.getElementById('duplicateWarning');
+const duplicateList = document.getElementById('duplicateList');
+
+function checkDuplicates() {
+    const title = titleInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const categoryId = categorySelect.value;
+    
+    // Only check if we have phone (10+ chars) or title (6+ chars)
+    if (phone.length < 10 && title.length < 6) {
+        duplicateWarning.classList.add('d-none');
+        return;
+    }
+    
+    fetch('{{ route("dashboard.listings.check-duplicate") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            phone: phone,
+            title: title,
+            category_id: categoryId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.has_duplicates) {
+            let html = '';
+            
+            // Phone matches (most important)
+            if (data.exact_phone_matches && data.exact_phone_matches.length > 0) {
+                html += '<div class="mb-2"><strong class="text-danger"><i class="fas fa-phone me-1"></i>একই ফোন নম্বর:</strong></div>';
+                html += '<ul class="list-unstyled mb-2">';
+                data.exact_phone_matches.forEach(item => {
+                    const statusBadge = item.status === 'approved' 
+                        ? '<span class="badge bg-success">অনুমোদিত</span>'
+                        : (item.status === 'pending' ? '<span class="badge bg-warning">পেন্ডিং</span>' : '<span class="badge bg-secondary">' + item.status + '</span>');
+                    html += `<li class="mb-1 ps-3 border-start border-danger border-3">
+                        <strong>${item.title}</strong> ${statusBadge}<br>
+                        <small class="text-muted">${item.category} | ${item.upazila} | ${item.phone}</small>
+                        ${item.url ? `<a href="${item.url}" target="_blank" class="ms-2 btn btn-sm btn-outline-primary">দেখুন</a>` : ''}
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+            
+            // Title matches
+            if (data.similar_title_matches && data.similar_title_matches.length > 0) {
+                html += '<div class="mb-2"><strong class="text-warning"><i class="fas fa-heading me-1"></i>একই রকম শিরোনাম:</strong></div>';
+                html += '<ul class="list-unstyled mb-0">';
+                data.similar_title_matches.forEach(item => {
+                    const statusBadge = item.status === 'approved' 
+                        ? '<span class="badge bg-success">অনুমোদিত</span>'
+                        : (item.status === 'pending' ? '<span class="badge bg-warning">পেন্ডিং</span>' : '<span class="badge bg-secondary">' + item.status + '</span>');
+                    html += `<li class="mb-1 ps-3 border-start border-warning border-3">
+                        <strong>${item.title}</strong> ${statusBadge}<br>
+                        <small class="text-muted">${item.category} | ${item.upazila}${item.phone ? ' | ' + item.phone : ''}</small>
+                        ${item.url ? `<a href="${item.url}" target="_blank" class="ms-2 btn btn-sm btn-outline-primary">দেখুন</a>` : ''}
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+            
+            duplicateList.innerHTML = html;
+            duplicateWarning.classList.remove('d-none');
+        } else {
+            duplicateWarning.classList.add('d-none');
+        }
+    })
+    .catch(error => {
+        console.error('Duplicate check error:', error);
+    });
+}
+
+// Debounced duplicate check
+function debouncedDuplicateCheck() {
+    clearTimeout(duplicateCheckTimeout);
+    duplicateCheckTimeout = setTimeout(checkDuplicates, 800);
+}
+
+titleInput.addEventListener('input', debouncedDuplicateCheck);
+phoneInput.addEventListener('input', debouncedDuplicateCheck);
+categorySelect.addEventListener('change', debouncedDuplicateCheck);
 </script>
 @endpush

@@ -24,7 +24,16 @@ use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
+
+// Sitemap Routes (for SEO)
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap-listings.xml', [SitemapController::class, 'listings'])->name('sitemap.listings');
+Route::get('/sitemap-categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
+Route::get('/sitemap-upazilas.xml', [SitemapController::class, 'upazilas'])->name('sitemap.upazilas');
+Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
 
 // Dynamic Favicon
 Route::get('/favicon.svg', [FaviconController::class, 'svg'])->name('favicon.svg');
@@ -72,6 +81,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/listings/{listing}/edit', [UserDashboardController::class, 'editListing'])->name('dashboard.listings.edit');
     Route::put('/dashboard/listings/{listing}', [UserDashboardController::class, 'updateListing'])->name('dashboard.listings.update');
     Route::delete('/dashboard/listings/{listing}', [UserDashboardController::class, 'destroyListing'])->name('dashboard.listings.destroy');
+    Route::post('/dashboard/listings/{listing}/resubmit', [UserDashboardController::class, 'resubmitListing'])->name('dashboard.listings.resubmit');
+    
+    // Duplicate Check API
+    Route::post('/dashboard/listings/check-duplicate', [UserDashboardController::class, 'checkDuplicate'])->name('dashboard.listings.check-duplicate');
     
     // Listing Images (Offers, Promotions, Banners)
     Route::get('/dashboard/listings/{listing}/images', [ListingImageController::class, 'index'])->name('dashboard.listings.images');
@@ -86,6 +99,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/profile', [UserDashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::put('/dashboard/password', [UserDashboardController::class, 'changePassword'])->name('dashboard.password');
     
+    // Access Request
+    Route::get('/dashboard/request-access', [UserDashboardController::class, 'requestAccess'])->name('dashboard.request-access');
+    Route::post('/dashboard/request-access', [UserDashboardController::class, 'storeAccessRequest'])->name('dashboard.request-access.store');
+    
     // MP question posting
     Route::post('/mp/question', [MpController::class, 'askQuestion'])->name('mp.question');
 });
@@ -97,10 +114,21 @@ Route::post('/listing/{listing}/comment', [ListingController::class, 'storeComme
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboard::class, 'index'])->name('dashboard');
     
+    // Analytics
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+    
     // Users Management
     Route::resource('users', AdminUserController::class);
     Route::post('users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
     Route::post('users/{user}/suspend', [AdminUserController::class, 'suspend'])->name('users.suspend');
+    Route::post('users/{user}/approve-category/{category}', [AdminUserController::class, 'approveCategory'])->name('users.approve-category');
+    Route::post('users/{user}/reject-category/{category}', [AdminUserController::class, 'rejectCategory'])->name('users.reject-category');
+    Route::post('users/{user}/make-moderator', [AdminUserController::class, 'makeModerator'])->name('users.make-moderator');
+    Route::post('users/{user}/make-upazila-moderator', [AdminUserController::class, 'makeModerator'])->name('users.make-upazila-moderator');
+    Route::post('users/{user}/remove-moderator', [AdminUserController::class, 'removeModerator'])->name('users.remove-moderator');
+    Route::post('users/{user}/make-own-business-moderator', [AdminUserController::class, 'makeOwnBusinessModerator'])->name('users.make-own-business-moderator');
+    Route::post('users/{user}/remove-own-business-moderator', [AdminUserController::class, 'removeOwnBusinessModerator'])->name('users.remove-own-business-moderator');
+    Route::post('users/{user}/toggle-ad-permission', [AdminUserController::class, 'toggleAdPermission'])->name('users.toggle-ad-permission');
     
     // Upazilas Management
     Route::resource('upazilas', AdminUpazilaController::class);
@@ -119,6 +147,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('listing-images/{listingImage}', [AdminListingImageController::class, 'show'])->name('listing-images.show');
     Route::post('listing-images/{listingImage}/approve', [AdminListingImageController::class, 'approve'])->name('listing-images.approve');
     Route::post('listing-images/{listingImage}/reject', [AdminListingImageController::class, 'reject'])->name('listing-images.reject');
+    Route::post('listing-images/{listingImage}/toggle-homepage', [AdminListingImageController::class, 'toggleHomepage'])->name('listing-images.toggle-homepage');
+    Route::post('listing-images/{listingImage}/update-priority', [AdminListingImageController::class, 'updatePriority'])->name('listing-images.update-priority');
     Route::post('listing-images/bulk-approve', [AdminListingImageController::class, 'bulkApprove'])->name('listing-images.bulk-approve');
     Route::post('listing-images/bulk-reject', [AdminListingImageController::class, 'bulkReject'])->name('listing-images.bulk-reject');
     Route::delete('listing-images/{listingImage}', [AdminListingImageController::class, 'destroy'])->name('listing-images.destroy');

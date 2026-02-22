@@ -471,4 +471,55 @@ class UserDashboardController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'আপনার অ্যাক্সেস অনুরোধ পাঠানো হয়েছে। অ্যাডমিন অনুমোদনের পর আপনাকে জানানো হবে।');
     }
+
+    /**
+     * Check for duplicate/similar listings (AJAX)
+     */
+    public function checkDuplicate(Request $request)
+    {
+        $phone = $request->input('phone');
+        $title = $request->input('title');
+        $categoryId = $request->input('category_id');
+        $excludeId = $request->input('exclude_id');
+
+        $similar = Listing::findSimilar($phone, $title, $categoryId, $excludeId);
+        
+        $response = [
+            'has_duplicates' => false,
+            'exact_phone_matches' => [],
+            'similar_title_matches' => [],
+        ];
+
+        if ($similar['exact_phone']->isNotEmpty()) {
+            $response['has_duplicates'] = true;
+            $response['exact_phone_matches'] = $similar['exact_phone']->map(function($listing) {
+                return [
+                    'id' => $listing->id,
+                    'title' => $listing->title,
+                    'phone' => $listing->phone,
+                    'category' => $listing->category->name ?? 'N/A',
+                    'upazila' => $listing->upazila->name ?? 'N/A',
+                    'status' => $listing->status,
+                    'url' => $listing->status === 'approved' ? route('listings.show', $listing) : null,
+                ];
+            });
+        }
+
+        if ($similar['similar_title']->isNotEmpty()) {
+            $response['has_duplicates'] = true;
+            $response['similar_title_matches'] = $similar['similar_title']->map(function($listing) {
+                return [
+                    'id' => $listing->id,
+                    'title' => $listing->title,
+                    'phone' => $listing->phone,
+                    'category' => $listing->category->name ?? 'N/A',
+                    'upazila' => $listing->upazila->name ?? 'N/A',
+                    'status' => $listing->status,
+                    'url' => $listing->status === 'approved' ? route('listings.show', $listing) : null,
+                ];
+            });
+        }
+
+        return response()->json($response);
+    }
 }

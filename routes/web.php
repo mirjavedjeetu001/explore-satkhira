@@ -83,6 +83,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/dashboard/listings/{listing}', [UserDashboardController::class, 'destroyListing'])->name('dashboard.listings.destroy');
     Route::post('/dashboard/listings/{listing}/resubmit', [UserDashboardController::class, 'resubmitListing'])->name('dashboard.listings.resubmit');
     
+    // Duplicate Check API
+    Route::post('/dashboard/listings/check-duplicate', [UserDashboardController::class, 'checkDuplicate'])->name('dashboard.listings.check-duplicate');
+    
     // Listing Images (Offers, Promotions, Banners)
     Route::get('/dashboard/listings/{listing}/images', [ListingImageController::class, 'index'])->name('dashboard.listings.images');
     Route::get('/dashboard/listings/{listing}/images/create', [ListingImageController::class, 'create'])->name('dashboard.listings.images.create');
