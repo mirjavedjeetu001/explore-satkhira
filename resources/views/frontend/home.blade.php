@@ -76,6 +76,501 @@
         </div>
     </div>
 
+    <!-- Ramadan Sehri Iftar Section - Auto hidden after Ramadan -->
+    @php
+        // Ramadan 2026: February 19 - March 20
+        $ramadanStart = '2026-02-19';
+        $ramadanEnd = '2026-03-20';
+        $today = date('Y-m-d');
+        $isRamadan = ($today >= $ramadanStart && $today <= $ramadanEnd);
+        
+        // Sehri & Iftar times for Satkhira - Ramadan 2026
+        $ramadanSchedule = [
+            '2026-02-19' => ['day' => 1, 'sehri' => '5:14', 'iftar' => '6:06', 'bar' => 'বৃহস্পতি'],
+            '2026-02-20' => ['day' => 2, 'sehri' => '5:13', 'iftar' => '6:06', 'bar' => 'শুক্র'],
+            '2026-02-21' => ['day' => 3, 'sehri' => '5:12', 'iftar' => '6:07', 'bar' => 'শনি'],
+            '2026-02-22' => ['day' => 4, 'sehri' => '5:11', 'iftar' => '6:07', 'bar' => 'রবি'],
+            '2026-02-23' => ['day' => 5, 'sehri' => '5:10', 'iftar' => '6:08', 'bar' => 'সোম'],
+            '2026-02-24' => ['day' => 6, 'sehri' => '5:10', 'iftar' => '6:08', 'bar' => 'মঙ্গল'],
+            '2026-02-25' => ['day' => 7, 'sehri' => '5:09', 'iftar' => '6:09', 'bar' => 'বুধ'],
+            '2026-02-26' => ['day' => 8, 'sehri' => '5:08', 'iftar' => '6:09', 'bar' => 'বৃহস্পতি'],
+            '2026-02-27' => ['day' => 9, 'sehri' => '5:08', 'iftar' => '6:10', 'bar' => 'শুক্র'],
+            '2026-02-28' => ['day' => 10, 'sehri' => '5:07', 'iftar' => '6:10', 'bar' => 'শনি'],
+            '2026-03-01' => ['day' => 11, 'sehri' => '5:06', 'iftar' => '6:11', 'bar' => 'রবি'],
+            '2026-03-02' => ['day' => 12, 'sehri' => '5:06', 'iftar' => '6:11', 'bar' => 'সোম'],
+            '2026-03-03' => ['day' => 13, 'sehri' => '5:05', 'iftar' => '6:11', 'bar' => 'মঙ্গল'],
+            '2026-03-04' => ['day' => 14, 'sehri' => '5:04', 'iftar' => '6:12', 'bar' => 'বুধ'],
+            '2026-03-05' => ['day' => 15, 'sehri' => '5:03', 'iftar' => '6:12', 'bar' => 'বৃহস্পতি'],
+            '2026-03-06' => ['day' => 16, 'sehri' => '5:02', 'iftar' => '6:13', 'bar' => 'শুক্র'],
+            '2026-03-07' => ['day' => 17, 'sehri' => '5:02', 'iftar' => '6:13', 'bar' => 'শনি'],
+            '2026-03-08' => ['day' => 18, 'sehri' => '5:01', 'iftar' => '6:14', 'bar' => 'রবি'],
+            '2026-03-09' => ['day' => 19, 'sehri' => '5:00', 'iftar' => '6:14', 'bar' => 'সোম'],
+            '2026-03-10' => ['day' => 20, 'sehri' => '4:59', 'iftar' => '6:15', 'bar' => 'মঙ্গল'],
+            '2026-03-11' => ['day' => 21, 'sehri' => '4:58', 'iftar' => '6:15', 'bar' => 'বুধ'],
+            '2026-03-12' => ['day' => 22, 'sehri' => '4:57', 'iftar' => '6:16', 'bar' => 'বৃহস্পতি'],
+            '2026-03-13' => ['day' => 23, 'sehri' => '4:56', 'iftar' => '6:16', 'bar' => 'শুক্র'],
+            '2026-03-14' => ['day' => 24, 'sehri' => '4:55', 'iftar' => '6:17', 'bar' => 'শনি'],
+            '2026-03-15' => ['day' => 25, 'sehri' => '4:54', 'iftar' => '6:17', 'bar' => 'রবি'],
+            '2026-03-16' => ['day' => 26, 'sehri' => '4:53', 'iftar' => '6:18', 'bar' => 'সোম'],
+            '2026-03-17' => ['day' => 27, 'sehri' => '4:52', 'iftar' => '6:18', 'bar' => 'মঙ্গল'],
+            '2026-03-18' => ['day' => 28, 'sehri' => '4:51', 'iftar' => '6:19', 'bar' => 'বুধ'],
+            '2026-03-19' => ['day' => 29, 'sehri' => '4:50', 'iftar' => '6:19', 'bar' => 'বৃহস্পতি'],
+            '2026-03-20' => ['day' => 30, 'sehri' => '4:49', 'iftar' => '6:20', 'bar' => 'শুক্র'],
+        ];
+        
+        $todaySchedule = $ramadanSchedule[$today] ?? null;
+    @endphp
+    
+    @if($isRamadan && $todaySchedule)
+    <section class="ramadan-section py-4">
+        <div class="container">
+            <div class="ramadan-banner" data-aos="fade-up">
+                <div class="ramadan-bg-pattern"></div>
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-center text-lg-start mb-3 mb-lg-0">
+                        <div class="ramadan-title">
+                            <span class="ramadan-arabic">رمضان مبارك</span>
+                            <h3 class="mb-1">রমজান মোবারক</h3>
+                            <p class="mb-0 ramadan-day">{{ $todaySchedule['day'] }} রমজান, ১৪৪৭ হিজরী</p>
+                            <small class="text-light opacity-75">সাতক্ষীরা ও পার্শ্ববর্তী এলাকা</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="time-card sehri-card">
+                                    <div class="time-icon">
+                                        <i class="fas fa-moon"></i>
+                                    </div>
+                                    <div class="time-info">
+                                        <span class="time-label">সেহরির শেষ সময়</span>
+                                        <span class="time-value" id="sehriTime">{{ $todaySchedule['sehri'] }} AM</span>
+                                        <span class="countdown-label" id="sehriCountdown"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="time-card iftar-card">
+                                    <div class="time-icon">
+                                        <i class="fas fa-sun"></i>
+                                    </div>
+                                    <div class="time-info">
+                                        <span class="time-label">ইফতারের সময়</span>
+                                        <span class="time-value" id="iftarTime">{{ $todaySchedule['iftar'] }} PM</span>
+                                        <span class="countdown-label" id="iftarCountdown"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 text-center text-lg-end mt-3 mt-lg-0">
+                        <button type="button" class="btn btn-ramadan" data-bs-toggle="modal" data-bs-target="#ramadanScheduleModal">
+                            <i class="fas fa-calendar-alt me-2"></i>পুরা মাসের সময়সূচী
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ramadan Full Schedule Modal -->
+    <div class="modal fade" id="ramadanScheduleModal" tabindex="-1" aria-labelledby="ramadanScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content ramadan-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ramadanScheduleModalLabel">
+                        <i class="fas fa-moon me-2"></i>রমজান ১৪৪৭ হিজরী - সেহরি ও ইফতারের সময়সূচী
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ramadan-today-highlight mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 text-center">
+                                <div class="today-badge">আজকের সময়সূচী</div>
+                                <h4 class="mb-0">{{ $todaySchedule['day'] }} রমজান</h4>
+                                <small>{{ $todaySchedule['bar'] }}, {{ date('d F Y') }}</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="today-time">
+                                    <i class="fas fa-moon"></i>
+                                    <span>সেহরি: <strong>{{ $todaySchedule['sehri'] }} AM</strong></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="today-time">
+                                    <i class="fas fa-sun"></i>
+                                    <span>ইফতার: <strong>{{ $todaySchedule['iftar'] }} PM</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-ramadan">
+                            <thead>
+                                <tr>
+                                    <th>রমজান</th>
+                                    <th>তারিখ</th>
+                                    <th>বার</th>
+                                    <th>সেহরি</th>
+                                    <th>ইফতার</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($ramadanSchedule as $date => $schedule)
+                                    <tr class="{{ $date == $today ? 'today-row' : '' }}">
+                                        <td><strong>{{ $schedule['day'] }}</strong></td>
+                                        <td>{{ date('d M', strtotime($date)) }}</td>
+                                        <td>{{ $schedule['bar'] }}</td>
+                                        <td><i class="fas fa-moon text-primary me-1"></i>{{ $schedule['sehri'] }}</td>
+                                        <td><i class="fas fa-sun text-warning me-1"></i>{{ $schedule['iftar'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="ramadan-dua mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="dua-card">
+                                    <h6><i class="fas fa-hands-praying me-2"></i>রোজার নিয়ত</h6>
+                                    <p class="arabic-text">نَوَيْتُ اَنْ اَصُوْمَ غَدًا مِنْ شَهْرِ رَمَضَانَ الْمُبٰرَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّىْ اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْم</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="dua-card">
+                                    <h6><i class="fas fa-utensils me-2"></i>ইফতারের দোয়া</h6>
+                                    <p class="arabic-text">اَللّٰهُمَّ لَكَ صُمْتُ وَعَلٰى رِزْقِكَ اَفْطَرْتُ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <small class="text-muted">সাতক্ষীরা ও পার্শ্ববর্তী এলাকার জন্য প্রযোজ্য</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    /* Ramadan Section Styles */
+    .ramadan-section {
+        background: linear-gradient(135deg, #1a472a 0%, #2d5016 50%, #1a472a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ramadan-banner {
+        background: linear-gradient(135deg, rgba(26, 71, 42, 0.9), rgba(45, 80, 22, 0.9));
+        border-radius: 20px;
+        padding: 25px 30px;
+        position: relative;
+        border: 2px solid rgba(212, 175, 55, 0.3);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .ramadan-bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='rgba(212,175,55,0.05)'/%3E%3C/svg%3E");
+        opacity: 0.5;
+        border-radius: 20px;
+    }
+    
+    .ramadan-title {
+        position: relative;
+        z-index: 1;
+        color: #fff;
+    }
+    
+    .ramadan-arabic {
+        font-family: 'Amiri', serif;
+        font-size: 1.8rem;
+        color: #d4af37;
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .ramadan-title h3 {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+    
+    .ramadan-day {
+        color: #d4af37;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .time-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease;
+    }
+    
+    .time-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .sehri-card {
+        background: linear-gradient(135deg, rgba(63, 81, 181, 0.3), rgba(48, 63, 159, 0.3));
+    }
+    
+    .iftar-card {
+        background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(245, 124, 0, 0.3));
+    }
+    
+    .time-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .sehri-card .time-icon {
+        background: linear-gradient(135deg, #3f51b5, #303f9f);
+        color: #fff;
+    }
+    
+    .iftar-card .time-icon {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+        color: #fff;
+    }
+    
+    .time-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .time-label {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .time-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    
+    .countdown-label {
+        font-size: 0.8rem;
+        color: #d4af37;
+        font-weight: 500;
+    }
+    
+    .btn-ramadan {
+        background: linear-gradient(135deg, #d4af37, #c9a227);
+        color: #1a472a;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    }
+    
+    .btn-ramadan:hover {
+        background: linear-gradient(135deg, #e5c158, #d4af37);
+        color: #1a472a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    }
+    
+    /* Modal Styles */
+    .ramadan-modal .modal-content {
+        background: linear-gradient(135deg, #1a472a, #2d5016);
+        border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .ramadan-modal .modal-header {
+        background: rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        color: #d4af37;
+    }
+    
+    .ramadan-modal .modal-body {
+        color: #fff;
+    }
+    
+    .ramadan-modal .modal-footer {
+        border-top: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .ramadan-today-highlight {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .today-badge {
+        background: #d4af37;
+        color: #1a472a;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .today-time {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1.1rem;
+    }
+    
+    .today-time i {
+        font-size: 1.5rem;
+        color: #d4af37;
+    }
+    
+    .table-ramadan {
+        color: #fff;
+    }
+    
+    .table-ramadan thead th {
+        background: rgba(212, 175, 55, 0.2);
+        color: #d4af37;
+        border-color: rgba(212, 175, 55, 0.3);
+        font-weight: 600;
+    }
+    
+    .table-ramadan tbody td {
+        border-color: rgba(255, 255, 255, 0.1);
+        vertical-align: middle;
+    }
+    
+    .table-ramadan .today-row {
+        background: rgba(212, 175, 55, 0.2) !important;
+    }
+    
+    .table-ramadan .today-row td {
+        color: #d4af37;
+        font-weight: 600;
+    }
+    
+    .dua-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    
+    .dua-card h6 {
+        color: #d4af37;
+        margin-bottom: 10px;
+    }
+    
+    .arabic-text {
+        font-family: 'Amiri', serif;
+        font-size: 1.1rem;
+        line-height: 2;
+        text-align: right;
+        direction: rtl;
+        margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .ramadan-banner {
+            padding: 20px;
+        }
+        
+        .ramadan-arabic {
+            font-size: 1.4rem;
+        }
+        
+        .ramadan-title h3 {
+            font-size: 1.2rem;
+        }
+        
+        .time-value {
+            font-size: 1.1rem;
+        }
+        
+        .time-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .btn-ramadan {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Today's times
+        const sehriTime = '{{ $todaySchedule['sehri'] ?? '5:00' }}';
+        const iftarTime = '{{ $todaySchedule['iftar'] ?? '6:00' }}';
+        
+        function updateCountdown() {
+            const now = new Date();
+            const today = now.toDateString();
+            
+            // Parse sehri time (AM)
+            const [sehriHour, sehriMin] = sehriTime.split(':').map(Number);
+            const sehriDate = new Date(today + ' ' + sehriHour + ':' + sehriMin + ':00');
+            
+            // Parse iftar time (PM - add 12 hours)
+            const [iftarHour, iftarMin] = iftarTime.split(':').map(Number);
+            const iftarDate = new Date(today + ' ' + (iftarHour + 12) + ':' + iftarMin + ':00');
+            
+            const sehriCountdownEl = document.getElementById('sehriCountdown');
+            const iftarCountdownEl = document.getElementById('iftarCountdown');
+            
+            // Sehri countdown
+            if (now < sehriDate) {
+                const diff = sehriDate - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                sehriCountdownEl.textContent = 'বাকি ' + hours + ' ঘণ্টা ' + mins + ' মিনিট';
+            } else {
+                sehriCountdownEl.textContent = 'সেহরি শেষ';
+            }
+            
+            // Iftar countdown
+            if (now < iftarDate) {
+                const diff = iftarDate - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                iftarCountdownEl.textContent = 'বাকি ' + hours + ' ঘণ্টা ' + mins + ' মিনিট';
+            } else {
+                iftarCountdownEl.textContent = 'ইফতার শেষ';
+            }
+        }
+        
+        // Update countdown every minute
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+    });
+    </script>
+    @endif
+
     <!-- Categories Section -->
     <section class="py-5">
         <div class="container">

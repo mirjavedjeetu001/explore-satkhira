@@ -212,8 +212,8 @@ class Listing extends Model
     public static function findSimilar($phone = null, $title = null, $categoryId = null, $excludeId = null)
     {
         $similar = [
-            'exact_phone' => [],
-            'similar_title' => [],
+            'exact_phone' => collect(),
+            'similar_title' => collect(),
         ];
 
         $query = self::with(['category', 'upazila', 'user']);
