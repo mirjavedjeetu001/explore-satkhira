@@ -41,7 +41,34 @@
             background: linear-gradient(180deg, #1a3c34 0%, #0d1f1a 100%);
             z-index: 1000;
             overflow-y: auto;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        
+        .sidebar.collapsed .sidebar-brand a span,
+        .sidebar.collapsed .nav-title,
+        .sidebar.collapsed .nav-link span,
+        .sidebar.collapsed .nav-link .badge {
+            display: none;
+        }
+        
+        .sidebar.collapsed .sidebar-brand a {
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+            font-size: 1.2rem;
         }
         
         .sidebar-brand {
@@ -97,7 +124,11 @@
         .main-content {
             margin-left: 260px;
             min-height: 100vh;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+        }
+        
+        .main-content.expanded {
+            margin-left: 70px;
         }
         
         /* Top Navbar */
@@ -226,9 +257,56 @@
                 transform: translateX(0);
             }
             
-            .main-content {
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .main-content,
+            .main-content.expanded {
                 margin-left: 0;
             }
+        }
+        
+        /* Sidebar Toggle Button */
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            color: #495057;
+            font-size: 1.2rem;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-toggle-btn:hover {
+            color: #28a745;
+        }
+
+        /* Pagination Fix */
+        .pagination {
+            margin-bottom: 0;
+            flex-wrap: wrap;
+        }
+        .pagination .page-item .page-link {
+            color: #28a745;
+            border-color: #dee2e6;
+            padding: 8px 14px;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #e9ecef;
+            color: #1a5f2a;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+        nav[aria-label="Pagination Navigation"] svg {
+            width: 18px;
+            height: 18px;
         }
     </style>
     
@@ -239,32 +317,42 @@
     <aside class="sidebar">
         <div class="sidebar-brand">
             <a href="{{ route('admin.dashboard') }}">
-                <i class="fas fa-leaf me-2"></i>Satkhira Admin
+                <i class="fas fa-leaf me-2"></i><span>{{ $adminSiteName }} Admin</span>
             </a>
         </div>
         
         <nav class="sidebar-nav">
             <div class="nav-title">Main</div>
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+                <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-line"></i> <span>Analytics</span>
             </a>
             
             <div class="nav-title">Content Management</div>
             <a href="{{ route('admin.upazilas.index') }}" class="nav-link {{ request()->routeIs('admin.upazilas.*') ? 'active' : '' }}">
-                <i class="fas fa-map-marker-alt"></i> Upazilas
+                <i class="fas fa-map-marker-alt"></i> <span>Upazilas</span>
             </a>
             <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i> Categories
+                <i class="fas fa-th-large"></i> <span>Categories</span>
             </a>
             <a href="{{ route('admin.listings.index') }}" class="nav-link {{ request()->routeIs('admin.listings.*') ? 'active' : '' }}">
-                <i class="fas fa-list"></i> Listings
+                <i class="fas fa-list"></i> <span>Listings</span>
                 @php $pendingListings = \App\Models\Listing::pending()->count(); @endphp
                 @if($pendingListings > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingListings }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.listing-images.index') }}" class="nav-link {{ request()->routeIs('admin.listing-images.*') ? 'active' : '' }}">
+                <i class="fas fa-ad"></i> <span>Ads/Offers</span>
+                @php $pendingImages = \App\Models\ListingImage::pending()->count(); @endphp
+                @if($pendingImages > 0)
+                    <span class="badge bg-warning text-dark">{{ $pendingImages }}</span>
+                @endif
+            </a>
             <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">
-                <i class="fas fa-comments"></i> Comments
+                <i class="fas fa-comments"></i> <span>Comments</span>
                 @php $pendingComments = \App\Models\Comment::pending()->count(); @endphp
                 @if($pendingComments > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingComments }}</span>
@@ -273,10 +361,10 @@
             
             <div class="nav-title">MP Section</div>
             <a href="{{ route('admin.mp-profiles.index') }}" class="nav-link {{ request()->routeIs('admin.mp-profiles.*') ? 'active' : '' }}">
-                <i class="fas fa-user-tie"></i> MP Profiles
+                <i class="fas fa-user-tie"></i> <span>MP Profiles</span>
             </a>
             <a href="{{ route('admin.mp-questions.index') }}" class="nav-link {{ request()->routeIs('admin.mp-questions.*') ? 'active' : '' }}">
-                <i class="fas fa-question-circle"></i> MP Questions
+                <i class="fas fa-question-circle"></i> <span>MP Questions</span>
                 @php $pendingQuestions = \App\Models\MpQuestion::pending()->count(); @endphp
                 @if($pendingQuestions > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingQuestions }}</span>
@@ -285,37 +373,37 @@
             
             <div class="nav-title">Appearance</div>
             <a href="{{ route('admin.sliders.index') }}" class="nav-link {{ request()->routeIs('admin.sliders.*') ? 'active' : '' }}">
-                <i class="fas fa-images"></i> Sliders
+                <i class="fas fa-images"></i> <span>Sliders</span>
             </a>
             <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
-                <i class="fas fa-newspaper"></i> News & Events
+                <i class="fas fa-newspaper"></i> <span>News & Events</span>
             </a>
             
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i> Users
+                <i class="fas fa-users"></i> <span>Users</span>
                 @php $pendingUsers = \App\Models\User::pending()->count(); @endphp
                 @if($pendingUsers > 0)
                     <span class="badge bg-warning text-dark">{{ $pendingUsers }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.team.index') }}" class="nav-link {{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i> Team Members
+                <i class="fas fa-users-cog"></i> <span>Team Members</span>
             </a>
             <a href="{{ route('admin.contacts.index') }}" class="nav-link {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
-                <i class="fas fa-envelope"></i> Contact Messages
+                <i class="fas fa-envelope"></i> <span>Contact Messages</span>
                 @php $unreadContacts = \App\Models\Contact::unread()->count(); @endphp
                 @if($unreadContacts > 0)
                     <span class="badge bg-danger">{{ $unreadContacts }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.settings.general') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cog"></i> Settings
+                <i class="fas fa-cog"></i> <span>Settings</span>
             </a>
             
             <div class="nav-title">Quick Links</div>
             <a href="{{ route('home') }}" class="nav-link" target="_blank">
-                <i class="fas fa-external-link-alt"></i> View Website
+                <i class="fas fa-external-link-alt"></i> <span>View Website</span>
             </a>
         </nav>
     </aside>
@@ -325,7 +413,7 @@
         <!-- Top Navbar -->
         <nav class="top-navbar d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <button class="btn btn-link d-lg-none me-3" id="sidebarToggle">
+                <button class="sidebar-toggle-btn me-3" id="sidebarToggle" title="Toggle Sidebar">
                     <i class="fas fa-bars"></i>
                 </button>
                 <span class="navbar-title">@yield('title', 'Dashboard')</span>
@@ -386,8 +474,36 @@
     
     <script>
         // Sidebar Toggle
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('show');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        
+        // Check localStorage for sidebar state
+        if (localStorage.getItem('sidebarCollapsed') === 'true' && window.innerWidth > 992) {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+        }
+        
+        sidebarToggle?.addEventListener('click', function() {
+            if (window.innerWidth <= 992) {
+                // Mobile: show/hide sidebar
+                sidebar.classList.toggle('show');
+            } else {
+                // Desktop: collapse/expand sidebar
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                // Save state to localStorage
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            }
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 992 && sidebar.classList.contains('show')) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
         });
     </script>
     

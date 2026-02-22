@@ -317,7 +317,7 @@
     <aside class="sidebar">
         <div class="sidebar-brand">
             <a href="{{ route('admin.dashboard') }}">
-                <i class="fas fa-leaf me-2"></i><span>Satkhira Admin</span>
+                <i class="fas fa-leaf me-2"></i><span>{{ $adminSiteName }} Admin</span>
             </a>
         </div>
         
