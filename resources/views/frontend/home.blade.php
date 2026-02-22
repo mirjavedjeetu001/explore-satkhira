@@ -169,14 +169,22 @@
                         </div>
                     </div>
                     <div class="col-lg-3 text-center text-lg-end mt-3 mt-lg-0">
-                        <button type="button" class="btn btn-ramadan" data-bs-toggle="modal" data-bs-target="#ramadanScheduleModal">
-                            <i class="fas fa-calendar-alt me-2"></i>পুরা মাসের সময়সূচী
-                        </button>
+                        <div class="d-flex flex-column flex-lg-row gap-2 justify-content-center justify-content-lg-end">
+                            <button type="button" class="btn btn-ramadan" data-bs-toggle="modal" data-bs-target="#ramadanScheduleModal">
+                                <i class="fas fa-calendar-alt me-2"></i>পুরা মাসের সময়সূচী
+                            </button>
+                            <button type="button" class="btn btn-ramadan-share" onclick="generateShareImage()">
+                                <i class="fas fa-download me-2"></i>শেয়ার করুন
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Hidden canvas for image generation -->
+    <canvas id="shareCanvas" style="display: none;" width="800" height="500"></canvas>
 
     <!-- Ramadan Full Schedule Modal -->
     <div class="modal fade" id="ramadanScheduleModal" tabindex="-1" aria-labelledby="ramadanScheduleModalLabel" aria-hidden="true">
@@ -434,6 +442,22 @@
         box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
     }
     
+    .btn-ramadan-share {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border: 2px solid #d4af37;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-ramadan-share:hover {
+        background: #d4af37;
+        color: #1a472a;
+        transform: translateY(-2px);
+    }
+    
     /* Modal Styles */
     .ramadan-modal .modal-content {
         background: #fff;
@@ -653,6 +677,136 @@
         // Update countdown every minute
         setInterval(updateCountdown, 60000);
     });
+    
+    // Generate shareable image
+    function generateShareImage() {
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Canvas dimensions
+        const width = 800;
+        const height = 500;
+        
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, '#1a472a');
+        gradient.addColorStop(0.5, '#2d5016');
+        gradient.addColorStop(1, '#1a472a');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Add decorative border
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(20, 20, width - 40, height - 40);
+        
+        // Inner border
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(35, 35, width - 70, height - 70);
+        
+        // Arabic text - Ramadan Mubarak
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 36px Amiri, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('رمضان مبارك', width / 2, 90);
+        
+        // Bengali title
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 32px Hind Siliguri, sans-serif';
+        ctx.fillText('রমজান মোবারক ১৪৪৭ হিজরী', width / 2, 140);
+        
+        // Today's date
+        const ramadanDay = '{{ $todaySchedule['day'] ?? 1 }}';
+        const todayBar = '{{ $todaySchedule['bar'] ?? 'রবি' }}';
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 28px Hind Siliguri, sans-serif';
+        ctx.fillText(ramadanDay + ' রমজান - ' + todayBar, width / 2, 185);
+        
+        // Separator line
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(200, 210);
+        ctx.lineTo(600, 210);
+        ctx.stroke();
+        
+        // Sehri box
+        const boxY = 240;
+        const boxHeight = 100;
+        
+        // Sehri background
+        ctx.fillStyle = 'rgba(63, 81, 181, 0.4)';
+        roundRect(ctx, 80, boxY, 280, boxHeight, 15);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        roundRect(ctx, 80, boxY, 280, boxHeight, 15);
+        ctx.stroke();
+        
+        // Sehri text
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '18px Hind Siliguri, sans-serif';
+        ctx.fillText('সেহরির শেষ সময়', 220, boxY + 35);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Hind Siliguri, sans-serif';
+        ctx.fillText('{{ $todaySchedule['sehri'] ?? '5:00' }} AM', 220, boxY + 78);
+        
+        // Iftar background
+        ctx.fillStyle = 'rgba(255, 152, 0, 0.4)';
+        roundRect(ctx, 440, boxY, 280, boxHeight, 15);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        roundRect(ctx, 440, boxY, 280, boxHeight, 15);
+        ctx.stroke();
+        
+        // Iftar text
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '18px Hind Siliguri, sans-serif';
+        ctx.fillText('ইফতারের সময়', 580, boxY + 35);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Hind Siliguri, sans-serif';
+        ctx.fillText('{{ $todaySchedule['iftar'] ?? '6:00' }} PM', 580, boxY + 78);
+        
+        // Location text
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '18px Hind Siliguri, sans-serif';
+        ctx.fillText('📍 সাতক্ষীরা ও পার্শ্ববর্তী এলাকার জন্য প্রযোজ্য', width / 2, 385);
+        
+        // Website URL
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 24px Hind Siliguri, sans-serif';
+        ctx.fillText('🌐 exploresatkhira.com', width / 2, 430);
+        
+        // Date
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '16px Hind Siliguri, sans-serif';
+        ctx.fillText(dateStr, width / 2, 465);
+        
+        // Download the image
+        const link = document.createElement('a');
+        link.download = 'ramadan-sehri-iftar-' + ramadanDay + '-satkhira.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+    
+    // Helper function to draw rounded rectangle
+    function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
     </script>
     @endif
 
