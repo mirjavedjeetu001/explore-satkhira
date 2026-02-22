@@ -425,29 +425,44 @@
     
     /* Modal Styles */
     .ramadan-modal .modal-content {
-        background: linear-gradient(135deg, #1a472a, #2d5016);
-        border: 2px solid rgba(212, 175, 55, 0.3);
+        background: #fff;
+        border: 2px solid #1a472a;
     }
     
     .ramadan-modal .modal-header {
-        background: rgba(212, 175, 55, 0.1);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        background: linear-gradient(135deg, #1a472a, #2d5016);
+        border-bottom: 2px solid #d4af37;
+        color: #fff;
+    }
+    
+    .ramadan-modal .modal-header .modal-title {
         color: #d4af37;
     }
     
     .ramadan-modal .modal-body {
-        color: #fff;
+        color: #333;
+        background: #fefefe;
     }
     
     .ramadan-modal .modal-footer {
-        border-top: 1px solid rgba(212, 175, 55, 0.3);
+        border-top: 1px solid #ddd;
+        background: #f8f9fa;
     }
     
     .ramadan-today-highlight {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+        background: linear-gradient(135deg, #1a472a, #2d5016);
         border-radius: 15px;
         padding: 20px;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 2px solid #d4af37;
+        color: #fff;
+    }
+    
+    .ramadan-today-highlight h4 {
+        color: #fff;
+    }
+    
+    .ramadan-today-highlight small {
+        color: rgba(255, 255, 255, 0.8);
     }
     
     .today-badge {
@@ -467,6 +482,7 @@
         justify-content: center;
         gap: 10px;
         font-size: 1.1rem;
+        color: #fff;
     }
     
     .today-time i {
@@ -475,40 +491,50 @@
     }
     
     .table-ramadan {
-        color: #fff;
+        color: #333;
     }
     
     .table-ramadan thead th {
-        background: rgba(212, 175, 55, 0.2);
-        color: #d4af37;
-        border-color: rgba(212, 175, 55, 0.3);
+        background: #1a472a;
+        color: #fff;
+        border-color: #1a472a;
         font-weight: 600;
+    }
+    
+    .table-ramadan tbody tr {
+        background: #fff;
+    }
+    
+    .table-ramadan tbody tr:nth-child(even) {
+        background: #f8f9fa;
     }
     
     .table-ramadan tbody td {
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: #dee2e6;
         vertical-align: middle;
+        color: #333;
     }
     
     .table-ramadan .today-row {
-        background: rgba(212, 175, 55, 0.2) !important;
+        background: #fff3cd !important;
     }
     
     .table-ramadan .today-row td {
-        color: #d4af37;
-        font-weight: 600;
+        color: #1a472a;
+        font-weight: 700;
     }
     
     .dua-card {
-        background: rgba(255, 255, 255, 0.1);
+        background: #f8f9fa;
         border-radius: 10px;
         padding: 15px;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 1px solid #1a472a;
     }
     
     .dua-card h6 {
-        color: #d4af37;
+        color: #1a472a;
         margin-bottom: 10px;
+        font-weight: 600;
     }
     
     .arabic-text {
@@ -518,6 +544,7 @@
         text-align: right;
         direction: rtl;
         margin: 0;
+        color: #333;
     }
     
     @media (max-width: 768px) {
