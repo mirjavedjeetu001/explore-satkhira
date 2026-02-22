@@ -137,6 +137,7 @@
                                 <span>এখন সময়: </span>
                                 <span id="currentTime" class="current-time-value">--:--:--</span>
                             </div>
+                            <small class="location-note d-block mt-2"><i class="fas fa-map-marker-alt me-1"></i>সাতক্ষীরা ও পার্শ্ববর্তী এলাকার জন্য</small>
                         </div>
                     </div>
                     <div class="col-lg-5">
@@ -335,6 +336,16 @@
         font-size: 1.1rem;
         color: #d4af37;
         font-family: monospace;
+    }
+    
+    .location-note {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .location-note i {
+        color: #d4af37;
     }
     
     .time-card {
