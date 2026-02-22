@@ -184,7 +184,7 @@
     </section>
 
     <!-- Hidden canvas for image generation -->
-    <canvas id="shareCanvas" style="display: none;" width="800" height="500"></canvas>
+    <canvas id="shareCanvas" style="display: none;" width="800" height="550"></canvas>
 
     <!-- Ramadan Full Schedule Modal -->
     <div class="modal fade" id="ramadanScheduleModal" tabindex="-1" aria-labelledby="ramadanScheduleModalLabel" aria-hidden="true">
@@ -693,116 +693,251 @@
     // Generate shareable image
     function generateShareImage() {
         const canvas = document.getElementById('shareCanvas');
+        canvas.width = 800;
+        canvas.height = 550;
         const ctx = canvas.getContext('2d');
         
         // Canvas dimensions
         const width = 800;
-        const height = 500;
+        const height = 550;
         
         // Create gradient background
         const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, '#1a472a');
-        gradient.addColorStop(0.5, '#2d5016');
-        gradient.addColorStop(1, '#1a472a');
+        gradient.addColorStop(0, '#0d3320');
+        gradient.addColorStop(0.3, '#1a472a');
+        gradient.addColorStop(0.7, '#1a472a');
+        gradient.addColorStop(1, '#0d3320');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
         
-        // Add decorative border
+        // Add decorative pattern overlay
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.03)';
+        for (let i = 0; i < 20; i++) {
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            ctx.beginPath();
+            ctx.arc(x, y, Math.random() * 30 + 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Outer golden border with shadow effect
+        ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+        ctx.shadowBlur = 15;
         ctx.strokeStyle = '#d4af37';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(20, 20, width - 40, height - 40);
+        ctx.lineWidth = 6;
+        roundRect(ctx, 15, 15, width - 30, height - 30, 15);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
         
-        // Inner border
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(35, 35, width - 70, height - 70);
+        // Inner decorative border
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, 30, 30, width - 60, height - 60, 10);
+        ctx.stroke();
         
-        // Arabic text - Ramadan Mubarak
+        // Draw crescent moon
         ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 36px Amiri, serif';
+        ctx.beginPath();
+        ctx.arc(130, 75, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#1a472a';
+        ctx.beginPath();
+        ctx.arc(145, 70, 28, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw stars
+        ctx.fillStyle = '#d4af37';
+        drawStar(ctx, 90, 55, 5, 8, 4);
+        drawStar(ctx, 710, 60, 5, 10, 5);
+        drawStar(ctx, 680, 90, 5, 6, 3);
+        drawStar(ctx, 100, 100, 5, 5, 2.5);
+        
+        // Arabic text - Ramadan Mubarak (centered)
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 40px Amiri, serif';
         ctx.textAlign = 'center';
-        ctx.fillText('رمضان مبارك', width / 2, 90);
+        ctx.fillText('رمضان مبارك', width / 2, 85);
         
         // Bengali title
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 32px Hind Siliguri, sans-serif';
-        ctx.fillText('রমজান মোবারক ১৪৪৭ হিজরী', width / 2, 140);
+        ctx.font = 'bold 30px Hind Siliguri, sans-serif';
+        ctx.fillText('রমজান মোবারক ১৪৪৭ হিজরী', width / 2, 130);
         
-        // Today's date
+        // Today's Ramadan day badge
         const ramadanDay = '{{ $todaySchedule['day'] ?? 1 }}';
         const todayBar = '{{ $todaySchedule['bar'] ?? 'রবি' }}';
-        ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 28px Hind Siliguri, sans-serif';
-        ctx.fillText(ramadanDay + ' রমজান - ' + todayBar, width / 2, 185);
         
-        // Separator line
+        // Day badge background
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.2)';
+        roundRect(ctx, width/2 - 100, 145, 200, 35, 17);
+        ctx.fill();
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 1;
+        roundRect(ctx, width/2 - 100, 145, 200, 35, 17);
+        ctx.stroke();
+        
+        ctx.fillStyle = '#d4af37';
+        ctx.font = 'bold 20px Hind Siliguri, sans-serif';
+        ctx.fillText(ramadanDay + ' রমজান - ' + todayBar, width / 2, 170);
+        
+        // Decorative line with dots
         ctx.strokeStyle = '#d4af37';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(200, 210);
-        ctx.lineTo(600, 210);
+        ctx.moveTo(150, 200);
+        ctx.lineTo(350, 200);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(450, 200);
+        ctx.lineTo(650, 200);
         ctx.stroke();
         
-        // Sehri box
-        const boxY = 240;
-        const boxHeight = 100;
+        // Center diamond
+        ctx.fillStyle = '#d4af37';
+        ctx.beginPath();
+        ctx.moveTo(400, 193);
+        ctx.lineTo(410, 200);
+        ctx.lineTo(400, 207);
+        ctx.lineTo(390, 200);
+        ctx.closePath();
+        ctx.fill();
         
-        // Sehri background
-        ctx.fillStyle = 'rgba(63, 81, 181, 0.4)';
-        roundRect(ctx, 80, boxY, 280, boxHeight, 15);
+        // Time cards
+        const boxY = 225;
+        const boxHeight = 115;
+        const boxWidth = 300;
+        
+        // Sehri card with gradient
+        const sehriGrad = ctx.createLinearGradient(70, boxY, 70, boxY + boxHeight);
+        sehriGrad.addColorStop(0, 'rgba(63, 81, 181, 0.5)');
+        sehriGrad.addColorStop(1, 'rgba(48, 63, 159, 0.5)');
+        ctx.fillStyle = sehriGrad;
+        roundRect(ctx, 70, boxY, boxWidth, boxHeight, 15);
         ctx.fill();
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 2;
-        roundRect(ctx, 80, boxY, 280, boxHeight, 15);
+        roundRect(ctx, 70, boxY, boxWidth, boxHeight, 15);
         ctx.stroke();
+        
+        // Moon icon for Sehri
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(110, boxY + 40, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = sehriGrad;
+        ctx.beginPath();
+        ctx.arc(120, boxY + 35, 16, 0, Math.PI * 2);
+        ctx.fill();
         
         // Sehri text
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.font = '18px Hind Siliguri, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.font = '16px Hind Siliguri, sans-serif';
+        ctx.textAlign = 'center';
         ctx.fillText('সেহরির শেষ সময়', 220, boxY + 35);
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 36px Hind Siliguri, sans-serif';
-        ctx.fillText('{{ $todaySchedule['sehri'] ?? '5:00' }} AM', 220, boxY + 78);
+        ctx.font = 'bold 42px Hind Siliguri, sans-serif';
+        ctx.fillText('{{ $todaySchedule['sehri'] ?? '5:00' }} AM', 220, boxY + 85);
         
-        // Iftar background
-        ctx.fillStyle = 'rgba(255, 152, 0, 0.4)';
-        roundRect(ctx, 440, boxY, 280, boxHeight, 15);
+        // Iftar card with gradient
+        const iftarGrad = ctx.createLinearGradient(430, boxY, 430, boxY + boxHeight);
+        iftarGrad.addColorStop(0, 'rgba(255, 152, 0, 0.5)');
+        iftarGrad.addColorStop(1, 'rgba(245, 124, 0, 0.5)');
+        ctx.fillStyle = iftarGrad;
+        roundRect(ctx, 430, boxY, boxWidth, boxHeight, 15);
         ctx.fill();
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 2;
-        roundRect(ctx, 440, boxY, 280, boxHeight, 15);
+        roundRect(ctx, 430, boxY, boxWidth, boxHeight, 15);
         ctx.stroke();
         
+        // Sun icon for Iftar
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(470, boxY + 40, 15, 0, Math.PI * 2);
+        ctx.fill();
+        // Sun rays
+        for (let i = 0; i < 8; i++) {
+            const angle = (i * Math.PI) / 4;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(470 + Math.cos(angle) * 20, boxY + 40 + Math.sin(angle) * 20);
+            ctx.lineTo(470 + Math.cos(angle) * 28, boxY + 40 + Math.sin(angle) * 28);
+            ctx.stroke();
+        }
+        
         // Iftar text
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.font = '18px Hind Siliguri, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.font = '16px Hind Siliguri, sans-serif';
+        ctx.textAlign = 'center';
         ctx.fillText('ইফতারের সময়', 580, boxY + 35);
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 36px Hind Siliguri, sans-serif';
-        ctx.fillText('{{ $todaySchedule['iftar'] ?? '6:00' }} PM', 580, boxY + 78);
+        ctx.font = 'bold 42px Hind Siliguri, sans-serif';
+        ctx.fillText('{{ $todaySchedule['iftar'] ?? '6:00' }} PM', 580, boxY + 85);
         
-        // Location text
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.font = '18px Hind Siliguri, sans-serif';
-        ctx.fillText('📍 সাতক্ষীরা ও পার্শ্ববর্তী এলাকার জন্য প্রযোজ্য', width / 2, 385);
+        // Location with icon
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '16px Hind Siliguri, sans-serif';
+        ctx.fillText('📍 সাতক্ষীরা ও পার্শ্ববর্তী এলাকার জন্য প্রযোজ্য', width / 2, 380);
         
-        // Website URL
+        // Website URL box
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
+        roundRect(ctx, width/2 - 140, 400, 280, 45, 22);
+        ctx.fill();
+        ctx.strokeStyle = '#d4af37';
+        ctx.lineWidth = 2;
+        roundRect(ctx, width/2 - 140, 400, 280, 45, 22);
+        ctx.stroke();
+        
         ctx.fillStyle = '#d4af37';
-        ctx.font = 'bold 24px Hind Siliguri, sans-serif';
+        ctx.font = 'bold 22px Hind Siliguri, sans-serif';
         ctx.fillText('🌐 exploresatkhira.com', width / 2, 430);
         
         // Date
         const today = new Date();
         const dateStr = today.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.font = '16px Hind Siliguri, sans-serif';
-        ctx.fillText(dateStr, width / 2, 465);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '14px Hind Siliguri, sans-serif';
+        ctx.fillText(dateStr, width / 2, 475);
+        
+        // Bottom decorative line
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(200, 495);
+        ctx.lineTo(600, 495);
+        ctx.stroke();
         
         // Download the image
         const link = document.createElement('a');
         link.download = 'ramadan-sehri-iftar-' + ramadanDay + '-satkhira.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+    }
+    
+    // Helper function to draw star
+    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+        let rot = Math.PI / 2 * 3;
+        let x = cx;
+        let y = cy;
+        const step = Math.PI / spikes;
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerRadius);
+        for (let i = 0; i < spikes; i++) {
+            x = cx + Math.cos(rot) * outerRadius;
+            y = cy + Math.sin(rot) * outerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+            
+            x = cx + Math.cos(rot) * innerRadius;
+            y = cy + Math.sin(rot) * innerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+        }
+        ctx.lineTo(cx, cy - outerRadius);
+        ctx.closePath();
+        ctx.fill();
     }
     
     // Helper function to draw rounded rectangle
