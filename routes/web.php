@@ -143,6 +143,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('listing-images/{listingImage}', [AdminListingImageController::class, 'show'])->name('listing-images.show');
     Route::post('listing-images/{listingImage}/approve', [AdminListingImageController::class, 'approve'])->name('listing-images.approve');
     Route::post('listing-images/{listingImage}/reject', [AdminListingImageController::class, 'reject'])->name('listing-images.reject');
+    Route::post('listing-images/{listingImage}/toggle-homepage', [AdminListingImageController::class, 'toggleHomepage'])->name('listing-images.toggle-homepage');
+    Route::post('listing-images/{listingImage}/update-priority', [AdminListingImageController::class, 'updatePriority'])->name('listing-images.update-priority');
     Route::post('listing-images/bulk-approve', [AdminListingImageController::class, 'bulkApprove'])->name('listing-images.bulk-approve');
     Route::post('listing-images/bulk-reject', [AdminListingImageController::class, 'bulkReject'])->name('listing-images.bulk-reject');
     Route::delete('listing-images/{listingImage}', [AdminListingImageController::class, 'destroy'])->name('listing-images.destroy');

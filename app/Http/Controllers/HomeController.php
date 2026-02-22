@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Models\ListingImage;
 use App\Models\MpProfile;
 use App\Models\News;
 use App\Models\Slider;
@@ -50,6 +51,12 @@ class HomeController extends Controller
 
         $mpProfiles = MpProfile::active()->orderBy('constituency')->take(4)->get();
 
+        // Homepage promotional ads
+        $homepageAds = ListingImage::homepage()
+            ->with('listing')
+            ->take(6)
+            ->get();
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -57,7 +64,8 @@ class HomeController extends Controller
             'featuredListings',
             'latestListings',
             'latestNews',
-            'mpProfiles'
+            'mpProfiles',
+            'homepageAds'
         ));
     }
 }

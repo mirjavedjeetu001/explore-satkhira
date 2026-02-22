@@ -344,6 +344,13 @@
                     <span class="badge bg-warning text-dark">{{ $pendingListings }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.listing-images.index') }}" class="nav-link {{ request()->routeIs('admin.listing-images.*') ? 'active' : '' }}">
+                <i class="fas fa-ad"></i> <span>Ads/Offers</span>
+                @php $pendingImages = \App\Models\ListingImage::pending()->count(); @endphp
+                @if($pendingImages > 0)
+                    <span class="badge bg-warning text-dark">{{ $pendingImages }}</span>
+                @endif
+            </a>
             <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">
                 <i class="fas fa-comments"></i> <span>Comments</span>
                 @php $pendingComments = \App\Models\Comment::pending()->count(); @endphp

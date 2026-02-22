@@ -121,7 +121,7 @@
                                         <i class="fas fa-info-circle"></i>
                                     </button>
                                 @endif
-                                <a href="{{ route('listings.show', $listing) }}" class="btn btn-info" title="View" target="_blank">
+                                <a href="{{ route('admin.listings.show', $listing) }}" class="btn btn-info" title="View">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a href="{{ route('admin.listings.edit', $listing) }}" class="btn btn-primary" title="Edit">

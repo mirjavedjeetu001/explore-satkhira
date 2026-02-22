@@ -172,6 +172,43 @@
         </div>
     </section>
 
+    <!-- Promotional Ads Section -->
+    @if($homepageAds->count() > 0)
+    <section class="py-4 promotional-ads-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-up">
+                <h5 class="mb-0"><i class="fas fa-bullhorn text-warning me-2"></i>{{ app()->getLocale() == 'bn' ? 'বিজ্ঞাপন' : 'Promotions' }}</h5>
+                @if($homepageAds->count() > 4)
+                <div class="ad-nav-btns">
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick="scrollAds('left')"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="scrollAds('right')"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                @endif
+            </div>
+            
+            <div class="ad-slider-wrapper" id="adSlider">
+                <div class="ad-slider d-flex gap-3">
+                    @foreach($homepageAds as $ad)
+                        <div class="ad-card-mini flex-shrink-0">
+                            <a href="{{ route('listings.show', $ad->listing) }}" class="text-decoration-none">
+                                <div class="ad-card-inner">
+                                    <span class="ad-badge-mini">AD</span>
+                                    <img src="{{ asset('storage/' . $ad->image) }}" 
+                                         class="ad-img-mini" 
+                                         alt="{{ $ad->title ?? ($ad->listing?->title ?? 'Advertisement') }}">
+                                    <div class="ad-info-mini">
+                                        <p class="ad-title-mini mb-0">{{ Str::limit($ad->title ?? ($ad->listing?->title ?? ''), 30) }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Featured Listings -->
     @if($featuredListings->count() > 0)
     <section class="py-5">
@@ -473,5 +510,102 @@ function flipCategories() {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+
+/* Promotional Ads Section - Mini Card Slider */
+.promotional-ads-section {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border-top: 3px solid #ffc107;
+    border-bottom: 3px solid #ffc107;
+}
+
+.ad-slider-wrapper {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.ad-slider-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.ad-card-mini {
+    width: 180px;
+    min-width: 180px;
+}
+
+.ad-card-inner {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.ad-card-inner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.ad-badge-mini {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    z-index: 5;
+}
+
+.ad-img-mini {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.ad-info-mini {
+    padding: 8px;
+    background: #fff;
+}
+
+.ad-title-mini {
+    font-size: 0.75rem;
+    color: #333;
+    font-weight: 500;
+    line-height: 1.3;
+    height: 2.6em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+@media (max-width: 768px) {
+    .ad-card-mini {
+        width: 150px;
+        min-width: 150px;
+    }
+    .ad-img-mini {
+        height: 100px;
+    }
+}
 </style>
+@endpush
+
+@push('scripts')
+<script>
+function scrollAds(direction) {
+    const slider = document.getElementById('adSlider');
+    const scrollAmount = 200;
+    if (direction === 'left') {
+        slider.scrollLeft -= scrollAmount;
+    } else {
+        slider.scrollLeft += scrollAmount;
+    }
+}
+</script>
 @endpush

@@ -63,6 +63,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Volunteer Organizations', 'name_bn' => 'স্বেচ্ছাসেবী সংগঠন', 'icon' => 'fa-hands-helping', 'color' => '#e83e8c', 'description' => 'NGOs and volunteer groups'],
             ['name' => 'Joruri Sheba', 'name_bn' => 'জরুরি সেবা', 'icon' => 'fa-phone-volume', 'color' => '#dc3545', 'description' => 'Emergency services and helplines'],
             ['name' => 'Samajik Songothon', 'name_bn' => 'সামাজিক সংগঠন', 'icon' => 'fa-people-group', 'color' => '#9c27b0', 'description' => 'Social organizations and community groups'],
+            ['name' => 'Transport', 'name_bn' => 'পরিবহন', 'icon' => 'fa-bus', 'color' => '#ff5722', 'description' => 'গাড়ি/বাস/যানবাহন - কোথা থেকে ছাড়ে, কোথায় যায়'],
         ];
 
         foreach ($categories as $index => $category) {

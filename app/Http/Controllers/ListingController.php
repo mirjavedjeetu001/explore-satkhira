@@ -48,7 +48,7 @@ class ListingController extends Controller
         }
 
         $listing->incrementViews();
-        $listing->load(['category', 'upazila', 'user', 'approvedComments' => function ($q) {
+        $listing->load(['category', 'upazila', 'user.role', 'approvedBy.role', 'approvedComments' => function ($q) {
             $q->parentComments()->with('replies')->latest();
         }]);
 

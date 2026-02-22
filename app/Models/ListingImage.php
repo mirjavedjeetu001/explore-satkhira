@@ -21,16 +21,20 @@ class ListingImage extends Model
         'position',
         'display_size',
         'status',
+        'rejection_reason',
         'valid_from',
         'valid_until',
         'sort_order',
         'is_active',
+        'show_on_homepage',
+        'homepage_priority',
     ];
 
     protected $casts = [
         'valid_from' => 'date',
         'valid_until' => 'date',
         'is_active' => 'boolean',
+        'show_on_homepage' => 'boolean',
     ];
 
     // Image types
@@ -182,6 +186,16 @@ class ListingImage extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderBy('created_at', 'desc');
+    }
+
+    public function scopeHomepage($query)
+    {
+        return $query->where('show_on_homepage', true)
+                     ->approved()
+                     ->active()
+                     ->valid()
+                     ->orderBy('homepage_priority', 'desc')
+                     ->orderBy('created_at', 'desc');
     }
 
     // Accessors

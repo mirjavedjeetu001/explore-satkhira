@@ -405,10 +405,69 @@
                         @endif
                     </div>
                     <div class="card-footer bg-transparent">
-                        <small class="text-muted">
-                            <i class="fas fa-user me-1"></i>যোগ করেছেন: {{ $listing->user->name ?? 'Admin' }} | 
-                            <i class="fas fa-calendar me-1"></i>{{ $listing->created_at->format('d M, Y') }}
-                        </small>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-1">
+                                    <i class="fas fa-user-plus text-primary me-1"></i><strong>তথ্য যোগ করেছেন:</strong>
+                                </small>
+                                <div class="d-flex align-items-center">
+                                    @if($listing->user)
+                                        <img src="{{ $listing->user->avatar ? asset('storage/' . $listing->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($listing->user->name) . '&background=28a745&color=fff&size=36' }}" 
+                                             class="rounded-circle me-2" width="36" height="36" alt="{{ $listing->user->name }}">
+                                        <div>
+                                            <span class="fw-semibold">{{ $listing->user->name }}</span>
+                                            @if($listing->user->role && in_array($listing->user->role->slug, ['admin', 'super-admin']))
+                                                <span class="badge bg-danger ms-1">অ্যাডমিন</span>
+                                            @elseif($listing->user->is_upazila_moderator)
+                                                <span class="badge bg-success ms-1">উপজেলা মডারেটর</span>
+                                            @elseif($listing->user->is_own_business_moderator)
+                                                <span class="badge bg-info ms-1">ব্যবসা মডারেটর</span>
+                                            @else
+                                                <span class="badge bg-secondary ms-1">সদস্য</span>
+                                            @endif
+                                            @if($listing->user->phone)
+                                                <br><small class="text-muted"><i class="fas fa-phone me-1"></i>{{ $listing->user->phone }}</small>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <img src="https://ui-avatars.com/api/?name=Admin&background=dc3545&color=fff&size=36" 
+                                             class="rounded-circle me-2" width="36" height="36" alt="Admin">
+                                        <span>Admin</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                <small class="text-muted d-block mb-1">
+                                    <i class="fas fa-check-circle text-success me-1"></i><strong>অনুমোদন করেছেন:</strong>
+                                </small>
+                                <div class="d-flex align-items-center justify-content-md-end">
+                                    @if($listing->approvedBy)
+                                        <img src="{{ $listing->approvedBy->avatar ? asset('storage/' . $listing->approvedBy->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($listing->approvedBy->name) . '&background=dc3545&color=fff&size=36' }}" 
+                                             class="rounded-circle me-2" width="36" height="36" alt="{{ $listing->approvedBy->name }}">
+                                        <div>
+                                            <span class="fw-semibold">{{ $listing->approvedBy->name }}</span>
+                                            @if($listing->approvedBy->role && in_array($listing->approvedBy->role->slug, ['admin', 'super-admin']))
+                                                <span class="badge bg-danger ms-1">অ্যাডমিন</span>
+                                            @elseif($listing->approvedBy->is_upazila_moderator)
+                                                <span class="badge bg-success ms-1">উপজেলা মডারেটর</span>
+                                            @endif
+                                            @if($listing->approved_at)
+                                                <br><small class="text-muted"><i class="fas fa-calendar me-1"></i>{{ $listing->approved_at->format('d M, Y') }}</small>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <img src="https://ui-avatars.com/api/?name=Admin&background=dc3545&color=fff&size=36" 
+                                             class="rounded-circle me-2" width="36" height="36" alt="Admin">
+                                        <span class="text-muted">Admin</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>তথ্য যোগের তারিখ: {{ $listing->created_at->format('d M, Y h:i A') }}
+                            </small>
+                        </div>
                     </div>
                 </div>
                 
