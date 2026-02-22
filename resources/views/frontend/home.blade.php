@@ -232,7 +232,7 @@
                             </thead>
                             <tbody>
                                 @foreach($ramadanSchedule as $date => $schedule)
-                                    <tr class="{{ $date == $today ? 'today-row' : '' }}">
+                                    <tr data-ramadan-day="{{ $schedule['day'] }}" data-date="{{ $date }}">
                                         <td><strong>{{ $schedule['day'] }}</strong></td>
                                         <td>{{ date('d M', strtotime($date)) }}</td>
                                         <td>{{ $schedule['bar'] }}</td>
@@ -654,9 +654,211 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Today's times
+        // Today's times from server
         const sehriTime = '{{ $todaySchedule['sehri'] ?? '5:00' }}';
         const iftarTime = '{{ $todaySchedule['iftar'] ?? '6:00' }}';
+        const serverDate = '{{ date('Y-m-d') }}';
+        
+        // Full Ramadan schedule for auto-update
+        const ramadanSchedule = {
+            '2026-02-19': {day: 1, sehri: '5:14', iftar: '6:06', bar: 'বৃহস্পতি'},
+            '2026-02-20': {day: 2, sehri: '5:13', iftar: '6:06', bar: 'শুক্র'},
+            '2026-02-21': {day: 3, sehri: '5:12', iftar: '6:07', bar: 'শনি'},
+            '2026-02-22': {day: 4, sehri: '5:11', iftar: '6:07', bar: 'রবি'},
+            '2026-02-23': {day: 5, sehri: '5:10', iftar: '6:08', bar: 'সোম'},
+            '2026-02-24': {day: 6, sehri: '5:10', iftar: '6:08', bar: 'মঙ্গল'},
+            '2026-02-25': {day: 7, sehri: '5:09', iftar: '6:09', bar: 'বুধ'},
+            '2026-02-26': {day: 8, sehri: '5:08', iftar: '6:09', bar: 'বৃহস্পতি'},
+            '2026-02-27': {day: 9, sehri: '5:08', iftar: '6:10', bar: 'শুক্র'},
+            '2026-02-28': {day: 10, sehri: '5:07', iftar: '6:10', bar: 'শনি'},
+            '2026-03-01': {day: 11, sehri: '5:06', iftar: '6:11', bar: 'রবি'},
+            '2026-03-02': {day: 12, sehri: '5:06', iftar: '6:11', bar: 'সোম'},
+            '2026-03-03': {day: 13, sehri: '5:05', iftar: '6:11', bar: 'মঙ্গল'},
+            '2026-03-04': {day: 14, sehri: '5:04', iftar: '6:12', bar: 'বুধ'},
+            '2026-03-05': {day: 15, sehri: '5:03', iftar: '6:12', bar: 'বৃহস্পতি'},
+            '2026-03-06': {day: 16, sehri: '5:02', iftar: '6:13', bar: 'শুক্র'},
+            '2026-03-07': {day: 17, sehri: '5:02', iftar: '6:13', bar: 'শনি'},
+            '2026-03-08': {day: 18, sehri: '5:01', iftar: '6:14', bar: 'রবি'},
+            '2026-03-09': {day: 19, sehri: '5:00', iftar: '6:14', bar: 'সোম'},
+            '2026-03-10': {day: 20, sehri: '4:59', iftar: '6:15', bar: 'মঙ্গল'},
+            '2026-03-11': {day: 21, sehri: '4:58', iftar: '6:15', bar: 'বুধ'},
+            '2026-03-12': {day: 22, sehri: '4:57', iftar: '6:16', bar: 'বৃহস্পতি'},
+            '2026-03-13': {day: 23, sehri: '4:56', iftar: '6:16', bar: 'শুক্র'},
+            '2026-03-14': {day: 24, sehri: '4:55', iftar: '6:17', bar: 'শনি'},
+            '2026-03-15': {day: 25, sehri: '4:54', iftar: '6:17', bar: 'রবি'},
+            '2026-03-16': {day: 26, sehri: '4:53', iftar: '6:18', bar: 'সোম'},
+            '2026-03-17': {day: 27, sehri: '4:52', iftar: '6:18', bar: 'মঙ্গল'},
+            '2026-03-18': {day: 28, sehri: '4:51', iftar: '6:19', bar: 'বুধ'},
+            '2026-03-19': {day: 29, sehri: '4:50', iftar: '6:19', bar: 'বৃহস্পতি'},
+            '2026-03-20': {day: 30, sehri: '4:49', iftar: '6:20', bar: 'শুক্র'},
+        };
+        
+        // Track if we've already updated today
+        let hasUpdatedToday = false;
+        
+        // Get current date string in YYYY-MM-DD format
+        function getCurrentDateString() {
+            const now = new Date();
+            return now.getFullYear() + '-' + 
+                   String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(now.getDate()).padStart(2, '0');
+        }
+        
+        // Update the display without page reload
+        function updateRamadanDisplay() {
+            const currentDate = getCurrentDateString();
+            const schedule = ramadanSchedule[currentDate];
+            
+            if (schedule) {
+                // Update Ramadan day
+                const dayEl = document.querySelector('.ramadan-day');
+                if (dayEl) {
+                    dayEl.textContent = schedule.day + ' রমজান, ১৪৪৭ হিজরী';
+                }
+                
+                // Update Sehri time
+                const sehriEl = document.getElementById('sehriTime');
+                if (sehriEl) {
+                    sehriEl.textContent = schedule.sehri + ' AM';
+                }
+                
+                // Update Iftar time
+                const iftarEl = document.getElementById('iftarTime');
+                if (iftarEl) {
+                    iftarEl.textContent = schedule.iftar + ' PM';
+                }
+                
+                // Update modal today highlight
+                const modalDayEl = document.querySelector('.ramadan-today-highlight h4');
+                if (modalDayEl) {
+                    modalDayEl.innerHTML = '<i class="fas fa-star text-warning me-2"></i>আজ: ' + schedule.day + ' রমজান (' + schedule.bar + ')';
+                }
+                
+                // Update today's times in modal
+                const modalSehriEl = document.querySelector('.ramadan-today-highlight .row .col-6:first-child h5');
+                if (modalSehriEl) {
+                    modalSehriEl.textContent = schedule.sehri + ' AM';
+                }
+                const modalIftarEl = document.querySelector('.ramadan-today-highlight .row .col-6:last-child h5');
+                if (modalIftarEl) {
+                    modalIftarEl.textContent = schedule.iftar + ' PM';
+                }
+                
+                // Update table row highlighting
+                updateTableHighlight(schedule.day);
+                
+                hasUpdatedToday = true;
+                console.log('রমজান দিন আপডেট হয়েছে: ' + schedule.day + ' রমজান');
+            }
+        }
+        
+        // Update table row highlighting
+        function updateTableHighlight(ramadanDay) {
+            // Remove existing highlight
+            document.querySelectorAll('.table-ramadan tbody tr').forEach(row => {
+                row.classList.remove('today-row');
+            });
+            // Add highlight to current day
+            const currentRow = document.querySelector('.table-ramadan tbody tr[data-ramadan-day="' + ramadanDay + '"]');
+            if (currentRow) {
+                currentRow.classList.add('today-row');
+            }
+        }
+        
+        // Initial table highlight on page load
+        function initTableHighlight() {
+            const now = new Date();
+            const currentDate = getCurrentDateString();
+            
+            // Check if we're past Iftar+10min - show tomorrow
+            const [iftarHour, iftarMin] = iftarTime.split(':').map(Number);
+            const iftarPlusTen = new Date();
+            iftarPlusTen.setHours(iftarHour + 12, iftarMin + 10, 0, 0);
+            
+            let dayToHighlight;
+            if (now >= iftarPlusTen) {
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.getFullYear() + '-' + 
+                               String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(tomorrow.getDate()).padStart(2, '0');
+                const tomorrowSchedule = ramadanSchedule[tomorrowStr];
+                dayToHighlight = tomorrowSchedule ? tomorrowSchedule.day : ramadanSchedule[currentDate]?.day;
+            } else {
+                dayToHighlight = ramadanSchedule[currentDate]?.day;
+            }
+            
+            if (dayToHighlight) {
+                updateTableHighlight(dayToHighlight);
+            }
+        }
+        
+        // Check if we need to update to next day
+        function checkForDayChange() {
+            const now = new Date();
+            const currentDate = getCurrentDateString();
+            
+            // If server date is different from current date, update display
+            if (serverDate !== currentDate && !hasUpdatedToday) {
+                updateRamadanDisplay();
+                return;
+            }
+            
+            // Check if it's 10 minutes after Iftar
+            const [iftarHour, iftarMin] = iftarTime.split(':').map(Number);
+            const iftarPlusTen = new Date();
+            iftarPlusTen.setHours(iftarHour + 12, iftarMin + 10, 0, 0); // PM so add 12
+            
+            // If current time is past Iftar + 10 mins, and we haven't updated yet
+            if (now >= iftarPlusTen && !hasUpdatedToday) {
+                // Get tomorrow's date
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.getFullYear() + '-' + 
+                                   String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+                                   String(tomorrow.getDate()).padStart(2, '0');
+                
+                const tomorrowSchedule = ramadanSchedule[tomorrowStr];
+                if (tomorrowSchedule) {
+                    // Update display to tomorrow's times
+                    const dayEl = document.querySelector('.ramadan-day');
+                    if (dayEl) {
+                        dayEl.textContent = tomorrowSchedule.day + ' রমজান, ১৪৪৭ হিজরী';
+                    }
+                    
+                    const sehriEl = document.getElementById('sehriTime');
+                    if (sehriEl) {
+                        sehriEl.textContent = tomorrowSchedule.sehri + ' AM';
+                    }
+                    
+                    const iftarEl = document.getElementById('iftarTime');
+                    if (iftarEl) {
+                        iftarEl.textContent = tomorrowSchedule.iftar + ' PM';
+                    }
+                    
+                    // Update countdown label
+                    const sehriCountdownEl = document.getElementById('sehriCountdown');
+                    if (sehriCountdownEl) {
+                        sehriCountdownEl.textContent = 'আগামীকালের সেহরি';
+                    }
+                    const iftarCountdownEl = document.getElementById('iftarCountdown');
+                    if (iftarCountdownEl) {
+                        iftarCountdownEl.textContent = 'আগামীকালের ইফতার';
+                    }
+                    
+                    // Update table row highlighting
+                    updateTableHighlight(tomorrowSchedule.day);
+                    
+                    hasUpdatedToday = true;
+                    console.log('ইফতারের পর আপডেট: ' + tomorrowSchedule.day + ' রমজান');
+                }
+            }
+            
+            // Also check at midnight - reload page to get fresh data
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                location.reload();
+            }
+        }
         
         // Update current time display
         function updateCurrentTime() {
@@ -670,19 +872,48 @@
                               mins.toString().padStart(2, '0') + ':' + 
                               secs.toString().padStart(2, '0') + ' ' + ampm;
             document.getElementById('currentTime').textContent = timeString;
+            
+            // Check for day change every second
+            checkForDayChange();
         }
         
         function updateCountdown() {
             const now = new Date();
+            const currentDate = getCurrentDateString();
+            
+            // Get current schedule (might be tomorrow after iftar)
+            let scheduleDate = currentDate;
+            const [iftarHour, iftarMin] = iftarTime.split(':').map(Number);
+            const iftarPlusTen = new Date();
+            iftarPlusTen.setHours(iftarHour + 12, iftarMin + 10, 0, 0);
+            
+            if (now >= iftarPlusTen) {
+                // Use tomorrow's schedule for countdown
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                scheduleDate = tomorrow.getFullYear() + '-' + 
+                              String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(tomorrow.getDate()).padStart(2, '0');
+            }
+            
+            const schedule = ramadanSchedule[scheduleDate] || ramadanSchedule[currentDate];
+            if (!schedule) return;
+            
             const today = now.toDateString();
             
-            // Parse sehri time (AM)
-            const [sehriHour, sehriMin] = sehriTime.split(':').map(Number);
-            const sehriDate = new Date(today + ' ' + sehriHour + ':' + sehriMin + ':00');
+            // Parse sehri time (AM) - for tomorrow if after iftar
+            const [sehriHour, sehriMin] = schedule.sehri.split(':').map(Number);
+            let sehriDate = new Date(today + ' ' + sehriHour + ':' + sehriMin + ':00');
+            if (now >= iftarPlusTen) {
+                sehriDate.setDate(sehriDate.getDate() + 1);
+            }
             
             // Parse iftar time (PM - add 12 hours)
-            const [iftarHour, iftarMin] = iftarTime.split(':').map(Number);
-            const iftarDate = new Date(today + ' ' + (iftarHour + 12) + ':' + iftarMin + ':00');
+            const [scheduleIftarHour, scheduleIftarMin] = schedule.iftar.split(':').map(Number);
+            let iftarDate = new Date(today + ' ' + (scheduleIftarHour + 12) + ':' + scheduleIftarMin + ':00');
+            if (now >= iftarPlusTen) {
+                iftarDate.setDate(iftarDate.getDate() + 1);
+            }
             
             const sehriCountdownEl = document.getElementById('sehriCountdown');
             const iftarCountdownEl = document.getElementById('iftarCountdown');
@@ -693,12 +924,22 @@
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 sehriCountdownEl.textContent = 'বাকি ' + hours + ' ঘণ্টা ' + mins + ' মিনিট';
+            } else if (now >= iftarPlusTen) {
+                const diff = sehriDate - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                sehriCountdownEl.textContent = 'বাকি ' + hours + ' ঘণ্টা ' + mins + ' মিনিট';
             } else {
                 sehriCountdownEl.textContent = 'সেহরি শেষ';
             }
             
             // Iftar countdown
-            if (now < iftarDate) {
+            if (now < iftarDate && now < iftarPlusTen) {
+                const diff = iftarDate - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                iftarCountdownEl.textContent = 'বাকি ' + hours + ' ঘণ্টা ' + mins + ' মিনিট';
+            } else if (now >= iftarPlusTen) {
                 const diff = iftarDate - now;
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -711,8 +952,10 @@
         // Initial updates
         updateCurrentTime();
         updateCountdown();
+        checkForDayChange();
+        initTableHighlight();
         
-        // Update current time every second
+        // Update current time every second (also checks for day change)
         setInterval(updateCurrentTime, 1000);
         // Update countdown every minute
         setInterval(updateCountdown, 60000);
@@ -728,6 +971,34 @@
         // Canvas dimensions
         const width = 800;
         const height = 550;
+        
+        // Get current displayed schedule from the page
+        const ramadanDayEl = document.querySelector('.ramadan-day');
+        const sehriEl = document.getElementById('sehriTime');
+        const iftarEl = document.getElementById('iftarTime');
+        
+        // Parse current day from display
+        let ramadanDay = '{{ $todaySchedule['day'] ?? 1 }}';
+        let todayBar = '{{ $todaySchedule['bar'] ?? 'রবি' }}';
+        let sehriTime = '{{ $todaySchedule['sehri'] ?? '5:00' }}';
+        let iftarTime = '{{ $todaySchedule['iftar'] ?? '6:00' }}';
+        
+        // Update from displayed values if available
+        if (ramadanDayEl) {
+            const dayText = ramadanDayEl.textContent;
+            const match = dayText.match(/(\d+)/);
+            if (match) ramadanDay = match[1];
+        }
+        if (sehriEl) {
+            sehriTime = sehriEl.textContent.replace(' AM', '');
+        }
+        if (iftarEl) {
+            iftarTime = iftarEl.textContent.replace(' PM', '');
+        }
+        
+        // Get bar from schedule
+        const barMap = {1:'বৃহস্পতি',2:'শুক্র',3:'শনি',4:'রবি',5:'সোম',6:'মঙ্গল',7:'বুধ',8:'বৃহস্পতি',9:'শুক্র',10:'শনি',11:'রবি',12:'সোম',13:'মঙ্গল',14:'বুধ',15:'বৃহস্পতি',16:'শুক্র',17:'শনি',18:'রবি',19:'সোম',20:'মঙ্গল',21:'বুধ',22:'বৃহস্পতি',23:'শুক্র',24:'শনি',25:'রবি',26:'সোম',27:'মঙ্গল',28:'বুধ',29:'বৃহস্পতি',30:'শুক্র'};
+        todayBar = barMap[parseInt(ramadanDay)] || todayBar;
         
         // Create gradient background
         const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -790,10 +1061,6 @@
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 30px Hind Siliguri, sans-serif';
         ctx.fillText('রমজান মোবারক ১৪৪৭ হিজরী', width / 2, 130);
-        
-        // Today's Ramadan day badge
-        const ramadanDay = '{{ $todaySchedule['day'] ?? 1 }}';
-        const todayBar = '{{ $todaySchedule['bar'] ?? 'রবি' }}';
         
         // Day badge background
         ctx.fillStyle = 'rgba(212, 175, 55, 0.2)';
@@ -864,7 +1131,7 @@
         ctx.fillText('সেহরির শেষ সময়', 220, boxY + 35);
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 42px Hind Siliguri, sans-serif';
-        ctx.fillText('{{ $todaySchedule['sehri'] ?? '5:00' }} AM', 220, boxY + 85);
+        ctx.fillText(sehriTime + ' AM', 220, boxY + 85);
         
         // Iftar card with gradient
         const iftarGrad = ctx.createLinearGradient(430, boxY, 430, boxY + boxHeight);
@@ -901,7 +1168,7 @@
         ctx.fillText('ইফতারের সময়', 580, boxY + 35);
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 42px Hind Siliguri, sans-serif';
-        ctx.fillText('{{ $todaySchedule['iftar'] ?? '6:00' }} PM', 580, boxY + 85);
+        ctx.fillText(iftarTime + ' PM', 580, boxY + 85);
         
         // Location with icon
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
