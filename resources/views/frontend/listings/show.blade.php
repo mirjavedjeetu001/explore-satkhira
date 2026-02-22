@@ -273,6 +273,77 @@
                             </div>
                         @endif
                         
+                        <!-- Job Circular Specific Information -->
+                        @if($listing->category_id == 21 && $listing->application_deadline)
+                            <div class="border-top pt-4 mb-4">
+                                <h5 class="mb-3"><i class="fas fa-briefcase text-primary me-2"></i>চাকরির তথ্য</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calendar-alt text-danger me-3"></i>
+                                            <div>
+                                                <strong>আবেদনের শেষ তারিখ</strong>
+                                                <p class="mb-0 {{ $listing->application_deadline->isPast() ? 'text-danger' : 'text-success' }} fw-bold">
+                                                    {{ $listing->application_deadline->format('d/m/Y') }}
+                                                    @if($listing->application_deadline->isPast())
+                                                        <span class="badge bg-danger ms-2">মেয়াদ শেষ</span>
+                                                    @elseif($listing->application_deadline->diffInDays(now()) <= 7)
+                                                        <span class="badge bg-warning text-dark ms-2">{{ $listing->application_deadline->diffInDays(now()) }} দিন বাকি</span>
+                                                    @endif
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        
+                        <!-- Events Specific Information -->
+                        @if($listing->category_id == 22)
+                            <div class="border-top pt-4 mb-4">
+                                <h5 class="mb-3"><i class="fas fa-calendar-check text-info me-2"></i>ইভেন্টের তথ্য</h5>
+                                @if($listing->isEventEnded())
+                                    <div class="alert alert-secondary mb-3">
+                                        <i class="fas fa-check-circle me-2"></i>এই ইভেন্ট সমাপ্ত হয়েছে
+                                    </div>
+                                @elseif($listing->isEventOngoing())
+                                    <div class="alert alert-success mb-3">
+                                        <i class="fas fa-play-circle me-2"></i>এই ইভেন্ট চলছে
+                                    </div>
+                                @elseif($listing->isEventUpcoming())
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-clock me-2"></i>এই ইভেন্ট আসছে
+                                    </div>
+                                @endif
+                                <div class="row g-3">
+                                    @if($listing->event_start_date)
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar-plus text-success me-3"></i>
+                                                <div>
+                                                    <strong>শুরুর তারিখ</strong>
+                                                    <p class="mb-0 fw-bold">{{ $listing->event_start_date->format('d/m/Y') }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if($listing->event_end_date)
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar-minus text-danger me-3"></i>
+                                                <div>
+                                                    <strong>শেষের তারিখ</strong>
+                                                    <p class="mb-0 {{ $listing->event_end_date->isPast() ? 'text-muted' : 'fw-bold' }}">
+                                                        {{ $listing->event_end_date->format('d/m/Y') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                        
                         <!-- Contact Info -->
                         <div class="border-top pt-4">
                             <h5 class="mb-3"><i class="fas fa-address-card text-success me-2"></i>যোগাযোগের তথ্য</h5>

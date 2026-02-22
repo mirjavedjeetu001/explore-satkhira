@@ -82,7 +82,25 @@ class ListingController extends Controller
             'price_to' => 'nullable|numeric|min:0',
             'status' => 'required|in:pending,approved,rejected',
             'is_featured' => 'boolean',
+            'application_deadline' => 'nullable|date',
+            'event_start_date' => 'nullable|date',
+            'event_end_date' => 'nullable|date|after_or_equal:event_start_date',
         ]);
+
+        // Require deadline for Job Circular category (id = 21)
+        if ($request->category_id == 21 && empty($request->application_deadline)) {
+            return back()->withErrors(['application_deadline' => 'চাকরির বিজ্ঞপ্তির জন্য আবেদনের শেষ তারিখ আবশ্যক।'])->withInput();
+        }
+
+        // Require dates for Events category (id = 22)
+        if ($request->category_id == 22) {
+            if (empty($request->event_start_date)) {
+                return back()->withErrors(['event_start_date' => 'ইভেন্টের জন্য শুরুর তারিখ আবশ্যক।'])->withInput();
+            }
+            if (empty($request->event_end_date)) {
+                return back()->withErrors(['event_end_date' => 'ইভেন্টের জন্য শেষের তারিখ আবশ্যক।'])->withInput();
+            }
+        }
 
         $validated['user_id'] = auth()->id();
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
@@ -157,7 +175,27 @@ class ListingController extends Controller
             'chamber_time' => 'nullable|string|max:255',
             'visit_fee' => 'nullable|string|max:100',
             'serial_number' => 'nullable|string|max:50',
+            // Job Circular deadline
+            'application_deadline' => 'nullable|date',
+            // Event dates
+            'event_start_date' => 'nullable|date',
+            'event_end_date' => 'nullable|date|after_or_equal:event_start_date',
         ]);
+
+        // Require deadline for Job Circular category (id = 21)
+        if ($request->category_id == 21 && empty($request->application_deadline)) {
+            return back()->withErrors(['application_deadline' => 'চাকরির বিজ্ঞপ্তির জন্য আবেদনের শেষ তারিখ আবশ্যক।'])->withInput();
+        }
+
+        // Require dates for Events category (id = 22)
+        if ($request->category_id == 22) {
+            if (empty($request->event_start_date)) {
+                return back()->withErrors(['event_start_date' => 'ইভেন্টের জন্য শুরুর তারিখ আবশ্যক।'])->withInput();
+            }
+            if (empty($request->event_end_date)) {
+                return back()->withErrors(['event_end_date' => 'ইভেন্টের জন্য শেষের তারিখ আবশ্যক।'])->withInput();
+            }
+        }
 
         // Handle multiple images (replaces all existing images)
         if ($request->hasFile('images')) {

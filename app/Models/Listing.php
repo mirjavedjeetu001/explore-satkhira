@@ -42,6 +42,9 @@ class Listing extends Model
         'rejection_reason',
         'rejected_at',
         'rejected_by',
+        'application_deadline',
+        'event_start_date',
+        'event_end_date',
     ];
 
     protected $casts = [
@@ -56,6 +59,9 @@ class Listing extends Model
         'price_to' => 'decimal:2',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'application_deadline' => 'date',
+        'event_start_date' => 'date',
+        'event_end_date' => 'date',
     ];
 
     public function user(): BelongsTo
@@ -119,6 +125,19 @@ class Listing extends Model
         return $query->where('status', 'approved');
     }
 
+    /**
+     * Scope to filter out expired job circulars (category_id = 21)
+     * Job circulars with past deadline are hidden, other categories unaffected
+     */
+    public function scopeNotExpired($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('category_id', '!=', 21) // Not a job circular
+              ->orWhereNull('application_deadline') // No deadline set
+              ->orWhere('application_deadline', '>=', now()->toDateString()); // Deadline not passed
+        });
+    }
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
@@ -127,6 +146,39 @@ class Listing extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    /**
+     * Check if event has ended (for Events category)
+     */
+    public function isEventEnded(): bool
+    {
+        if ($this->category_id != 22 || !$this->event_end_date) {
+            return false;
+        }
+        return $this->event_end_date->isPast();
+    }
+
+    /**
+     * Check if event is upcoming (hasn't started yet)
+     */
+    public function isEventUpcoming(): bool
+    {
+        if ($this->category_id != 22 || !$this->event_start_date) {
+            return false;
+        }
+        return $this->event_start_date->isFuture();
+    }
+
+    /**
+     * Check if event is currently ongoing
+     */
+    public function isEventOngoing(): bool
+    {
+        if ($this->category_id != 22 || !$this->event_start_date || !$this->event_end_date) {
+            return false;
+        }
+        return now()->between($this->event_start_date, $this->event_end_date);
     }
 
     public function scopeByCategory($query, $categoryId)

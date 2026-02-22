@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', __('messages.home'))
+{{-- Title not set here so homepage shows only site name in browser tab --}}
 
 @section('content')
     <!-- Hero Slider -->

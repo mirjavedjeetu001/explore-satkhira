@@ -76,6 +76,40 @@
                                     @enderror
                                 </div>
                                 
+                                <!-- Job Circular Deadline Field (shown only for Job Circular category - id 21) -->
+                                <div class="col-md-6" id="jobDeadlineField" style="display: none;">
+                                    <label class="form-label">আবেদনের শেষ তারিখ <span class="text-danger">*</span></label>
+                                    <input type="date" name="application_deadline" id="application_deadline" 
+                                           class="form-control @error('application_deadline') is-invalid @enderror" 
+                                           value="{{ old('application_deadline') }}" min="{{ date('Y-m-d') }}">
+                                    @error('application_deadline')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>এই তারিখ পার হলে বিজ্ঞপ্তি স্বয়ংক্রিয়ভাবে লুকিয়ে যাবে</small>
+                                </div>
+                                
+                                <!-- Event Dates Fields (shown only for Events category - id 22) -->
+                                <div class="col-md-6" id="eventStartField" style="display: none;">
+                                    <label class="form-label">ইভেন্ট শুরুর তারিখ <span class="text-danger">*</span></label>
+                                    <input type="date" name="event_start_date" id="event_start_date" 
+                                           class="form-control @error('event_start_date') is-invalid @enderror" 
+                                           value="{{ old('event_start_date') }}">
+                                    @error('event_start_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-md-6" id="eventEndField" style="display: none;">
+                                    <label class="form-label">ইভেন্ট শেষের তারিখ <span class="text-danger">*</span></label>
+                                    <input type="date" name="event_end_date" id="event_end_date" 
+                                           class="form-control @error('event_end_date') is-invalid @enderror" 
+                                           value="{{ old('event_end_date') }}">
+                                    @error('event_end_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>ইভেন্ট শেষ হলে "সমাপ্ত" হিসেবে দেখাবে</small>
+                                </div>
+                                
                                 <div class="col-12">
                                     <label class="form-label">বিবরণ (Description) <span class="text-danger">*</span></label>
                                     <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
@@ -285,9 +319,12 @@
 
 @push('scripts')
 <script>
-// Doctor category specific fields toggle
+// Category specific fields toggle
 const categorySelect = document.querySelector('select[name="category_id"]');
 const doctorFields = document.getElementById('doctorFields');
+const jobDeadlineField = document.getElementById('jobDeadlineField');
+const eventStartField = document.getElementById('eventStartField');
+const eventEndField = document.getElementById('eventEndField');
 
 // Category data with slug mapping
 const categoryData = {
@@ -296,26 +333,47 @@ const categoryData = {
     @endforeach
 };
 
-function toggleDoctorFields() {
+function toggleCategoryFields() {
     const selectedId = categorySelect.value;
     const selectedSlug = categoryData[selectedId] || '';
     
+    // Doctor fields
     if (selectedSlug === 'doctor') {
         doctorFields.style.display = 'block';
-        // Make hospital and specialization required
         doctorFields.querySelector('input[name="hospital_name"]').required = true;
         doctorFields.querySelector('input[name="specialization"]').required = true;
     } else {
         doctorFields.style.display = 'none';
-        // Remove required
         doctorFields.querySelector('input[name="hospital_name"]').required = false;
         doctorFields.querySelector('input[name="specialization"]').required = false;
     }
+    
+    // Job Circular deadline field (category_id = 21)
+    if (selectedId === '21') {
+        jobDeadlineField.style.display = 'block';
+        document.getElementById('application_deadline').required = true;
+    } else {
+        jobDeadlineField.style.display = 'none';
+        document.getElementById('application_deadline').required = false;
+    }
+    
+    // Events date fields (category_id = 22)
+    if (selectedId === '22') {
+        eventStartField.style.display = 'block';
+        eventEndField.style.display = 'block';
+        document.getElementById('event_start_date').required = true;
+        document.getElementById('event_end_date').required = true;
+    } else {
+        eventStartField.style.display = 'none';
+        eventEndField.style.display = 'none';
+        document.getElementById('event_start_date').required = false;
+        document.getElementById('event_end_date').required = false;
+    }
 }
 
-categorySelect.addEventListener('change', toggleDoctorFields);
+categorySelect.addEventListener('change', toggleCategoryFields);
 // Check on page load (in case of old() values)
-document.addEventListener('DOMContentLoaded', toggleDoctorFields);
+document.addEventListener('DOMContentLoaded', toggleCategoryFields);
 
 document.getElementById('imageInput').addEventListener('change', function(e) {
     const preview = document.getElementById('imagePreview');

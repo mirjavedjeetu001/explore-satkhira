@@ -106,11 +106,15 @@ class UserDashboardController extends Controller
             ? 'nullable|exists:upazilas,id' 
             : 'required|exists:upazilas,id';
         
-        // Check if Doctor category is selected (slug = 'doctor')
+        // Check category type
         $isDoctorCategory = false;
+        $isJobCircularCategory = false;
+        $isEventsCategory = false;
         if ($request->category_id) {
             $category = \App\Models\Category::find($request->category_id);
             $isDoctorCategory = $category && $category->slug === 'doctor';
+            $isJobCircularCategory = $request->category_id == 21;
+            $isEventsCategory = $request->category_id == 22;
         }
         
         $rules = [
@@ -138,6 +142,17 @@ class UserDashboardController extends Controller
             $rules['chamber_time'] = 'nullable|string|max:255';
             $rules['visit_fee'] = 'nullable|string|max:100';
             $rules['serial_number'] = 'nullable|string|max:50';
+        }
+        
+        // Add Job Circular deadline validation
+        if ($isJobCircularCategory) {
+            $rules['application_deadline'] = 'required|date|after_or_equal:today';
+        }
+        
+        // Add Events date validation
+        if ($isEventsCategory) {
+            $rules['event_start_date'] = 'required|date';
+            $rules['event_end_date'] = 'required|date|after_or_equal:event_start_date';
         }
         
         $validated = $request->validate($rules);

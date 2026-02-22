@@ -13,7 +13,7 @@ class ListingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Listing::approved()->with(['category', 'upazila', 'user']);
+        $query = Listing::approved()->notExpired()->with(['category', 'upazila', 'user']);
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -53,6 +53,7 @@ class ListingController extends Controller
         }]);
 
         $relatedListings = Listing::approved()
+            ->notExpired()
             ->where('category_id', $listing->category_id)
             ->where('id', '!=', $listing->id)
             ->take(4)

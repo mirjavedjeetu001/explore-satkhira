@@ -31,6 +31,7 @@ class HomeController extends Controller
             ->get();
 
         $featuredListings = Listing::approved()
+            ->notExpired()
             ->featured()
             ->with(['category', 'upazila'])
             ->latest()
@@ -38,6 +39,7 @@ class HomeController extends Controller
             ->get();
 
         $latestListings = Listing::approved()
+            ->notExpired()
             ->with(['category', 'upazila'])
             ->latest()
             ->take(6)

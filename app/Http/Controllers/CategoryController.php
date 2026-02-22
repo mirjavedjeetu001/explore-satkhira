@@ -24,10 +24,11 @@ class CategoryController extends Controller
     {
         $upazilas = Upazila::active()
             ->ordered()
-            ->withCount(['listings' => fn($q) => $q->approved()->where('category_id', $category->id)])
+            ->withCount(['listings' => fn($q) => $q->approved()->notExpired()->where('category_id', $category->id)])
             ->get();
 
         $query = Listing::approved()
+            ->notExpired()
             ->where('category_id', $category->id)
             ->with(['upazila', 'user']);
 

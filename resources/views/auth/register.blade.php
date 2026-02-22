@@ -236,18 +236,25 @@
         .category-item input[type="checkbox"] {
             position: absolute;
             opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
         
         .category-item label {
             display: flex;
             align-items: center;
-            padding: 10px 12px;
-            background: #f8f9fa;
+            padding: 10px 28px 10px 12px;
+            background: #fff !important;
             border: 2px solid #e9ecef;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.85rem;
+            position: relative;
         }
         
         .category-item label i {
@@ -257,17 +264,34 @@
         }
         
         .category-item input[type="checkbox"]:checked + label {
-            background: rgba(40, 167, 69, 0.1);
-            border-color: #28a745;
+            background: #fff !important;
+            border-color: #28a745 !important;
             color: #1a5f2a;
+            box-shadow: 0 0 0 1px #28a745;
         }
         
         .category-item input[type="checkbox"]:checked + label i {
             color: #28a745;
         }
         
+        .category-item input[type="checkbox"]:checked + label::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #28a745;
+            font-size: 0.8rem;
+        }
+        
         .category-item label:hover {
             border-color: #28a745;
+        }
+        
+        .category-item input[type="checkbox"]:focus + label {
+            background: #fff !important;
         }
         
         .btn-register {

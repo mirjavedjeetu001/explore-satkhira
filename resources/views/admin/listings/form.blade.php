@@ -71,6 +71,41 @@
                 <small class="text-muted">সকল উপজেলা নির্বাচন করলে এই তথ্য সব উপজেলায় দেখাবে</small>
             </div>
             
+            <!-- Job Circular Application Deadline -->
+            <div class="col-md-6" id="deadlineField" style="display: none;">
+                <label class="form-label">আবেদনের শেষ তারিখ <span class="text-danger">*</span></label>
+                <input type="date" name="application_deadline" id="application_deadline" 
+                       class="form-control @error('application_deadline') is-invalid @enderror" 
+                       value="{{ old('application_deadline', isset($listing) && $listing->application_deadline ? $listing->application_deadline->format('Y-m-d') : '') }}"
+                       min="{{ date('Y-m-d') }}">
+                @error('application_deadline')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">এই তারিখ পার হলে চাকরির বিজ্ঞপ্তি স্বয়ংক্রিয়ভাবে লুকিয়ে যাবে</small>
+            </div>
+            
+            <!-- Events Dates -->
+            <div class="col-md-6" id="eventStartField" style="display: none;">
+                <label class="form-label">ইভেন্ট শুরুর তারিখ <span class="text-danger">*</span></label>
+                <input type="date" name="event_start_date" id="event_start_date" 
+                       class="form-control @error('event_start_date') is-invalid @enderror" 
+                       value="{{ old('event_start_date', isset($listing) && $listing->event_start_date ? $listing->event_start_date->format('Y-m-d') : '') }}">
+                @error('event_start_date')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="col-md-6" id="eventEndField" style="display: none;">
+                <label class="form-label">ইভেন্ট শেষের তারিখ <span class="text-danger">*</span></label>
+                <input type="date" name="event_end_date" id="event_end_date" 
+                       class="form-control @error('event_end_date') is-invalid @enderror" 
+                       value="{{ old('event_end_date', isset($listing) && $listing->event_end_date ? $listing->event_end_date->format('Y-m-d') : '') }}">
+                @error('event_end_date')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">ইভেন্ট শেষ হলে "সমাপ্ত" হিসেবে দেখাবে কিন্তু হিস্ট্রিতে থাকবে</small>
+            </div>
+            
             <div class="col-12">
                 <label class="form-label">Description <span class="text-danger">*</span></label>
                 <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
@@ -283,24 +318,54 @@
 
 @push('scripts')
 <script>
-// Show/hide doctor fields based on category selection
+// Show/hide category-specific fields based on category selection
 const categorySelect = document.getElementById('category_id');
 const doctorFields = document.getElementById('doctorFields');
+const deadlineField = document.getElementById('deadlineField');
+const deadlineInput = document.getElementById('application_deadline');
+const eventStartField = document.getElementById('eventStartField');
+const eventEndField = document.getElementById('eventEndField');
+const eventStartInput = document.getElementById('event_start_date');
+const eventEndInput = document.getElementById('event_end_date');
 
-function toggleDoctorFields() {
+function toggleCategoryFields() {
     const selectedOption = categorySelect.options[categorySelect.selectedIndex];
     const slug = selectedOption ? selectedOption.getAttribute('data-slug') : '';
+    const categoryId = categorySelect.value;
     
+    // Show doctor fields for doctor category
     if (slug === 'doctor') {
         doctorFields.style.display = 'block';
     } else {
         doctorFields.style.display = 'none';
     }
+    
+    // Show deadline field for Job Circular category (id = 21)
+    if (categoryId === '21') {
+        deadlineField.style.display = 'block';
+        deadlineInput.required = true;
+    } else {
+        deadlineField.style.display = 'none';
+        deadlineInput.required = false;
+    }
+    
+    // Show event dates for Events category (id = 22)
+    if (categoryId === '22') {
+        eventStartField.style.display = 'block';
+        eventEndField.style.display = 'block';
+        eventStartInput.required = true;
+        eventEndInput.required = true;
+    } else {
+        eventStartField.style.display = 'none';
+        eventEndField.style.display = 'none';
+        eventStartInput.required = false;
+        eventEndInput.required = false;
+    }
 }
 
-categorySelect.addEventListener('change', toggleDoctorFields);
+categorySelect.addEventListener('change', toggleCategoryFields);
 // Check on page load
-document.addEventListener('DOMContentLoaded', toggleDoctorFields);
+document.addEventListener('DOMContentLoaded', toggleCategoryFields);
 </script>
 @endpush
 @endsection

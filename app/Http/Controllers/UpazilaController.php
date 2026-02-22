@@ -13,11 +13,11 @@ class UpazilaController extends Controller
     {
         $upazilas = Upazila::active()
             ->ordered()
-            ->withCount(['listings' => fn($q) => $q->approved()])
+            ->withCount(['listings' => fn($q) => $q->approved()->notExpired()])
             ->get();
         
         // Add count of "all upazila" listings to each upazila count
-        $allUpazilaListingsCount = Listing::approved()->whereNull('upazila_id')->count();
+        $allUpazilaListingsCount = Listing::approved()->notExpired()->whereNull('upazila_id')->count();
         foreach ($upazilas as $upazila) {
             $upazila->listings_count += $allUpazilaListingsCount;
         }
@@ -30,13 +30,14 @@ class UpazilaController extends Controller
         $categories = Category::active()
             ->parentCategories()
             ->ordered()
-            ->withCount(['listings' => fn($q) => $q->approved()->where(function($query) use ($upazila) {
+            ->withCount(['listings' => fn($q) => $q->approved()->notExpired()->where(function($query) use ($upazila) {
                 $query->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
             })])
             ->get();
 
         // Include listings for this upazila OR listings with NULL upazila_id (all upazilas)
         $query = Listing::approved()
+            ->notExpired()
             ->where(function($q) use ($upazila) {
                 $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');
             })
@@ -68,6 +69,7 @@ class UpazilaController extends Controller
         $listings = $query->latest()->paginate(12);
 
         $featuredListings = Listing::approved()
+            ->notExpired()
             ->featured()
             ->where(function($q) use ($upazila) {
                 $q->where('upazila_id', $upazila->id)->orWhereNull('upazila_id');

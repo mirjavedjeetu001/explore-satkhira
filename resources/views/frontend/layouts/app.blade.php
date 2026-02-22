@@ -20,7 +20,7 @@
             : 'Satkhira, Explore Satkhira, Satkhira District, Home Tutor Satkhira, To-Let Satkhira, Restaurant Satkhira, Hospital Satkhira, School Satkhira, College Satkhira, Doctor Satkhira, Pharmacy Satkhira, Bank Satkhira, Government Office Satkhira, Tourist Spots Satkhira, Shopping Center Satkhira, Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala, Bangladesh';
     @endphp
     
-    <title>@yield('title', $localeSiteName) - {{ $localeSiteName }}</title>
+    <title>@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif</title>
     
     <meta name="description" content="@yield('meta_description', $defaultDescription)">
     <meta name="keywords" content="@yield('meta_keywords', $defaultKeywords)">
@@ -33,14 +33,14 @@
     
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', $localeSiteName) - {{ $localeSiteName }}">
+    <meta property="og:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
     <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     <meta property="og:site_name" content="{{ $localeSiteName }}">
     <meta property="og:locale" content="{{ app()->getLocale() === 'bn' ? 'bn_BD' : 'en_US' }}">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', $localeSiteName) - {{ $localeSiteName }}">
+    <meta name="twitter:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
     <meta name="twitter:description" content="@yield('meta_description', $defaultDescription)">
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     
