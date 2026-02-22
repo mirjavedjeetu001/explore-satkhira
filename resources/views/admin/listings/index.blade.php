@@ -195,7 +195,7 @@
 <script>
 function openRejectModal(listingId, title) {
     document.getElementById('rejectListingTitle').textContent = title;
-    document.getElementById('rejectForm').action = '/admin/listings/' + listingId + '/reject';
+    document.getElementById('rejectForm').action = '{{ url("admin/listings") }}/' + listingId + '/reject';
     document.getElementById('rejection_reason').value = '';
     new bootstrap.Modal(document.getElementById('rejectModal')).show();
 }
