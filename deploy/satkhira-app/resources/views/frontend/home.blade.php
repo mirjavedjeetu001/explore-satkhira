@@ -281,6 +281,12 @@
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='rgba(212,175,55,0.05)'/%3E%3C/svg%3E");
         opacity: 0.5;
         border-radius: 20px;
+        pointer-events: none;
+    }
+    
+    .ramadan-banner .row {
+        position: relative;
+        z-index: 2;
     }
     
     .ramadan-title {
