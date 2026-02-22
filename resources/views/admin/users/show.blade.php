@@ -162,6 +162,32 @@
         </div>
         @endif
         
+        <!-- Ad Upload Permission -->
+        <div class="card mb-4 border-{{ $user->can_upload_ads ? 'success' : 'secondary' }}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-ad fa-2x {{ $user->can_upload_ads ? 'text-success' : 'text-secondary' }} me-3 float-start"></i>
+                        <h5 class="mb-1">বিজ্ঞাপন আপলোড অনুমতি</h5>
+                        <p class="text-muted mb-0">
+                            @if($user->can_upload_ads)
+                                <span class="text-success"><i class="fas fa-check-circle me-1"></i>এই ইউজার বিজ্ঞাপন/অফার ছবি আপলোড করতে পারবেন</span>
+                            @else
+                                <span class="text-muted"><i class="fas fa-times-circle me-1"></i>বিজ্ঞাপন আপলোড অক্ষম - এই ইউজার বিজ্ঞাপন আপলোড করতে পারবেন না</span>
+                            @endif
+                        </p>
+                    </div>
+                    <form action="{{ route('admin.users.toggle-ad-permission', $user) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn {{ $user->can_upload_ads ? 'btn-danger' : 'btn-success' }}">
+                            <i class="fas {{ $user->can_upload_ads ? 'fa-ban' : 'fa-check' }} me-1"></i>
+                            {{ $user->can_upload_ads ? 'অক্ষম করুন' : 'সক্ষম করুন' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <!-- Category Permissions -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">

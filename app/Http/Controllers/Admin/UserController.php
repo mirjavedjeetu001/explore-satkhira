@@ -359,4 +359,12 @@ class UserController extends Controller
         
         return back()->with('success', 'নিজস্ব ব্যবসা মডারেটর স্ট্যাটাস সরানো হয়েছে।');
     }
+
+    public function toggleAdPermission(User $user)
+    {
+        $user->update(['can_upload_ads' => !$user->can_upload_ads]);
+        
+        $status = $user->can_upload_ads ? 'সক্ষম' : 'অক্ষম';
+        return back()->with('success', "বিজ্ঞাপন আপলোড অনুমতি {$status} করা হয়েছে।");
+    }
 }

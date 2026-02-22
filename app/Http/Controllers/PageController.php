@@ -50,7 +50,35 @@ class PageController extends Controller
 
     public function contact()
     {
-        return view('frontend.pages.contact');
+        // Get upazila moderators
+        $upazilaModerators = User::where('is_upazila_moderator', true)
+            ->where('status', 'active')
+            ->with('upazila')
+            ->orderBy('name')
+            ->get();
+        
+        // Get own business moderators
+        $ownBusinessModerators = User::where('is_own_business_moderator', true)
+            ->where('status', 'active')
+            ->with(['approvedCategories', 'upazila'])
+            ->orderBy('name')
+            ->get();
+        
+        // Get user IDs to exclude from team members
+        $excludeUserIds = array_merge(
+            $upazilaModerators->pluck('id')->toArray(),
+            $ownBusinessModerators->pluck('id')->toArray()
+        );
+        
+        $teamMembers = TeamMember::with('user')
+            ->active()
+            ->ordered()
+            ->whereHas('user', function($q) use ($excludeUserIds) {
+                $q->whereNotIn('id', $excludeUserIds);
+            })
+            ->get();
+        
+        return view('frontend.pages.contact', compact('teamMembers', 'upazilaModerators', 'ownBusinessModerators'));
     }
 
     public function storeContact(Request $request)

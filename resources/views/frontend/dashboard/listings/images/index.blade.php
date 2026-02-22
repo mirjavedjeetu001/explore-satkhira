@@ -12,13 +12,37 @@
                 <p class="text-white-50 mb-0">{{ $listing->title }}</p>
             </div>
             <div class="col-md-4 text-md-end">
-                <a href="{{ route('dashboard.listings.images.create', $listing) }}" class="btn btn-light">
-                    <i class="fas fa-plus me-1"></i>নতুন ছবি আপলোড করুন
+                @if(auth()->user()->can_upload_ads)
+                    <a href="{{ route('dashboard.listings.images.create', $listing) }}" class="btn btn-light">
+                        <i class="fas fa-plus me-1"></i>নতুন ছবি আপলোড করুন
+                    </a>
+                @else
+                    <span class="badge bg-warning text-dark p-2">
+                        <i class="fas fa-lock me-1"></i>বিজ্ঞাপন আপলোড অনুমতি নেই
+                    </span>
+                @endif
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ad Permission Notice -->
+@if(!auth()->user()->can_upload_ads)
+<section class="py-3 bg-warning-subtle">
+    <div class="container">
+        <div class="alert alert-warning mb-0 d-flex align-items-center">
+            <i class="fas fa-info-circle fa-2x me-3"></i>
+            <div>
+                <strong>বিজ্ঞাপন/অফার আপলোড করার অনুমতি নেই</strong>
+                <p class="mb-0">আপনার অ্যাকাউন্টে বিজ্ঞাপন আপলোড করার সুবিধা সক্রিয় নেই। বিজ্ঞাপন দিতে চাইলে অনুগ্রহ করে এডমিনের সাথে যোগাযোগ করুন।</p>
+                <a href="{{ route('contact') }}" class="btn btn-warning btn-sm mt-2">
+                    <i class="fas fa-envelope me-1"></i>এডমিনের সাথে যোগাযোগ করুন
                 </a>
             </div>
         </div>
     </div>
 </section>
+@endif
 
 <!-- Content -->
 <section class="py-5">
@@ -143,9 +167,15 @@
                                 <i class="fas fa-images fa-4x text-muted mb-3"></i>
                                 <h5>কোন ছবি নেই</h5>
                                 <p class="text-muted">আপনি এখনও কোন ছবি আপলোড করেননি</p>
-                                <a href="{{ route('dashboard.listings.images.create', $listing) }}" class="btn btn-success">
-                                    <i class="fas fa-plus me-1"></i>প্রথম ছবি আপলোড করুন
-                                </a>
+                                @if(auth()->user()->can_upload_ads)
+                                    <a href="{{ route('dashboard.listings.images.create', $listing) }}" class="btn btn-success">
+                                        <i class="fas fa-plus me-1"></i>প্রথম ছবি আপলোড করুন
+                                    </a>
+                                @else
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-lock me-1"></i>বিজ্ঞাপন আপলোড করতে এডমিনের সাথে যোগাযোগ করুন
+                                    </div>
+                                @endif
                             </div>
                         @endif
                     </div>

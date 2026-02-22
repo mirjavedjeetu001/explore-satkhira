@@ -277,4 +277,99 @@
         </div>
     </div>
 </div>
+
+<!-- User Leaderboard Section -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="admin-table">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-trophy me-2 text-warning"></i>User Leaderboard - Top Contributors</h5>
+                <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-warning">Manage Users</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="25%">User</th>
+                            <th width="15%">Role</th>
+                            <th class="text-center" width="12%">Total</th>
+                            <th class="text-center" width="12%">Approved</th>
+                            <th class="text-center" width="12%">Pending</th>
+                            <th class="text-center" width="12%">Rejected</th>
+                            <th class="text-center" width="12%">Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($userLeaderboard ?? [] as $index => $user)
+                            <tr>
+                                <td>
+                                    @if($index == 0)
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-crown"></i> 1</span>
+                                    @elseif($index == 1)
+                                        <span class="badge bg-secondary">2</span>
+                                    @elseif($index == 2)
+                                        <span class="badge bg-danger">3</span>
+                                    @else
+                                        <span class="text-muted">{{ $index + 1 }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=28a745&color=fff&size=40' }}" 
+                                             class="rounded-circle me-2" width="40" height="40" alt="{{ $user->name }}">
+                                        <div>
+                                            <strong>{{ $user->name }}</strong>
+                                            @if($user->phone)
+                                                <br><small class="text-muted"><i class="fas fa-phone me-1"></i>{{ $user->phone }}</small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($user->role && in_array($user->role->slug ?? '', ['admin', 'super-admin']))
+                                        <span class="badge bg-danger">Admin</span>
+                                    @elseif($user->is_upazila_moderator)
+                                        <span class="badge bg-success">Upazila Mod</span>
+                                    @elseif($user->is_own_business_moderator)
+                                        <span class="badge bg-info">Business Mod</span>
+                                    @else
+                                        <span class="badge bg-secondary">User</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary fs-6">{{ $user->total_listings }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ $user->approved_listings }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark">{{ $user->pending_listings }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">{{ $user->rejected_listings }}</span>
+                                </td>
+                                <td class="text-center">
+                                    @php
+                                        $successRate = $user->total_listings > 0 ? round(($user->approved_listings / $user->total_listings) * 100) : 0;
+                                    @endphp
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-{{ $successRate >= 70 ? 'success' : ($successRate >= 40 ? 'warning' : 'danger') }}" 
+                                             role="progressbar" style="width: {{ $successRate }}%">
+                                            {{ $successRate }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">No user data found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

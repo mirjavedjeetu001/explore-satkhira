@@ -185,4 +185,170 @@
         @endif
     </div>
 </section>
+
+<!-- Our Team Section -->
+@if(isset($teamMembers) && $teamMembers->count() > 0)
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">আমাদের টিম</h2>
+            <p class="text-muted">যারা এই পোর্টাল পরিচালনা করছেন</p>
+            <div class="underline mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #1a5f2a, #28a745); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            @foreach($teamMembers as $member)
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                @if($member->user->avatar)
+                                    <img src="{{ asset('storage/' . $member->user->avatar) }}" 
+                                         alt="{{ $member->user->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #28a745;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($member->user->name) }}&background=28a745&color=fff&size=100" 
+                                         alt="{{ $member->user->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #28a745;">
+                                @endif
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ $member->user->name }}</h5>
+                            <span class="badge bg-success mb-2">{{ $member->role_display }}</span>
+                            @if($member->designation_display)
+                                <p class="text-muted small mb-2">{{ $member->designation_display }}</p>
+                            @endif
+                            @if($member->phone || $member->email)
+                                <div class="small">
+                                    @if($member->phone)
+                                        <div class="mb-1">
+                                            <i class="fas fa-phone-alt text-success me-1"></i>
+                                            <a href="tel:{{ $member->phone }}" class="text-decoration-none text-dark">{{ $member->phone }}</a>
+                                        </div>
+                                    @endif
+                                    @if($member->email)
+                                        <div>
+                                            <i class="fas fa-envelope text-success me-1"></i>
+                                            <a href="mailto:{{ $member->email }}" class="text-decoration-none text-dark small">{{ $member->email }}</a>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Upazila Moderators Section -->
+@if(isset($upazilaModerators) && $upazilaModerators->count() > 0)
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">আমাদের উপজেলা মডারেটরস</h2>
+            <p class="text-muted">Our Upazila Moderators</p>
+            <div class="underline mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #f39c12, #e67e22); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            @foreach($upazilaModerators as $moderator)
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center position-relative">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                                <i class="fas fa-user-shield me-1"></i> মডারেটর
+                            </span>
+                        </div>
+                        <div class="card-body p-4 pt-5">
+                            <div class="mb-3 mt-2">
+                                @if($moderator->avatar)
+                                    <img src="{{ asset('storage/' . $moderator->avatar) }}" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #f39c12;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($moderator->name) }}&background=f39c12&color=fff&size=100" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #f39c12;">
+                                @endif
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ $moderator->name }}</h5>
+                            <span class="badge mb-2" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ $moderator->upazila->name_bn ?? $moderator->upazila->name ?? 'N/A' }}
+                            </span>
+                            @if($moderator->phone)
+                                <div class="small mt-2">
+                                    <i class="fas fa-phone-alt text-warning me-1"></i>
+                                    <a href="tel:{{ $moderator->phone }}" class="text-decoration-none text-dark">{{ $moderator->phone }}</a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Own Business Moderators Section -->
+@if(isset($ownBusinessModerators) && $ownBusinessModerators->count() > 0)
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">নিজস্ব ব্যবসা মডারেটরস</h2>
+            <p class="text-muted">Own Business Moderators</p>
+            <div class="underline mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #17a2b8, #138496); border-radius: 2px;"></div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            @foreach($ownBusinessModerators as $moderator)
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center position-relative">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                                <i class="fas fa-store me-1"></i> ব্যবসা মডারেটর
+                            </span>
+                        </div>
+                        <div class="card-body p-4 pt-5">
+                            <div class="mb-3 mt-2">
+                                @if($moderator->avatar)
+                                    <img src="{{ asset('storage/' . $moderator->avatar) }}" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #17a2b8;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($moderator->name) }}&background=17a2b8&color=fff&size=100" 
+                                         alt="{{ $moderator->name }}" 
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #17a2b8;">
+                                @endif
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ $moderator->name }}</h5>
+                            @if($moderator->approvedCategories && $moderator->approvedCategories->count() > 0)
+                                <div class="mb-2">
+                                    @foreach($moderator->approvedCategories->take(2) as $cat)
+                                        <span class="badge bg-info me-1">{{ $cat->name_bn ?? $cat->name }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            @if($moderator->phone)
+                                <div class="small mt-2">
+                                    <i class="fas fa-phone-alt text-info me-1"></i>
+                                    <a href="tel:{{ $moderator->phone }}" class="text-decoration-none text-dark">{{ $moderator->phone }}</a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 @endsection

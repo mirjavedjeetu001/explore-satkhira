@@ -51,12 +51,24 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // User Leaderboard - Users with most listings
+        $userLeaderboard = User::select('users.*')
+            ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id) as total_listings')
+            ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "approved") as approved_listings')
+            ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "pending") as pending_listings')
+            ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "rejected") as rejected_listings')
+            ->having('total_listings', '>', 0)
+            ->orderByDesc('total_listings')
+            ->take(10)
+            ->get();
+
         return view('admin.dashboard', compact(
             'stats',
             'recentListings',
             'recentUsers',
             'pendingQuestions',
-            'recentContacts'
+            'recentContacts',
+            'userLeaderboard'
         ));
     }
 }

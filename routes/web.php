@@ -125,6 +125,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('users/{user}/remove-moderator', [AdminUserController::class, 'removeModerator'])->name('users.remove-moderator');
     Route::post('users/{user}/make-own-business-moderator', [AdminUserController::class, 'makeOwnBusinessModerator'])->name('users.make-own-business-moderator');
     Route::post('users/{user}/remove-own-business-moderator', [AdminUserController::class, 'removeOwnBusinessModerator'])->name('users.remove-own-business-moderator');
+    Route::post('users/{user}/toggle-ad-permission', [AdminUserController::class, 'toggleAdPermission'])->name('users.toggle-ad-permission');
     
     // Upazilas Management
     Route::resource('upazilas', AdminUpazilaController::class);

@@ -33,6 +33,12 @@ class ListingImageController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Check if user has ad upload permission
+        if (!auth()->user()->can_upload_ads) {
+            return redirect()->route('dashboard.listings.images', $listing)
+                ->with('error', 'বিজ্ঞাপন/অফার আপলোড করার অনুমতি নেই। অনুগ্রহ করে এডমিনের সাথে যোগাযোগ করুন।');
+        }
+
         // Only allow image upload for approved listings
         if ($listing->status !== 'approved') {
             return redirect()->route('dashboard.listings')
@@ -53,6 +59,12 @@ class ListingImageController extends Controller
     {
         if ($listing->user_id !== auth()->id()) {
             abort(403, 'Unauthorized');
+        }
+
+        // Check if user has ad upload permission
+        if (!auth()->user()->can_upload_ads) {
+            return redirect()->route('dashboard.listings.images', $listing)
+                ->with('error', 'বিজ্ঞাপন/অফার আপলোড করার অনুমতি নেই। অনুগ্রহ করে এডমিনের সাথে যোগাযোগ করুন।');
         }
 
         if ($listing->status !== 'approved') {
