@@ -500,6 +500,12 @@
     .ramadan-modal .modal-body {
         color: #333;
         background: #fefefe;
+        padding: 1rem;
+    }
+    
+    .ramadan-modal .table-responsive {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
     }
     
     .ramadan-modal .modal-footer {
@@ -557,6 +563,11 @@
         color: #fff;
         border-color: #1a472a;
         font-weight: 600;
+        padding: 12px 10px;
+    }
+    
+    .table-ramadan thead th:first-child {
+        padding-left: 15px;
     }
     
     .table-ramadan tbody tr {
@@ -571,6 +582,12 @@
         border-color: #dee2e6;
         vertical-align: middle;
         color: #333;
+        padding: 10px;
+    }
+    
+    .table-ramadan tbody td:first-child {
+        padding-left: 15px;
+        min-width: 60px;
     }
     
     .table-ramadan .today-row {
