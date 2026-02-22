@@ -132,7 +132,11 @@
                             <span class="ramadan-arabic">رمضان مبارك</span>
                             <h3 class="mb-1">রমজান মোবারক</h3>
                             <p class="mb-0 ramadan-day">{{ $todaySchedule['day'] }} রমজান, ১৪৪৭ হিজরী</p>
-                            <small class="text-light opacity-75">সাতক্ষীরা ও পার্শ্ববর্তী এলাকা</small>
+                            <div class="current-time-display mt-2">
+                                <i class="fas fa-clock me-1"></i>
+                                <span>এখন সময়: </span>
+                                <span id="currentTime" class="current-time-value">--:--:--</span>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-5">
@@ -313,6 +317,24 @@
         color: #d4af37;
         font-weight: 600;
         font-size: 1.1rem;
+    }
+    
+    .current-time-display {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #fff;
+        font-size: 0.95rem;
+    }
+    
+    .current-time-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #d4af37;
+        font-family: monospace;
     }
     
     .time-card {
@@ -534,6 +556,20 @@
         const sehriTime = '{{ $todaySchedule['sehri'] ?? '5:00' }}';
         const iftarTime = '{{ $todaySchedule['iftar'] ?? '6:00' }}';
         
+        // Update current time display
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const mins = now.getMinutes();
+            const secs = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            const timeString = displayHours.toString().padStart(2, '0') + ':' + 
+                              mins.toString().padStart(2, '0') + ':' + 
+                              secs.toString().padStart(2, '0') + ' ' + ampm;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
         function updateCountdown() {
             const now = new Date();
             const today = now.toDateString();
@@ -570,8 +606,13 @@
             }
         }
         
-        // Update countdown every minute
+        // Initial updates
+        updateCurrentTime();
         updateCountdown();
+        
+        // Update current time every second
+        setInterval(updateCurrentTime, 1000);
+        // Update countdown every minute
         setInterval(updateCountdown, 60000);
     });
     </script>
