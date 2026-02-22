@@ -4,17 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="google-site-verification" content="MpDysAtFM8ui1Ken2ZbOg_JFGLQQVu_hCE2VQPT6XDk">
     
     @php
         $localeSiteName = app()->getLocale() === 'bn' 
             ? ($siteSettings['site_name_bn'] ?? __('messages.site_name'))
             : ($siteSettings['site_name'] ?? __('messages.site_name'));
+        
+        $defaultDescription = app()->getLocale() === 'bn' 
+            ? 'সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়। হোম টিউটর, টু-লেট, রেস্টুরেন্ট, হাসপাতাল, স্কুল, কলেজ, ডাক্তার, ফার্মেসি, ব্যাংক, সরকারি অফিস, পর্যটন স্পট এবং আরও অনেক কিছু খুঁজুন সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা উপজেলায়।'
+            : 'Explore Satkhira - Complete district directory of Satkhira, Bangladesh. Find home tutors, rentals, restaurants, hospitals, schools, colleges, doctors, pharmacies, banks, government offices, tourist spots in Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala.';
+        
+        $defaultKeywords = app()->getLocale() === 'bn'
+            ? 'সাতক্ষীরা, এক্সপ্লোর সাতক্ষীরা, সাতক্ষীরা জেলা, হোম টিউটর সাতক্ষীরা, টু-লেট সাতক্ষীরা, রেস্টুরেন্ট সাতক্ষীরা, হাসপাতাল সাতক্ষীরা, স্কুল সাতক্ষীরা, কলেজ সাতক্ষীরা, ডাক্তার সাতক্ষীরা, ফার্মেসি সাতক্ষীরা, ব্যাংক সাতক্ষীরা, সরকারি অফিস সাতক্ষীরা, পর্যটন স্পট সাতক্ষীরা, শপিং সেন্টার সাতক্ষীরা, সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা'
+            : 'Satkhira, Explore Satkhira, Satkhira District, Home Tutor Satkhira, To-Let Satkhira, Restaurant Satkhira, Hospital Satkhira, School Satkhira, College Satkhira, Doctor Satkhira, Pharmacy Satkhira, Bank Satkhira, Government Office Satkhira, Tourist Spots Satkhira, Shopping Center Satkhira, Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala, Bangladesh';
     @endphp
-    <title>@yield('title', $localeSiteName) - {{ $localeSiteName }}</title>
+    
+    <title>@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif</title>
+    
+    <meta name="description" content="@yield('meta_description', $defaultDescription)">
+    <meta name="keywords" content="@yield('meta_keywords', $defaultKeywords)">
+    <meta name="author" content="Explore Satkhira">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="geo.region" content="BD-E">
+    <meta name="geo.placename" content="Satkhira, Bangladesh">
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
+    <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:site_name" content="{{ $localeSiteName }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'bn' ? 'bn_BD' : 'en_US' }}">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
+    <meta name="twitter:description" content="@yield('meta_description', $defaultDescription)">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    
+    @yield('structured_data')
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,10 +61,16 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- AOS Animation - Disabled for performance -->
+    <!-- <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"> -->
     
     <style>
+        /* Disable AOS animations - show everything immediately */
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
         :root {
             --primary-color: #28a745;
             --secondary-color: #1a5f2a;
@@ -71,6 +111,52 @@
             color: #fff !important;
             background: rgba(255,255,255,0.1);
             border-radius: 5px;
+        }
+        
+        /* Mega Dropdown Menu for Categories */
+        .dropdown-mega {
+            position: relative;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega {
+            min-width: 400px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            left: 50% !important;
+            transform: translateX(-50%);
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .dropdown-item {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .dropdown-mega .dropdown-menu-mega .dropdown-item:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .dropdown-mega .dropdown-menu-mega {
+                min-width: 100%;
+                left: 0 !important;
+                transform: none;
+                position: absolute;
+            }
+            
+            .dropdown-mega .dropdown-menu-mega .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Top Bar */
@@ -259,6 +345,42 @@
             border: 5px solid rgba(255,255,255,0.3);
         }
         
+        /* New MP Cards Grid */
+        .mp-card-new {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mp-card-new:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .mp-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .mp-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #28a745;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .mp-card-new .badge {
+            font-weight: 500;
+            padding: 6px 15px;
+            border-radius: 20px;
+        }
+        
         /* Footer */
         .footer {
             background: #1a3c34;
@@ -391,24 +513,228 @@
             
             .search-box {
                 margin-top: 20px;
+                padding: 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .category-card, .upazila-card, .listing-card {
+                margin-bottom: 15px;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .footer h5 {
+                font-size: 1.1rem;
+            }
+            
+            .btn-lg {
+                padding: 10px 20px;
+                font-size: 1rem;
             }
         }
         
-        /* Preloader */
+        @media (max-width: 576px) {
+            .hero-slider .carousel-item {
+                height: 280px;
+            }
+            
+            .hero-slider .carousel-caption {
+                padding: 10px;
+            }
+            
+            .hero-slider .carousel-caption h2 {
+                font-size: 1.3rem;
+                margin-bottom: 8px;
+            }
+            
+            .hero-slider .carousel-caption p {
+                font-size: 0.85rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            .search-box {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .search-box .form-select-lg,
+            .search-box .form-control-lg {
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
+            
+            .search-box .btn-lg {
+                padding: 10px 15px;
+            }
+            
+            .section-header {
+                margin-bottom: 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section-header p {
+                font-size: 0.85rem;
+            }
+            
+            .category-card {
+                padding: 15px;
+            }
+            
+            .category-card h5 {
+                font-size: 0.9rem;
+            }
+            
+            .category-card .icon-wrapper {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .category-card .icon-wrapper i {
+                font-size: 1.2rem;
+            }
+            
+            .listing-card .card-title {
+                font-size: 0.95rem;
+            }
+            
+            .listing-card .card-body {
+                padding: 12px;
+            }
+            
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            .py-5 {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-toggler {
+                padding: 4px 8px;
+            }
+            
+            .footer {
+                padding: 30px 0 15px;
+            }
+            
+            .footer h5 {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .footer p, .footer a {
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                font-size: 0.9rem;
+            }
+            
+            .btn-lg {
+                padding: 8px 16px;
+                font-size: 0.95rem;
+            }
+            
+            .mp-card-new {
+                padding: 15px;
+            }
+            
+            .mp-avatar {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .mp-card-new h5 {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .hero-slider .carousel-item {
+                height: 240px;
+            }
+            
+            .hero-slider .carousel-caption h2 {
+                font-size: 1.1rem;
+            }
+            
+            .hero-slider .carousel-caption p {
+                font-size: 0.8rem;
+            }
+            
+            .hero-slider .carousel-caption .btn {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-custom .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .category-card {
+                padding: 12px;
+            }
+            
+            .category-card h5 {
+                font-size: 0.85rem;
+            }
+            
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+        
+        /* Preloader - Force full screen on all devices */
+        html.preloader-active,
+        body.preloader-active {
+            overflow: hidden !important;
+            height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
         .preloader {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important; /* Dynamic viewport height for mobile */
+            min-height: 100% !important;
             background: linear-gradient(135deg, #1a3c34 0%, #28a745 100%);
-            z-index: 99999;
+            z-index: 999999 !important;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             transition: opacity 0.5s ease, visibility 0.5s ease;
-            overflow: hidden;
+            overflow: hidden !important;
+            -webkit-overflow-scrolling: touch;
         }
         
         .preloader.fade-out {
@@ -584,8 +910,9 @@
     </style>
     
     @stack('styles')
+    <script>document.documentElement.classList.add('preloader-active');</script>
 </head>
-<body>
+<body class="preloader-active">
     <!-- Preloader -->
     <div class="preloader" id="preloader">
         <div class="preloader-inner">
@@ -662,17 +989,19 @@
                             @endforeach
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown dropdown-mega">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="fas fa-th-large me-1"></i> {{ __('messages.categories') }}
                         </a>
-                        <ul class="dropdown-menu">
-                            @foreach(\App\Models\Category::active()->parentCategories()->inMenu()->ordered()->get() as $category)
-                                <li><a class="dropdown-item" href="{{ route('categories.show', $category) }}">
-                                    <i class="fas {{ $category->icon }} me-2" style="color: {{ $category->color }}"></i>
-                                    {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
-                                </a></li>
-                            @endforeach
+                        <ul class="dropdown-menu dropdown-menu-mega">
+                            <div class="category-grid">
+                                @foreach(\App\Models\Category::active()->parentCategories()->inMenu()->ordered()->get() as $category)
+                                    <a class="dropdown-item" href="{{ route('categories.show', $category) }}">
+                                        <i class="{{ $category->icon ?? 'fas fa-folder' }} me-2" style="color: {{ $category->color }}"></i>
+                                        {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
+                                    </a>
+                                @endforeach
+                            </div>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -842,28 +1171,33 @@
             const preloader = document.getElementById('preloader');
             if (preloader) {
                 preloader.classList.add('fade-out');
+                document.body.classList.remove('preloader-active');
+                document.documentElement.classList.remove('preloader-active');
                 setTimeout(function() {
                     preloader.style.display = 'none';
                 }, 500);
             }
         });
         
-        // Fallback: hide preloader after 3 seconds even if load event doesn't fire
+        // Fallback: hide preloader after 1.5 seconds even if load event doesn't fire
         setTimeout(function() {
             const preloader = document.getElementById('preloader');
             if (preloader && !preloader.classList.contains('fade-out')) {
                 preloader.classList.add('fade-out');
+                document.body.classList.remove('preloader-active');
+                document.documentElement.classList.remove('preloader-active');
                 setTimeout(function() {
                     preloader.style.display = 'none';
                 }, 500);
             }
         }, 1500);
         
-        AOS.init({
-            duration: 400,
-            once: true,
-            offset: 50
-        });
+        // AOS animations disabled for better mobile performance
+        // AOS.init({
+        //     duration: 400,
+        //     once: true,
+        //     offset: 50
+        // });
         
         // Auto dismiss alerts
         setTimeout(function() {

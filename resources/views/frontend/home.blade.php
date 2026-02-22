@@ -95,7 +95,7 @@
                                 <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
                                     <div class="category-card">
                                         <div class="icon-wrapper" style="background-color: {{ $category->color }}">
-                                            <i class="fas {{ $category->icon }}"></i>
+                                            <i class="{{ $category->icon ?? 'fas fa-folder' }}"></i>
                                         </div>
                                         <h5>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
                                         <p class="listing-count mb-0">{{ $category->listings_count }} {{ app()->getLocale() == 'bn' ? 'টি তথ্য' : 'listings' }}</p>
@@ -121,7 +121,7 @@
                                 <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
                                     <div class="category-card">
                                         <div class="icon-wrapper" style="background-color: {{ $category->color }}">
-                                            <i class="fas {{ $category->icon }}"></i>
+                                            <i class="{{ $category->icon ?? 'fas fa-folder' }}"></i>
                                         </div>
                                         <h5>{{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}</h5>
                                         <p class="listing-count mb-0">{{ $category->listings_count }} {{ app()->getLocale() == 'bn' ? 'টি তথ্য' : 'listings' }}</p>
@@ -307,7 +307,7 @@
                                 </a>
                                 <span class="category-badge position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill text-white small fw-semibold" 
                                       style="background-color: {{ $listing->category->color ?? '#28a745' }};">
-                                    <i class="fas fa-{{ $listing->category->icon ?? 'tag' }} me-1"></i>
+                                    <i class="{{ $listing->category->icon ?? 'fas fa-tag' }} me-1"></i>
                                     {{ app()->getLocale() == 'bn' ? ($listing->category->name_bn ?? $listing->category->name) : $listing->category->name }}
                                 </span>
                                 @if($listing->is_featured)

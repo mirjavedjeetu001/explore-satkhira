@@ -997,7 +997,7 @@
                             <div class="category-grid">
                                 @foreach(\App\Models\Category::active()->parentCategories()->inMenu()->ordered()->get() as $category)
                                     <a class="dropdown-item" href="{{ route('categories.show', $category) }}">
-                                        <i class="fas {{ $category->icon }} me-2" style="color: {{ $category->color }}"></i>
+                                        <i class="{{ $category->icon ?? 'fas fa-folder' }} me-2" style="color: {{ $category->color }}"></i>
                                         {{ app()->getLocale() == 'bn' ? ($category->name_bn ?? $category->name) : $category->name }}
                                     </a>
                                 @endforeach
