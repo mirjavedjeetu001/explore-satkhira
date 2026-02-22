@@ -42,10 +42,10 @@
             
             <div class="col-md-6">
                 <label class="form-label">Category <span class="text-danger">*</span></label>
-                <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
+                <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
                     <option value="">Select Category</option>
                     @foreach($categories ?? [] as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id', $listing->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                        <option value="{{ $category->id }}" data-slug="{{ $category->slug }}" {{ old('category_id', $listing->category_id ?? '') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -169,11 +169,11 @@
                 <small class="text-muted">Google Maps এ যান → Share → Embed a map → HTML কপি করুন</small>
             </div>
             
-            <!-- Extra Fields (All Categories) -->
-            <div class="col-12">
+            <!-- Doctor Extra Fields (Only for Doctor Category) -->
+            <div class="col-12" id="doctorFields" style="display: none;">
                 <div class="card bg-light">
                     <div class="card-body">
-                        <h6 class="card-title"><i class="fas fa-info-circle text-primary me-2"></i>অতিরিক্ত তথ্য (Extra Information)</h6>
+                        <h6 class="card-title"><i class="fas fa-user-md text-danger me-2"></i>ডাক্তার সম্পর্কিত তথ্য (Doctor Information)</h6>
                         
                         @php
                             $extraFields = isset($listing) ? ($listing->extra_fields ?? []) : [];
@@ -260,4 +260,27 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+// Show/hide doctor fields based on category selection
+const categorySelect = document.getElementById('category_id');
+const doctorFields = document.getElementById('doctorFields');
+
+function toggleDoctorFields() {
+    const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+    const slug = selectedOption ? selectedOption.getAttribute('data-slug') : '';
+    
+    if (slug === 'doctor') {
+        doctorFields.style.display = 'block';
+    } else {
+        doctorFields.style.display = 'none';
+    }
+}
+
+categorySelect.addEventListener('change', toggleDoctorFields);
+// Check on page load
+document.addEventListener('DOMContentLoaded', toggleDoctorFields);
+</script>
+@endpush
 @endsection
