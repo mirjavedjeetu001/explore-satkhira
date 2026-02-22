@@ -134,8 +134,8 @@ class ListingController extends Controller
             'upazila_id' => 'nullable|exists:upazilas,id',
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'gallery.*' => 'nullable|image|max:2048',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'nullable|image|max:2048',
             'address' => 'nullable|string|max:500',
             'phone' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
@@ -159,30 +159,39 @@ class ListingController extends Controller
             'serial_number' => 'nullable|string|max:50',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('listings', 'public');
-        }
-
-        if ($request->hasFile('gallery')) {
-            $gallery = $listing->gallery ?? [];
-            foreach ($request->file('gallery') as $file) {
-                $gallery[] = $file->store('listings/gallery', 'public');
+        // Handle multiple images (replaces all existing images)
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            // First image becomes the primary image
+            $validated['image'] = $images[0]->store('listings', 'public');
+            
+            // Remaining images go to gallery
+            $gallery = [];
+            for ($i = 1; $i < count($images); $i++) {
+                $gallery[] = $images[$i]->store('listings/gallery', 'public');
             }
-            $validated['gallery'] = $gallery;
+            $validated['gallery'] = !empty($gallery) ? $gallery : null;
         }
 
         // Handle doctor extra_fields
         $category = \App\Models\Category::find($validated['category_id']);
-        // Save extra_fields for all categories (admin can edit any listing)
-        $validated['extra_fields'] = [
-            'hospital_name' => $request->input('hospital_name'),
-            'specialization' => $request->input('specialization'),
-            'diseases_treated' => $request->input('diseases_treated'),
-            'degrees' => $request->input('degrees'),
-            'chamber_time' => $request->input('chamber_time'),
-            'visit_fee' => $request->input('visit_fee'),
-            'serial_number' => $request->input('serial_number'),
-        ];
+        // Only save extra_fields for doctor category
+        if ($category && $category->slug === 'doctor') {
+            $validated['extra_fields'] = [
+                'hospital_name' => $request->input('hospital_name'),
+                'specialization' => $request->input('specialization'),
+                'diseases_treated' => $request->input('diseases_treated'),
+                'degrees' => $request->input('degrees'),
+                'chamber_time' => $request->input('chamber_time'),
+                'visit_fee' => $request->input('visit_fee'),
+                'serial_number' => $request->input('serial_number'),
+            ];
+        } else {
+            // Keep existing extra_fields if category changed from doctor
+            if (!isset($validated['extra_fields'])) {
+                $validated['extra_fields'] = $listing->extra_fields;
+            }
+        }
 
         $wasNotApproved = $listing->status !== 'approved';
         if ($validated['status'] === 'approved' && $wasNotApproved) {

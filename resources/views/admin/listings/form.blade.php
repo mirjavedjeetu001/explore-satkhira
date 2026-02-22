@@ -116,16 +116,36 @@
                 @enderror
             </div>
             
-            <div class="col-md-6">
-                <label class="form-label">Image</label>
-                <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
-                @error('image')
-                    <div class="invalid-feedback">{{ $message }}</div>
+            <div class="col-12">
+                <label class="form-label">Images (সর্বোচ্চ ৫টি)</label>
+                <input type="file" name="images[]" class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" accept="image/*" multiple>
+                @error('images')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
-                @if(isset($listing) && $listing->image)
-                    <div class="mt-2">
-                        <img src="{{ asset('storage/' . $listing->image) }}" alt="Current Image" width="100" class="rounded">
-                        <small class="text-muted d-block">Current image</small>
+                @error('images.*')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+                <small class="text-muted">প্রথম ছবিটি প্রধান ছবি হিসেবে ব্যবহার হবে। নতুন ছবি আপলোড করলে আগের সব ছবি মুছে যাবে।</small>
+                
+                @if(isset($listing))
+                    <div class="mt-3">
+                        <label class="form-label text-muted">বর্তমান ছবিসমূহ:</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @if($listing->image)
+                                <div class="position-relative">
+                                    <img src="{{ asset('storage/' . $listing->image) }}" alt="Primary" width="100" height="100" class="rounded border border-success border-3" style="object-fit: cover;">
+                                    <span class="position-absolute top-0 start-0 badge bg-success" style="font-size: 0.6rem;">প্রধান</span>
+                                </div>
+                            @endif
+                            @if($listing->gallery && is_array($listing->gallery))
+                                @foreach($listing->gallery as $galleryImage)
+                                    <div class="position-relative">
+                                        <img src="{{ asset('storage/' . $galleryImage) }}" alt="Gallery" width="100" height="100" class="rounded border" style="object-fit: cover;">
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        <small class="text-muted d-block mt-1">মোট {{ 1 + count($listing->gallery ?? []) }} টি ছবি</small>
                     </div>
                 @endif
             </div>
