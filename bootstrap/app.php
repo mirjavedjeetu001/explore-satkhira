@@ -21,8 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'no-cache' => \App\Http\Middleware\NoCacheMiddleware::class,
         ]);
         
-        // Apply SetLocale, TrackVisitor and NoCache middleware to all web routes
+        // Apply ForceCanonicalDomain, SetLocale, TrackVisitor and NoCache middleware to all web routes
         $middleware->web(append: [
+            \App\Http\Middleware\ForceCanonicalDomain::class,
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\TrackVisitor::class,
             \App\Http\Middleware\NoCacheMiddleware::class,
