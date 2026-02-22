@@ -192,7 +192,7 @@
             <div class="modal-content ramadan-modal">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ramadanScheduleModalLabel">
-                        <i class="fas fa-moon me-2"></i>রমজান ১৪৪৭ হিজরী - সেহরি ও ইফতারের সময়সূচী
+                        <i class="fas fa-moon me-2"></i>রমজান ১৪৪৭ - সেহরি ও ইফতার
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -480,10 +480,21 @@
         background: linear-gradient(135deg, #1a472a, #2d5016);
         border-bottom: 2px solid #d4af37;
         color: #fff;
+        padding: 1rem 1.5rem;
     }
     
     .ramadan-modal .modal-header .modal-title {
         color: #d4af37;
+        font-size: 1rem;
+        line-height: 1.4;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    
+    @media (min-width: 576px) {
+        .ramadan-modal .modal-header .modal-title {
+            font-size: 1.15rem;
+        }
     }
     
     .ramadan-modal .modal-body {
