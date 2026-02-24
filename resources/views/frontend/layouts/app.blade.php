@@ -35,14 +35,16 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
     <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
-    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-image.png'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="{{ $localeSiteName }}">
     <meta property="og:locale" content="{{ app()->getLocale() === 'bn' ? 'bn_BD' : 'en_US' }}">
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif">
     <meta name="twitter:description" content="@yield('meta_description', $defaultDescription)">
-    <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.png'))">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">

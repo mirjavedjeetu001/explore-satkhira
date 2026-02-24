@@ -25,9 +25,9 @@
 @endphp
 
 @section('seo_title', $seoTitle)
-@section('seo_description', $seoDescription)
-@section('seo_keywords', $seoKeywords)
-@section('seo_image', $seoImage)
+@section('meta_description', $seoDescription)
+@section('meta_keywords', $seoKeywords)
+@section('og_image', $seoImage)
 @section('canonical_url', route('listings.show', $listing))
 @section('og_type', 'business.business')
 
