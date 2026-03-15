@@ -254,7 +254,7 @@ function toggleCards(phone, btn) {
         btn.innerHTML = '<i class="fas fa-eye-slash me-1"></i> বন্ধ করুন';
         
         // Load cards
-        fetch('{{ route("admin.eid-card.cards-by-phone") }}?phone=' + encodeURIComponent(phone))
+        fetch('{{ url("admin/eid-card/cards") }}/' + encodeURIComponent(phone))
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -343,13 +343,12 @@ function confirmDeleteCard(cardId) {
 // Delete all cards of a user
 function confirmDeleteUser(phone) {
     if (confirm('এই ব্যবহারকারীর সকল কার্ড মুছে ফেলতে চান?')) {
-        fetch('{{ route("admin.eid-card.destroy-user") }}', {
+        fetch('{{ url("admin/eid-card/user") }}/' + encodeURIComponent(phone), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ phone: phone })
+            }
         })
         .then(response => response.json())
         .then(data => {

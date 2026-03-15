@@ -93,6 +93,8 @@
         .navbar-custom {
             background: linear-gradient(135deg, #1a5f2a 0%, #28a745 100%);
             box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            z-index: 1050;
+            position: relative;
         }
         
         .navbar-custom .navbar-brand {

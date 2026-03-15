@@ -61,7 +61,7 @@ class EidCardController extends Controller
                 ];
             });
         
-        return response()->json(['cards' => $cards]);
+        return response()->json(['success' => true, 'cards' => $cards]);
     }
     
     /**

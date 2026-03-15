@@ -88,7 +88,7 @@
                     <div class="row g-4">
                         <!-- Card Creator Form -->
                         <div class="col-lg-5">
-                            <div class="eid-card-box sticky-lg-top" style="top: 100px;">
+                            <div class="eid-card-box sticky-lg-top" style="top: 100px; z-index: 10;">
                                 <div class="card-header-eid bg-gradient-gold">
                                     <i class="fas fa-magic"></i>
                                     <span>কার্ড তৈরি করুন</span>
@@ -115,7 +115,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">কার্ডে আপনার নাম <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" name="name" id="cardName" 
-                                                   value="{{ $savedName }}" placeholder="যেমন: মোঃ রহিম উদ্দিন" required>
+                                                   value="{{ $savedName ?? '' }}" placeholder="যেমন: মোঃ রহিম উদ্দিন" required>
                                         </div>
                                         
                                         <!-- Designation -->
@@ -850,8 +850,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 document.getElementById('userInfoCard').classList.add('d-none');
                 document.getElementById('cardMakerSection').classList.remove('d-none');
-                document.getElementById('welcomeName').textContent = data.name;
-                document.getElementById('cardName').value = data.name;
+                document.getElementById('welcomeName').textContent = data.name || 'অতিথি';
+                document.getElementById('cardName').value = data.name || '';
+                if (data.has_previous_data) {
+                    location.reload(); // Reload to show previous cards
+                }
             } else {
                 alert(data.message || 'কিছু সমস্যা হয়েছে');
             }
@@ -909,7 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Don't trigger if clicking on delete button
             if (e.target.closest('.delete-prev-card')) return;
             
-            const name = this.dataset.name;
+            const name = this.dataset.name || '';
             const designation = this.dataset.designation || '';
             const message = this.dataset.message || '';
             const template = this.dataset.template || 'template1';
@@ -959,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation(); // Prevent triggering load
             if (confirm('এই কার্ডটি মুছে ফেলতে চান?')) {
                 const cardId = this.dataset.id;
-                fetch('{{ url("eid-card") }}/' + cardId + '/delete', {
+                fetch('{{ url("eid-card/card") }}/' + cardId, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 })

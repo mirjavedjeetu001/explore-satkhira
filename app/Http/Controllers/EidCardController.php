@@ -25,15 +25,26 @@ class EidCardController extends Controller
         // Check for saved phone in cookie
         $savedPhone = request()->cookie('eid_card_phone');
         $savedName = request()->cookie('eid_card_name');
+        
+        // Handle invalid name values
+        if (empty($savedName) || $savedName === 'undefined' || $savedName === 'null') {
+            $savedName = null;
+        }
+        
         $hasSession = !empty($savedPhone);
         
         // Get user's previous cards
-        $previousCards = [];
+        $previousCards = collect();
         if ($hasSession) {
             $previousCards = EidCard::where('phone', $savedPhone)
                 ->latest()
                 ->take(5)
                 ->get();
+            
+            // If no saved name in cookie but has cards, get name from latest card
+            if (empty($savedName) && $previousCards->isNotEmpty()) {
+                $savedName = $previousCards->first()->name;
+            }
         }
         
         return view('frontend.eid-card.index', compact(
@@ -51,12 +62,12 @@ class EidCardController extends Controller
     public function startSession(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100',
+            'user_name' => 'required|string|max:100',
             'phone' => 'required|string|size:11',
         ]);
         
         $phone = $request->phone;
-        $name = $request->name;
+        $name = $request->user_name;
         
         // Set cookies for 30 days
         $cookiePhone = cookie('eid_card_phone', $phone, 60 * 24 * 30);
@@ -67,6 +78,7 @@ class EidCardController extends Controller
         
         return response()->json([
             'success' => true,
+            'name' => $name,
             'has_previous_data' => $previousCards > 0,
         ])->withCookie($cookiePhone)->withCookie($cookieName);
     }
