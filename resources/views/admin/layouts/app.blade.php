@@ -389,6 +389,15 @@
                     {{ $salamiEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.eid-card.index') }}" class="nav-link {{ request()->routeIs('admin.eid-card.*') ? 'active' : '' }}">
+                <i class="fas fa-id-card"></i> <span>🌙 ঈদ কার্ড মেকার</span>
+                @php 
+                    $eidCardEnabled = \App\Models\EidCardSetting::first()?->is_enabled ?? false;
+                @endphp
+                <span class="badge {{ $eidCardEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $eidCardEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

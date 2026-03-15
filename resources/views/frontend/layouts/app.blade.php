@@ -1272,5 +1272,66 @@
         }
     </style>
     @endif
+
+    <!-- Floating Eid Card Maker Button -->
+    @php
+        $eidCardEnabled = \App\Models\EidCardSetting::first()?->is_enabled ?? false;
+    @endphp
+    @if($eidCardEnabled && !request()->routeIs('eid-card.*'))
+    <a href="{{ route('eid-card.index') }}" class="eid-card-float-btn" title="ঈদ গ্রিটিং কার্ড মেকার">
+        <span class="eid-card-icon">✨</span>
+        <span class="eid-card-text">ঈদ কার্ড</span>
+    </a>
+    <style>
+        .eid-card-float-btn {
+            position: fixed;
+            bottom: {{ $salamiEnabled ? '100px' : '30px' }};
+            right: 30px;
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(26, 35, 126, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: eidCardPulse 2s infinite;
+        }
+        .eid-card-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(26, 35, 126, 0.5);
+            color: white;
+        }
+        .eid-card-icon {
+            font-size: 1.5rem;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        .eid-card-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes eidCardPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(26, 35, 126, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(26, 35, 126, 0.6); }
+        }
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(15deg); }
+        }
+        @media (max-width: 576px) {
+            .eid-card-float-btn {
+                bottom: {{ $salamiEnabled ? '90px' : '20px' }};
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .eid-card-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
 </body>
 </html>

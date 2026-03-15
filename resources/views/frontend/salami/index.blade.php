@@ -175,9 +175,14 @@
                                         <span>সালামির তালিকা</span>
                                         <span class="badge bg-white text-success ms-2" id="entriesCount">{{ $entries->count() }}</span>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-light" id="logoutBtn" title="অন্য অ্যাকাউন্টে যান">
-                                        <i class="fas fa-sign-out-alt me-1"></i> লগআউট
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-warning" id="downloadCardBtn" title="কার্ড ডাউনলোড করুন" {{ $entries->count() == 0 ? 'disabled' : '' }}>
+                                            <i class="fas fa-download me-1"></i> ডাউনলোড
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-light" id="logoutBtn" title="অন্য অ্যাকাউন্টে যান">
+                                            <i class="fas fa-sign-out-alt me-1"></i> লগআউট
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body-custom p-0">
                                     <div id="entriesList">
@@ -245,6 +250,73 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Downloadable Card -->
+<div id="downloadableCard" style="position: absolute; left: -9999px; top: 0;">
+    <div class="salami-download-card" style="width: 600px; font-family: 'Hind Siliguri', Arial, sans-serif;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #1a5f2a 0%, #28a745 100%); padding: 30px; text-align: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 10px; right: 20px; font-size: 60px; opacity: 0.2;">🌙</div>
+            <div style="font-size: 40px; margin-bottom: 10px;">🌙 ⭐</div>
+            <h2 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">ঈদ সালামি কার্ড</h2>
+            <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0; font-size: 16px;">{{ now()->format('d M, Y') }}</p>
+        </div>
+        
+        <!-- User Info -->
+        <div style="background: #f8f9fa; padding: 20px 30px; text-align: center; border-bottom: 2px dashed #ddd;">
+            <h3 style="margin: 0; color: #333; font-size: 24px;" id="cardUserName">{{ $savedName ?? 'অতিথি' }}</h3>
+            <p style="margin: 5px 0 0; color: #666; font-size: 14px;" id="cardUserPhone">{{ $savedPhone }}</p>
+        </div>
+        
+        <!-- Total -->
+        <div style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); padding: 25px; text-align: center;">
+            <p style="margin: 0; color: rgba(0,0,0,0.6); font-size: 14px;">মোট সালামি</p>
+            <h1 style="margin: 5px 0 0; color: #333; font-size: 48px; font-weight: bold;" id="cardTotalAmount">৳{{ number_format($total, 0) }}</h1>
+        </div>
+        
+        <!-- Entries List -->
+        <div style="padding: 20px 30px; background: white;" id="cardEntriesList">
+            <h4 style="margin: 0 0 15px; color: #333; font-size: 16px; border-bottom: 2px solid #28a745; padding-bottom: 10px;">📋 সালামির তালিকা</h4>
+            @foreach($entries as $entry)
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #28a745, #1a5f2a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">{{ mb_substr($entry->giver_name, 0, 1) }}</div>
+                    <div>
+                        <div style="font-weight: 600; color: #333; font-size: 15px;">{{ $entry->giver_name }}</div>
+                        <div style="color: #888; font-size: 12px;">{{ $entry->giver_relation ?? 'অন্যান্য' }}</div>
+                    </div>
+                </div>
+                <div style="font-weight: bold; color: #28a745; font-size: 18px;">৳{{ number_format($entry->amount, 0) }}</div>
+            </div>
+            @endforeach
+        </div>
+        
+        <!-- Stats -->
+        <div style="display: flex; background: #f8f9fa; text-align: center;">
+            <div style="flex: 1; padding: 20px; border-right: 1px solid #ddd;">
+                <div style="font-size: 24px;">👥</div>
+                <div style="font-size: 22px; font-weight: bold; color: #28a745;" id="cardGiversCount">{{ $entries->count() }}</div>
+                <div style="font-size: 12px; color: #666;">জন থেকে</div>
+            </div>
+            <div style="flex: 1; padding: 20px; border-right: 1px solid #ddd;">
+                <div style="font-size: 24px;">💵</div>
+                <div style="font-size: 22px; font-weight: bold; color: #28a745;" id="cardAvgAmount">৳{{ $entries->count() > 0 ? number_format($total / $entries->count(), 0) : 0 }}</div>
+                <div style="font-size: 12px; color: #666;">গড়</div>
+            </div>
+            <div style="flex: 1; padding: 20px;">
+                <div style="font-size: 24px;">🏆</div>
+                <div style="font-size: 22px; font-weight: bold; color: #28a745;" id="cardMaxAmount">৳{{ $entries->count() > 0 ? number_format($entries->max('amount'), 0) : 0 }}</div>
+                <div style="font-size: 12px; color: #666;">সর্বোচ্চ</div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="background: linear-gradient(135deg, #1a5f2a 0%, #28a745 100%); padding: 15px; text-align: center;">
+            <p style="margin: 0; color: white; font-size: 14px;">🌐 exploresatkhira.com/salami</p>
+            <p style="margin: 5px 0 0; color: rgba(255,255,255,0.7); font-size: 11px;">ঈদ মোবারক! 🌙</p>
         </div>
     </div>
 </div>
@@ -596,6 +668,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const userInfoForm = document.getElementById('userInfoForm');
@@ -849,6 +922,84 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+
+    // Download Card as PNG
+    document.getElementById('downloadCardBtn')?.addEventListener('click', async function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> জেনারেট হচ্ছে...';
+        
+        try {
+            // Update card content dynamically
+            const downloadCard = document.getElementById('downloadableCard');
+            downloadCard.style.left = '0';
+            downloadCard.style.position = 'fixed';
+            downloadCard.style.zIndex = '-1';
+            
+            // Update total in card
+            document.getElementById('cardTotalAmount').textContent = '৳' + totalAmountEl.textContent;
+            document.getElementById('cardGiversCount').textContent = entriesCountEl.textContent;
+            document.getElementById('cardAvgAmount').textContent = '৳' + document.getElementById('avgAmount').textContent;
+            document.getElementById('cardMaxAmount').textContent = '৳' + document.getElementById('maxAmount').textContent;
+            
+            // Update entries in card
+            const entries = document.querySelectorAll('#entriesList .entry-item');
+            let entriesHtml = '<h4 style="margin: 0 0 15px; color: #333; font-size: 16px; border-bottom: 2px solid #28a745; padding-bottom: 10px;">📋 সালামির তালিকা</h4>';
+            
+            entries.forEach(entry => {
+                const name = entry.querySelector('.entry-details h6').textContent;
+                const relation = entry.querySelector('.entry-details small').textContent.split('•')[0].trim();
+                const amount = entry.querySelector('.amount').textContent;
+                const firstChar = entry.querySelector('.entry-avatar').textContent;
+                
+                entriesHtml += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #28a745, #1a5f2a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">${firstChar}</div>
+                            <div>
+                                <div style="font-weight: 600; color: #333; font-size: 15px;">${name}</div>
+                                <div style="color: #888; font-size: 12px;">${relation}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; color: #28a745; font-size: 18px;">${amount}</div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('cardEntriesList').innerHTML = entriesHtml;
+            
+            // Wait for styles to apply
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Generate canvas
+            const cardElement = downloadCard.querySelector('.salami-download-card');
+            const canvas = await html2canvas(cardElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+            
+            // Download
+            const link = document.createElement('a');
+            const userName = document.querySelector('.user-name-display')?.textContent || 'salami';
+            link.download = `salami-card-${userName.replace(/\s+/g, '-')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            // Hide card again
+            downloadCard.style.left = '-9999px';
+            downloadCard.style.position = 'absolute';
+            
+            showToast('কার্ড ডাউনলোড হয়েছে!', 'success');
+        } catch (error) {
+            console.error('Download error:', error);
+            showToast('ডাউনলোডে সমস্যা হয়েছে!', 'error');
+        }
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-download me-1"></i> ডাউনলোড';
+    });
 
     // Add animation keyframes
     const style = document.createElement('style');

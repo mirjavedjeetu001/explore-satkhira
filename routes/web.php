@@ -122,6 +122,16 @@ Route::prefix('salami')->name('salami.')->group(function () {
     Route::post('/reset', [SalamiController::class, 'resetSession'])->name('reset');
 });
 
+// Eid Card Maker Routes
+Route::prefix('eid-card')->name('eid-card.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\EidCardController::class, 'index'])->name('index');
+    Route::post('/start-session', [\App\Http\Controllers\EidCardController::class, 'startSession'])->name('start-session');
+    Route::post('/create', [\App\Http\Controllers\EidCardController::class, 'createCard'])->name('create');
+    Route::get('/cards', [\App\Http\Controllers\EidCardController::class, 'getCards'])->name('cards');
+    Route::delete('/card/{id}', [\App\Http\Controllers\EidCardController::class, 'deleteCard'])->name('delete');
+    Route::post('/reset', [\App\Http\Controllers\EidCardController::class, 'resetSession'])->name('reset');
+});
+
 // Admin Panel Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -219,11 +229,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('salami', [AdminSalamiController::class, 'index'])->name('salami.index');
     Route::get('salami/users', [AdminSalamiController::class, 'users'])->name('salami.users');
     Route::get('salami/user/{sessionId}', [AdminSalamiController::class, 'userEntries'])->name('salami.user-entries');
+    Route::get('salami/entries/{phone}', [AdminSalamiController::class, 'getEntriesByPhone'])->name('salami.entries-by-phone');
+    Route::delete('salami/user/{phone}', [AdminSalamiController::class, 'destroyUser'])->name('salami.destroy-user');
     Route::post('salami/toggle-status', [AdminSalamiController::class, 'toggleStatus'])->name('salami.toggle-status');
     Route::put('salami/settings', [AdminSalamiController::class, 'updateSettings'])->name('salami.update-settings');
     Route::delete('salami/{id}', [AdminSalamiController::class, 'destroy'])->name('salami.destroy');
     Route::get('salami/export', [AdminSalamiController::class, 'export'])->name('salami.export');
     Route::post('salami/clear-all', [AdminSalamiController::class, 'clearAll'])->name('salami.clear-all');
+    
+    // Eid Card Maker Management
+    Route::get('eid-card', [\App\Http\Controllers\Admin\EidCardController::class, 'index'])->name('eid-card.index');
+    Route::get('eid-card/cards/{phone}', [\App\Http\Controllers\Admin\EidCardController::class, 'getCardsByPhone'])->name('eid-card.cards-by-phone');
+    Route::post('eid-card/toggle-status', [\App\Http\Controllers\Admin\EidCardController::class, 'toggleStatus'])->name('eid-card.toggle-status');
+    Route::put('eid-card/settings', [\App\Http\Controllers\Admin\EidCardController::class, 'updateSettings'])->name('eid-card.update-settings');
+    Route::delete('eid-card/user/{phone}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroyUser'])->name('eid-card.destroy-user');
+    Route::delete('eid-card/{id}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroy'])->name('eid-card.destroy');
+    Route::post('eid-card/clear-all', [\App\Http\Controllers\Admin\EidCardController::class, 'clearAll'])->name('eid-card.clear-all');
 });
 
 require __DIR__.'/auth.php';

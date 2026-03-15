@@ -10,44 +10,68 @@ use Illuminate\Http\Request;
 class SalamiController extends Controller
 {
     /**
-     * Show all salami entries for admin
+     * Show all salami entries for admin (grouped by user)
      */
     public function index(Request $request)
     {
-        $query = SalamiEntry::query();
+        $query = SalamiEntry::selectRaw('phone, user_name, COUNT(*) as entries_count, SUM(amount) as total_amount, MAX(created_at) as last_entry')
+            ->groupBy('phone', 'user_name');
         
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('user_name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('giver_name', 'like', "%{$search}%");
+                  ->orWhere('phone', 'like', "%{$search}%");
             });
         }
         
-        // Date filter
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-        
-        $entries = $query->latest()->paginate(50);
+        $users = $query->orderByDesc('last_entry')->paginate(30);
         
         // Statistics
         $stats = [
             'total_entries' => SalamiEntry::count(),
             'total_amount' => SalamiEntry::sum('amount'),
-            'unique_users' => SalamiEntry::distinct('session_id')->count('session_id'),
+            'unique_users' => SalamiEntry::distinct('phone')->count('phone'),
             'today_entries' => SalamiEntry::whereDate('created_at', today())->count(),
             'today_amount' => SalamiEntry::whereDate('created_at', today())->sum('amount'),
         ];
         
         $settings = SalamiSetting::getSettings();
         
-        return view('admin.salami.index', compact('entries', 'stats', 'settings'));
+        return view('admin.salami.index', compact('users', 'stats', 'settings'));
+    }
+
+    /**
+     * Get entries for a specific phone (JSON API)
+     */
+    public function getEntriesByPhone($phone)
+    {
+        $entries = SalamiEntry::where('phone', $phone)
+            ->latest()
+            ->get()
+            ->map(function($entry) {
+                return [
+                    'id' => $entry->id,
+                    'giver_name' => $entry->giver_name,
+                    'giver_relation' => $entry->giver_relation,
+                    'amount' => $entry->amount,
+                    'note' => $entry->note,
+                    'created_at' => $entry->created_at->format('d M, h:i A'),
+                ];
+            });
+        
+        return response()->json(['entries' => $entries]);
+    }
+
+    /**
+     * Delete all entries by user phone
+     */
+    public function destroyUser($phone)
+    {
+        SalamiEntry::where('phone', $phone)->delete();
+        
+        return back()->with('success', 'ব্যবহারকারীর সকল এন্ট্রি মুছে ফেলা হয়েছে।');
     }
 
     /**

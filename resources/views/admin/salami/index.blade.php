@@ -99,14 +99,11 @@
 <div class="card mb-4">
     <div class="card-body">
         <form action="" method="GET" class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <input type="text" class="form-control" name="search" placeholder="নাম বা ফোন খুঁজুন..." value="{{ request('search') }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <input type="date" class="form-control" name="date_from" value="{{ request('date_from') }}" placeholder="From">
-            </div>
-            <div class="col-md-3">
-                <input type="date" class="form-control" name="date_to" value="{{ request('date_to') }}" placeholder="To">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
@@ -117,48 +114,81 @@
     </div>
 </div>
 
-<!-- Entries Table -->
+<!-- Users Table (Grouped) -->
 <div class="admin-table">
     <div class="table-responsive">
-        <table class="table table-hover">
+        <table class="table table-hover" id="usersTable">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th width="50">#</th>
                     <th>ব্যবহারকারী</th>
                     <th>মোবাইল</th>
-                    <th>সালামিদাতা</th>
-                    <th>সম্পর্ক</th>
-                    <th>টাকা</th>
-                    <th>নোট</th>
-                    <th>তারিখ</th>
-                    <th width="80">অ্যাকশন</th>
+                    <th>এন্ট্রি</th>
+                    <th>মোট টাকা</th>
+                    <th>সর্বশেষ</th>
+                    <th width="150">অ্যাকশন</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($entries as $entry)
-                    <tr>
-                        <td>{{ $entry->id }}</td>
-                        <td><strong>{{ $entry->user_name }}</strong></td>
-                        <td>{{ $entry->phone ?? '-' }}</td>
-                        <td>{{ $entry->giver_name }}</td>
-                        <td>{{ $entry->giver_relation ?? '-' }}</td>
-                        <td><span class="text-success fw-bold">৳{{ number_format($entry->amount) }}</span></td>
-                        <td>{{ $entry->note ?? '-' }}</td>
-                        <td>{{ $entry->created_at->format('d M, h:i A') }}</td>
+                @forelse($users as $index => $user)
+                    <tr class="user-row" data-phone="{{ $user->phone }}">
+                        <td>{{ $index + 1 }}</td>
                         <td>
-                            <form action="{{ route('admin.salami.destroy', $entry->id) }}" method="POST" 
-                                  onsubmit="return confirm('আপনি কি নিশ্চিত?')">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:35px;height:35px;font-size:14px;">
+                                    {{ mb_substr($user->user_name, 0, 1) }}
+                                </div>
+                                <strong>{{ $user->user_name }}</strong>
+                            </div>
+                        </td>
+                        <td><code>{{ $user->phone }}</code></td>
+                        <td><span class="badge bg-info">{{ $user->entries_count }} জন</span></td>
+                        <td><span class="text-success fw-bold fs-5">৳{{ number_format($user->total_amount) }}</span></td>
+                        <td>{{ \Carbon\Carbon::parse($user->last_entry)->format('d M, h:i A') }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary toggle-details" data-phone="{{ $user->phone }}">
+                                <i class="fas fa-eye me-1"></i> বিস্তারিত
+                            </button>
+                            <form action="{{ route('admin.salami.destroy-user', $user->phone) }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('এই ব্যবহারকারীর সকল এন্ট্রি মুছে ফেলতে চান?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         </td>
                     </tr>
+                    <!-- Hidden Details Row -->
+                    <tr class="details-row d-none" id="details-{{ $user->phone }}">
+                        <td colspan="7" class="bg-light p-0">
+                            <div class="p-3">
+                                <h6 class="mb-3"><i class="fas fa-list me-2"></i>{{ $user->user_name }} এর সালামির তালিকা</h6>
+                                <table class="table table-sm table-bordered mb-0 bg-white">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>সালামিদাতা</th>
+                                            <th>সম্পর্ক</th>
+                                            <th>টাকা</th>
+                                            <th>নোট</th>
+                                            <th>তারিখ</th>
+                                            <th width="60">মুছুন</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="entries-body" data-phone="{{ $user->phone }}">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-3">
+                                                <i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center py-4 text-muted">
+                        <td colspan="7" class="text-center py-4 text-muted">
                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                             কোন ডাটা পাওয়া যায়নি
                         </td>
@@ -168,10 +198,102 @@
         </table>
     </div>
     
-    @if($entries->hasPages())
-        <div class="p-3 border-top">{{ $entries->links() }}</div>
+    @if($users->hasPages())
+        <div class="p-3 border-top">{{ $users->links() }}</div>
     @endif
 </div>
+
+<style>
+.details-row td {
+    border-left: 4px solid #0d6efd;
+}
+.avatar-sm {
+    font-weight: bold;
+}
+</style>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle details
+    document.querySelectorAll('.toggle-details').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const phone = this.dataset.phone;
+            const detailsRow = document.getElementById('details-' + phone);
+            const entriesBody = detailsRow.querySelector('.entries-body');
+            
+            // Toggle visibility
+            detailsRow.classList.toggle('d-none');
+            
+            // Update button text
+            if (detailsRow.classList.contains('d-none')) {
+                this.innerHTML = '<i class="fas fa-eye me-1"></i> বিস্তারিত';
+            } else {
+                this.innerHTML = '<i class="fas fa-eye-slash me-1"></i> লুকান';
+                
+                // Load entries if not loaded
+                if (entriesBody.dataset.loaded !== 'true') {
+                    try {
+                        const response = await fetch(`/admin/salami/entries/${phone}`);
+                        const data = await response.json();
+                        
+                        let html = '';
+                        data.entries.forEach(entry => {
+                            html += `
+                                <tr>
+                                    <td><strong>${entry.giver_name}</strong></td>
+                                    <td>${entry.giver_relation || '-'}</td>
+                                    <td><span class="text-success fw-bold">৳${Number(entry.amount).toLocaleString()}</span></td>
+                                    <td>${entry.note || '-'}</td>
+                                    <td>${entry.created_at}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger delete-entry" data-id="${entry.id}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        entriesBody.innerHTML = html;
+                        entriesBody.dataset.loaded = 'true';
+                    } catch (error) {
+                        entriesBody.innerHTML = '<tr><td colspan="6" class="text-danger text-center">লোড করতে সমস্যা হয়েছে</td></tr>';
+                    }
+                }
+            }
+        });
+    });
+    
+    // Delete single entry
+    document.addEventListener('click', async function(e) {
+        if (e.target.closest('.delete-entry')) {
+            const btn = e.target.closest('.delete-entry');
+            const id = btn.dataset.id;
+            
+            if (!confirm('আপনি কি নিশ্চিত?')) return;
+            
+            try {
+                const response = await fetch(`/admin/salami/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    btn.closest('tr').remove();
+                    location.reload(); // Refresh to update counts
+                }
+            } catch (error) {
+                alert('মুছতে সমস্যা হয়েছে');
+            }
+        }
+    });
+});
+</script>
+@endpush
 
 <!-- Clear All Button -->
 @if($stats['total_entries'] > 0)
