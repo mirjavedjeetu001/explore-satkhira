@@ -1211,5 +1211,66 @@
     </script>
     
     @stack('scripts')
+    
+    <!-- Floating Salami Calculator Button (Eid Feature) -->
+    @php
+        $salamiEnabled = \App\Models\SalamiSetting::first()?->is_enabled ?? false;
+    @endphp
+    @if($salamiEnabled && !request()->routeIs('salami.*'))
+    <a href="{{ route('salami.index') }}" class="salami-float-btn" title="ঈদ সালামি ক্যালকুলেটর">
+        <span class="salami-icon">🌙</span>
+        <span class="salami-text">সালামি হিসাব</span>
+    </a>
+    <style>
+        .salami-float-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #28a745 0%, #1a5f2a 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(40, 167, 69, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: salamiPulse 2s infinite;
+        }
+        .salami-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(40, 167, 69, 0.5);
+            color: white;
+        }
+        .salami-icon {
+            font-size: 1.5rem;
+            animation: moonGlow 3s ease-in-out infinite;
+        }
+        .salami-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes salamiPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(40, 167, 69, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(40, 167, 69, 0.6); }
+        }
+        @keyframes moonGlow {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+        @media (max-width: 576px) {
+            .salami-float-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .salami-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
 </body>
 </html>

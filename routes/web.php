@@ -25,7 +25,9 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\SalamiController as AdminSalamiController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\SalamiController;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap Routes (for SEO)
@@ -109,6 +111,16 @@ Route::middleware(['auth'])->group(function () {
 
 // Listings public routes
 Route::post('/listing/{listing}/comment', [ListingController::class, 'storeComment'])->name('listings.comment')->middleware('auth');
+
+// Salami Calculator Routes (Eid Feature)
+Route::prefix('salami')->name('salami.')->group(function () {
+    Route::get('/', [SalamiController::class, 'index'])->name('index');
+    Route::post('/start-session', [SalamiController::class, 'startSession'])->name('start-session');
+    Route::post('/add-entry', [SalamiController::class, 'addEntry'])->name('add-entry');
+    Route::delete('/entry/{id}', [SalamiController::class, 'deleteEntry'])->name('delete-entry');
+    Route::get('/entries', [SalamiController::class, 'getEntries'])->name('entries');
+    Route::post('/reset', [SalamiController::class, 'resetSession'])->name('reset');
+});
 
 // Admin Panel Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
@@ -202,6 +214,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('team/{teamMember}', [\App\Http\Controllers\Admin\TeamMemberController::class, 'update'])->name('team.update');
     Route::delete('team/{teamMember}', [\App\Http\Controllers\Admin\TeamMemberController::class, 'destroy'])->name('team.destroy');
     Route::post('team/{teamMember}/toggle-active', [\App\Http\Controllers\Admin\TeamMemberController::class, 'toggleActive'])->name('team.toggle-active');
+    
+    // Salami Calculator Management
+    Route::get('salami', [AdminSalamiController::class, 'index'])->name('salami.index');
+    Route::get('salami/users', [AdminSalamiController::class, 'users'])->name('salami.users');
+    Route::get('salami/user/{sessionId}', [AdminSalamiController::class, 'userEntries'])->name('salami.user-entries');
+    Route::post('salami/toggle-status', [AdminSalamiController::class, 'toggleStatus'])->name('salami.toggle-status');
+    Route::put('salami/settings', [AdminSalamiController::class, 'updateSettings'])->name('salami.update-settings');
+    Route::delete('salami/{id}', [AdminSalamiController::class, 'destroy'])->name('salami.destroy');
+    Route::get('salami/export', [AdminSalamiController::class, 'export'])->name('salami.export');
+    Route::post('salami/clear-all', [AdminSalamiController::class, 'clearAll'])->name('salami.clear-all');
 });
 
 require __DIR__.'/auth.php';

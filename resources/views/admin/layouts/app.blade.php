@@ -379,6 +379,17 @@
                 <i class="fas fa-newspaper"></i> <span>News & Events</span>
             </a>
             
+            <div class="nav-title">Features</div>
+            <a href="{{ route('admin.salami.index') }}" class="nav-link {{ request()->routeIs('admin.salami.*') ? 'active' : '' }}">
+                <i class="fas fa-calculator"></i> <span>🌙 সালামি ক্যালকুলেটর</span>
+                @php 
+                    $salamiEnabled = \App\Models\SalamiSetting::first()?->is_enabled ?? false;
+                @endphp
+                <span class="badge {{ $salamiEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $salamiEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
+            
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i> <span>Users</span>
