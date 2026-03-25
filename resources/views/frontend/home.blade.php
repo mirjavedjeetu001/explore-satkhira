@@ -1252,6 +1252,78 @@
     </script>
     @endif
 
+    <!-- Fuel Availability Section -->
+    @if($fuelEnabled && count($fuelReports) > 0)
+    <section class="py-5 fuel-section">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2><i class="fas fa-gas-pump me-2 text-warning"></i>⛽ জ্বালানি তেল আপডেট</h2>
+                <p class="text-muted">সাতক্ষীরার পেট্রোল পাম্পে তেলের বর্তমান অবস্থা</p>
+                <div class="underline" style="background: linear-gradient(90deg, #e65100, #ff6d00);"></div>
+            </div>
+            
+            <div class="row g-3">
+                @foreach($fuelReports as $report)
+                    @php
+                        $hasAnyFuel = $report->petrol_available || $report->diesel_available || $report->octane_available;
+                    @endphp
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                        <div class="card h-100 fuel-card {{ $hasAnyFuel ? 'border-success' : 'border-danger' }}" style="border-width: 2px;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ $report->fuelStation->name }}</h6>
+                                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ $report->fuelStation->upazila->name }}</small>
+                                    </div>
+                                    <span class="badge bg-{{ $hasAnyFuel ? 'success' : 'danger' }}">
+                                        {{ $hasAnyFuel ? 'আছে' : 'নেই' }}
+                                    </span>
+                                </div>
+                                <div class="d-flex gap-2 mb-2">
+                                    <span class="badge {{ $report->petrol_available ? 'bg-success' : 'bg-secondary' }}">
+                                        পেট্রোল {{ $report->petrol_available ? '✓' : '✗' }}
+                                    </span>
+                                    <span class="badge {{ $report->diesel_available ? 'bg-success' : 'bg-secondary' }}">
+                                        ডিজেল {{ $report->diesel_available ? '✓' : '✗' }}
+                                    </span>
+                                    <span class="badge {{ $report->octane_available ? 'bg-success' : 'bg-secondary' }}">
+                                        অকটেন {{ $report->octane_available ? '✓' : '✗' }}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-{{ $report->queue_status == 'none' ? 'success' : ($report->queue_status == 'short' ? 'info' : ($report->queue_status == 'medium' ? 'warning' : 'danger')) }}">
+                                        <i class="fas fa-users me-1"></i>{{ $report->queue_status_bangla }}
+                                    </span>
+                                    <small class="text-muted">{{ $report->created_at->diffForHumans() }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{{ route('fuel.index') }}" class="btn btn-warning btn-lg">
+                    <i class="fas fa-gas-pump me-2"></i>সব আপডেট দেখুন এবং যুক্ত করুন
+                </a>
+            </div>
+        </div>
+    </section>
+    <style>
+        .fuel-section {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+        .fuel-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 12px;
+        }
+        .fuel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+    @endif
+
     <!-- Categories Section -->
     <section class="py-5">
         <div class="container">

@@ -398,6 +398,15 @@
                     {{ $eidCardEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.fuel.reports') }}" class="nav-link {{ request()->routeIs('admin.fuel.*') ? 'active' : '' }}">
+                <i class="fas fa-gas-pump"></i> <span>⛽ জ্বালানি তেল</span>
+                @php 
+                    $fuelEnabled = \App\Models\FuelSetting::isEnabled();
+                @endphp
+                <span class="badge {{ $fuelEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $fuelEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

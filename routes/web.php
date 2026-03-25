@@ -132,6 +132,21 @@ Route::prefix('eid-card')->name('eid-card.')->group(function () {
     Route::post('/reset', [\App\Http\Controllers\EidCardController::class, 'resetSession'])->name('reset');
 });
 
+// Fuel Availability Tracker Routes
+Route::prefix('fuel')->name('fuel.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\FuelController::class, 'index'])->name('index');
+    Route::get('/station/{id}', [\App\Http\Controllers\FuelController::class, 'showStation'])->name('station');
+    Route::get('/report/create/{stationId?}', [\App\Http\Controllers\FuelController::class, 'createReport'])->name('create-report');
+    Route::post('/report/{stationId?}', [\App\Http\Controllers\FuelController::class, 'storeReport'])->name('store-report');
+    Route::get('/report/{id}/verify-pin', [\App\Http\Controllers\FuelController::class, 'verifyPinForm'])->name('verify-pin');
+    Route::post('/report/{id}/verify-pin', [\App\Http\Controllers\FuelController::class, 'verifyPin'])->name('verify-pin.submit');
+    Route::get('/report/{id}/edit', [\App\Http\Controllers\FuelController::class, 'editReport'])->name('edit-report');
+    Route::put('/report/{id}', [\App\Http\Controllers\FuelController::class, 'updateReport'])->name('update-report');
+    Route::delete('/report/{id}', [\App\Http\Controllers\FuelController::class, 'deleteReport'])->name('delete-report');
+    Route::get('/api/latest', [\App\Http\Controllers\FuelController::class, 'getLatestReports'])->name('api.latest');
+    Route::get('/api/station/{id}', [\App\Http\Controllers\FuelController::class, 'getStationInfo'])->name('api.station');
+});
+
 // Admin Panel Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -245,6 +260,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('eid-card/user/{phone}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroyUser'])->name('eid-card.destroy-user');
     Route::delete('eid-card/{id}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroy'])->name('eid-card.destroy');
     Route::post('eid-card/clear-all', [\App\Http\Controllers\Admin\EidCardController::class, 'clearAll'])->name('eid-card.clear-all');
+    
+    // Fuel Availability Tracker Management
+    Route::prefix('fuel')->name('fuel.')->group(function () {
+        // Stations
+        Route::get('stations', [\App\Http\Controllers\Admin\FuelController::class, 'stations'])->name('stations');
+        Route::get('stations/create', [\App\Http\Controllers\Admin\FuelController::class, 'createStation'])->name('stations.create');
+        Route::post('stations', [\App\Http\Controllers\Admin\FuelController::class, 'storeStation'])->name('stations.store');
+        Route::get('stations/{id}/edit', [\App\Http\Controllers\Admin\FuelController::class, 'editStation'])->name('stations.edit');
+        Route::put('stations/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'updateStation'])->name('stations.update');
+        Route::delete('stations/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'deleteStation'])->name('stations.delete');
+        // Reports
+        Route::get('reports', [\App\Http\Controllers\Admin\FuelController::class, 'reports'])->name('reports');
+        Route::get('reports/phone/{phone}', [\App\Http\Controllers\Admin\FuelController::class, 'getReportsByPhone'])->name('reports.by-phone');
+        Route::post('reports/{id}/verify', [\App\Http\Controllers\Admin\FuelController::class, 'verifyReport'])->name('reports.verify');
+        Route::delete('reports/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'deleteReport'])->name('reports.delete');
+        // Settings
+        Route::get('settings', [\App\Http\Controllers\Admin\FuelController::class, 'settings'])->name('settings');
+        Route::put('settings', [\App\Http\Controllers\Admin\FuelController::class, 'updateSettings'])->name('settings.update');
+        Route::post('toggle', [\App\Http\Controllers\Admin\FuelController::class, 'toggleFeature'])->name('toggle');
+    });
 });
 
 require __DIR__.'/auth.php';

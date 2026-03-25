@@ -1275,6 +1275,62 @@
     </style>
     @endif
 
+    <!-- Floating Fuel Tracker Button -->
+    @php
+        $fuelEnabled = \App\Models\FuelSetting::isEnabled();
+    @endphp
+    @if($fuelEnabled && !request()->routeIs('fuel.*'))
+    <a href="{{ route('fuel.index') }}" class="fuel-float-btn" title="জ্বালানি তেল আপডেট">
+        <span class="fuel-icon">⛽</span>
+        <span class="fuel-text">তেল আপডেট</span>
+    </a>
+    <style>
+        .fuel-float-btn {
+            position: fixed;
+            bottom: {{ ($salamiEnabled ?? false) ? '170px' : (($eidCardEnabled ?? false) ? '100px' : '30px') }};
+            right: 30px;
+            background: linear-gradient(135deg, #e65100 0%, #ff6d00 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(230, 81, 0, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: fuelPulse 2s infinite;
+        }
+        .fuel-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(230, 81, 0, 0.5);
+            color: white;
+        }
+        .fuel-icon {
+            font-size: 1.5rem;
+        }
+        .fuel-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes fuelPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(230, 81, 0, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(230, 81, 0, 0.6); }
+        }
+        @media (max-width: 576px) {
+            .fuel-float-btn {
+                bottom: {{ ($salamiEnabled ?? false) ? '160px' : (($eidCardEnabled ?? false) ? '90px' : '20px') }};
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .fuel-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
+
     <!-- Floating Eid Card Maker Button -->
     @php
         $eidCardEnabled = \App\Models\EidCardSetting::first()?->is_enabled ?? false;
@@ -1287,7 +1343,7 @@
     <style>
         .eid-card-float-btn {
             position: fixed;
-            bottom: {{ $salamiEnabled ? '100px' : '30px' }};
+            bottom: {{ ($salamiEnabled ?? false) ? '100px' : ($fuelEnabled ? '100px' : '30px') }};
             right: 30px;
             background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
             color: white;
