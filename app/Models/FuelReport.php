@@ -25,6 +25,8 @@ class FuelReport extends Model
         'queue_status',
         'notes',
         'is_verified',
+        'correct_votes',
+        'incorrect_votes',
     ];
 
     protected $casts = [

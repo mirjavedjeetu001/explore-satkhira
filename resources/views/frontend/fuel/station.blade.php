@@ -47,7 +47,17 @@
                     @php $latestReport = $station->reports->first(); @endphp
                     <div class="card shadow-sm mb-4 border-{{ ($latestReport->petrol_available || $latestReport->diesel_available || $latestReport->octane_available) ? 'success' : 'danger' }}" style="border-width: 2px;">
                         <div class="card-header bg-{{ ($latestReport->petrol_available || $latestReport->diesel_available || $latestReport->octane_available) ? 'success' : 'danger' }} text-white">
-                            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>সর্বশেষ আপডেট - {{ $latestReport->created_at->diffForHumans() }} ({{ $latestReport->created_at->format('d M Y, h:i A') }})</h5>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>সর্বশেষ আপডেট - {{ $latestReport->created_at->diffForHumans() }} ({{ $latestReport->created_at->format('d M Y, h:i A') }})</h5>
+                                <div class="d-flex gap-2">
+                                    @if($latestReport->is_verified)
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-check-circle me-1"></i>যাচাইকৃত</span>
+                                    @else
+                                        <span class="badge bg-light text-dark"><i class="fas fa-exclamation-triangle me-1"></i>যাচাই করা হয়নি</span>
+                                    @endif
+                                    <span class="badge bg-info"><i class="fas fa-eye me-1"></i>{{ number_format($station->view_count ?? 0) }} বার দেখা হয়েছে</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="row g-4">
@@ -101,6 +111,32 @@
                             <p class="text-center text-muted mt-3 mb-0 small">
                                 <i class="fas fa-user me-1"></i>আপডেট করেছেন: {{ $latestReport->reporter_name }}
                             </p>
+                            
+                            <!-- Voting Section -->
+                            <div class="vote-section mt-3 pt-3 border-top text-center" id="vote-section-{{ $latestReport->id }}">
+                                <p class="mb-2">এই তথ্য কি সঠিক?</p>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button type="button" class="btn btn-outline-success" 
+                                            onclick="voteReport({{ $latestReport->id }}, 'correct')" id="btn-correct-{{ $latestReport->id }}">
+                                        <i class="fas fa-thumbs-up me-1"></i>সঠিক 
+                                        <span class="badge bg-success">{{ $latestReport->correct_votes ?? 0 }}</span>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger"
+                                            onclick="voteReport({{ $latestReport->id }}, 'incorrect')" id="btn-incorrect-{{ $latestReport->id }}">
+                                        <i class="fas fa-thumbs-down me-1"></i>ভুল 
+                                        <span class="badge bg-danger">{{ $latestReport->incorrect_votes ?? 0 }}</span>
+                                    </button>
+                                </div>
+                                @if($latestReport->is_verified)
+                                    <div class="mt-2">
+                                        <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>যাচাইকৃত তথ্য</span>
+                                    </div>
+                                @elseif(($latestReport->incorrect_votes ?? 0) > ($latestReport->correct_votes ?? 0) && ($latestReport->incorrect_votes ?? 0) >= 2)
+                                    <div class="mt-2">
+                                        <span class="badge bg-danger fs-6"><i class="fas fa-exclamation-triangle me-1"></i>এই তথ্য ভুল হতে পারে</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -163,7 +199,9 @@
                                                 <td>
                                                     {{ $report->reporter_name }}
                                                     @if($report->is_verified)
-                                                        <i class="fas fa-check-circle text-success ms-1" title="ভেরিফাইড"></i>
+                                                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>যাচাইকৃত</span>
+                                                    @else
+                                                        <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>যাচাই করা হয়নি</span>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -194,3 +232,43 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function voteReport(reportId, voteType) {
+    fetch(`/fuel/report/${reportId}/vote`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ vote: voteType })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update vote counts
+            const correctBtn = document.getElementById(`btn-correct-${reportId}`);
+            const incorrectBtn = document.getElementById(`btn-incorrect-${reportId}`);
+            
+            correctBtn.innerHTML = `<i class="fas fa-thumbs-up me-1"></i>সঠিক <span class="badge bg-success">${data.correct_votes}</span>`;
+            incorrectBtn.innerHTML = `<i class="fas fa-thumbs-down me-1"></i>ভুল <span class="badge bg-danger">${data.incorrect_votes}</span>`;
+            
+            // Disable buttons after voting
+            correctBtn.disabled = true;
+            incorrectBtn.disabled = true;
+            correctBtn.classList.add('disabled');
+            incorrectBtn.classList.add('disabled');
+            
+            alert(data.message);
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        alert('সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    });
+}
+</script>
+@endpush

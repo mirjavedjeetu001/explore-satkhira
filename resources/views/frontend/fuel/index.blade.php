@@ -12,6 +12,14 @@
                 <i class="fas fa-gas-pump me-2"></i>জ্বালানি তেল আপডেট
             </h1>
             <p class="text-muted">সাতক্ষীরার পেট্রোল পাম্পে তেলের বর্তমান অবস্থা জানুন ও শেয়ার করুন</p>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <span class="badge bg-info fs-6 px-3 py-2">
+                    <i class="fas fa-eye me-1"></i> {{ number_format($totalViews ?? 0) }} বার দেখা হয়েছে
+                </span>
+                <span class="badge bg-secondary fs-6 px-3 py-2">
+                    <i class="fas fa-gas-pump me-1"></i> {{ $stations->count() }} টি পাম্প
+                </span>
+            </div>
         </div>
 
         <!-- Success/Error Messages -->
@@ -62,16 +70,26 @@
         <div class="row g-4">
             @forelse($stations as $station)
                 @php
-                    $report = $station->latestReport;
+                    $report = $station->displayReport;
                     $hasAnyFuel = $report && ($report->petrol_available || $report->diesel_available || $report->octane_available);
+                    $isVerified = $report && $report->is_verified;
                 @endphp
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm station-card {{ $hasAnyFuel ? 'border-success' : 'border-danger' }}" style="border-width: 2px;">
                         <div class="card-header {{ $hasAnyFuel ? 'bg-success' : 'bg-danger' }} text-white py-3">
-                            <h5 class="mb-0 fw-bold">
-                                <i class="fas fa-gas-pump me-2"></i>{{ $station->name }}
-                            </h5>
-                            <small><i class="fas fa-map-marker-alt me-1"></i>{{ $station->upazila->name }}</small>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-0 fw-bold">
+                                        <i class="fas fa-gas-pump me-2"></i>{{ $station->name }}
+                                    </h5>
+                                    <small><i class="fas fa-map-marker-alt me-1"></i>{{ $station->upazila->name }}</small>
+                                </div>
+                                @if($isVerified)
+                                    <span class="badge bg-warning text-dark" title="যাচাইকৃত তথ্য">
+                                        <i class="fas fa-check-circle"></i> যাচাইকৃত
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                         <div class="card-body">
                             @if($report)
@@ -126,7 +144,35 @@
                                 <div class="text-center text-muted small">
                                     <i class="fas fa-clock me-1"></i>{{ $report->created_at->diffForHumans() }}
                                     <span class="d-block">{{ $report->created_at->format('d M Y, h:i A') }}</span>
-                                    <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
+                                    <div class="mt-1">
+                                        <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
+                                    </div>
+                                </div>
+                                
+                                <!-- Voting Section -->
+                                <div class="vote-section mt-3 pt-3 border-top" id="vote-section-{{ $report->id }}">
+                                    <p class="text-center small mb-2">এই তথ্য কি সঠিক?</p>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-success vote-btn" 
+                                                onclick="voteReport({{ $report->id }}, 'correct')" id="btn-correct-{{ $report->id }}">
+                                            <i class="fas fa-thumbs-up me-1"></i>সঠিক 
+                                            <span class="badge bg-success">{{ $report->correct_votes ?? 0 }}</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger vote-btn"
+                                                onclick="voteReport({{ $report->id }}, 'incorrect')" id="btn-incorrect-{{ $report->id }}">
+                                            <i class="fas fa-thumbs-down me-1"></i>ভুল 
+                                            <span class="badge bg-danger">{{ $report->incorrect_votes ?? 0 }}</span>
+                                        </button>
+                                    </div>
+                                    @if($isVerified)
+                                        <div class="text-center mt-2">
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>যাচাইকৃত তথ্য</span>
+                                        </div>
+                                    @elseif(($report->incorrect_votes ?? 0) > ($report->correct_votes ?? 0) && ($report->incorrect_votes ?? 0) >= 2)
+                                        <div class="text-center mt-2">
+                                            <span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>এই তথ্য ভুল হতে পারে</span>
+                                        </div>
+                                    @endif
                                 </div>
                             @else
                                 <div class="text-center text-muted py-4">
@@ -264,6 +310,48 @@ function filterByUpazila() {
     } else {
         window.location.href = '{{ route("fuel.index") }}';
     }
+}
+
+function voteReport(reportId, voteType) {
+    fetch(`/fuel/report/${reportId}/vote`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ vote: voteType })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update vote counts
+            const correctBtn = document.getElementById(`btn-correct-${reportId}`);
+            const incorrectBtn = document.getElementById(`btn-incorrect-${reportId}`);
+            
+            correctBtn.innerHTML = `<i class="fas fa-thumbs-up me-1"></i>সঠিক <span class="badge bg-success">${data.correct_votes}</span>`;
+            incorrectBtn.innerHTML = `<i class="fas fa-thumbs-down me-1"></i>ভুল <span class="badge bg-danger">${data.incorrect_votes}</span>`;
+            
+            // Disable buttons after voting
+            correctBtn.disabled = true;
+            incorrectBtn.disabled = true;
+            correctBtn.classList.add('disabled');
+            incorrectBtn.classList.add('disabled');
+            
+            // Show verification status
+            const voteSection = document.getElementById(`vote-section-${reportId}`);
+            if (data.is_verified) {
+                voteSection.innerHTML += '<div class="text-center mt-2"><span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>যাচাইকৃত তথ্য</span></div>';
+            }
+            
+            alert(data.message);
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        alert('সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    });
 }
 
 function deleteReport(id) {

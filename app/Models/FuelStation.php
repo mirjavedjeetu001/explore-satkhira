@@ -18,6 +18,7 @@ class FuelStation extends Model
         'latitude',
         'longitude',
         'is_active',
+        'view_count',
     ];
 
     protected $casts = [

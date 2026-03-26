@@ -16,7 +16,8 @@ class FuelController extends Controller
         $upazilas = Upazila::orderBy('name')->get();
         $selectedUpazila = $request->get('upazila');
         
-        $stationsQuery = FuelStation::with(['upazila', 'latestReport'])
+        // Get latest VERIFIED report for each station
+        $stationsQuery = FuelStation::with(['upazila'])
             ->active()
             ->orderBy('name');
         
@@ -25,6 +26,24 @@ class FuelController extends Controller
         }
         
         $stations = $stationsQuery->get();
+        
+        // Attach latest verified report for each station
+        $stations->each(function($station) {
+            $station->displayReport = FuelReport::where('fuel_station_id', $station->id)
+                ->where('is_verified', true)
+                ->orderByDesc('created_at')
+                ->first();
+            
+            // If no verified report, get latest unverified
+            if (!$station->displayReport) {
+                $station->displayReport = FuelReport::where('fuel_station_id', $station->id)
+                    ->orderByDesc('created_at')
+                    ->first();
+            }
+        });
+        
+        // Get total page views
+        $totalViews = FuelStation::sum('view_count');
         
         // Get my reports using session
         $sessionId = $request->cookie('fuel_session_id');
@@ -36,14 +55,17 @@ class FuelController extends Controller
                 ->get();
         }
         
-        return view('frontend.fuel.index', compact('upazilas', 'stations', 'selectedUpazila', 'myReports'));
+        return view('frontend.fuel.index', compact('upazilas', 'stations', 'selectedUpazila', 'myReports', 'totalViews'));
     }
     
     public function showStation($id)
     {
         $station = FuelStation::with(['upazila', 'reports' => function($q) {
-            $q->orderByDesc('created_at')->limit(10);
+            $q->orderByDesc('is_verified')->orderByDesc('created_at')->limit(10);
         }])->findOrFail($id);
+        
+        // Increment view count
+        $station->increment('view_count');
         
         return view('frontend.fuel.station', compact('station'));
     }
@@ -320,5 +342,44 @@ class FuelController extends Controller
                 'time' => $latestReport->created_at->diffForHumans(),
             ] : null,
         ]);
+    }
+    
+    // Public vote on report correctness
+    public function voteReport(Request $request, $id)
+    {
+        $report = FuelReport::findOrFail($id);
+        $voteType = $request->input('vote'); // 'correct' or 'incorrect'
+        
+        // Check if already voted using cookie
+        $votedReports = json_decode($request->cookie('fuel_voted_reports', '[]'), true);
+        
+        if (in_array($id, $votedReports)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'আপনি ইতিমধ্যে এই রিপোর্টে ভোট দিয়েছেন।'
+            ]);
+        }
+        
+        if ($voteType === 'correct') {
+            $report->increment('correct_votes');
+        } else {
+            $report->increment('incorrect_votes');
+        }
+        
+        // Auto-verify if correct votes >= 3 and more than incorrect
+        if ($report->correct_votes >= 3 && $report->correct_votes > $report->incorrect_votes) {
+            $report->update(['is_verified' => true]);
+        }
+        
+        // Mark as voted
+        $votedReports[] = $id;
+        
+        return response()->json([
+            'success' => true,
+            'message' => $voteType === 'correct' ? 'ধন্যবাদ! আপনি "সঠিক" বলেছেন। ✓' : 'ধন্যবাদ! আপনি "ভুল" বলেছেন।',
+            'correct_votes' => $report->correct_votes,
+            'incorrect_votes' => $report->incorrect_votes,
+            'is_verified' => $report->is_verified,
+        ])->cookie('fuel_voted_reports', json_encode($votedReports), 60 * 24 * 30); // 30 days
     }
 }

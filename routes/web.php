@@ -145,6 +145,7 @@ Route::prefix('fuel')->name('fuel.')->group(function () {
     Route::delete('/report/{id}', [\App\Http\Controllers\FuelController::class, 'deleteReport'])->name('delete-report');
     Route::get('/api/latest', [\App\Http\Controllers\FuelController::class, 'getLatestReports'])->name('api.latest');
     Route::get('/api/station/{id}', [\App\Http\Controllers\FuelController::class, 'getStationInfo'])->name('api.station');
+    Route::post('/report/{id}/vote', [\App\Http\Controllers\FuelController::class, 'voteReport'])->name('vote-report');
 });
 
 // Admin Panel Routes
