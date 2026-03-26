@@ -1266,6 +1266,7 @@
                 @foreach($fuelReports as $report)
                     @php
                         $hasAnyFuel = $report->petrol_available || $report->diesel_available || $report->octane_available;
+                        $isVerified = $report->is_verified || ($report->correct_votes >= 3 && $report->correct_votes > $report->incorrect_votes);
                     @endphp
                     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <div class="card h-100 fuel-card {{ $hasAnyFuel ? 'border-success' : 'border-danger' }}" style="border-width: 2px;">
@@ -1275,9 +1276,16 @@
                                         <h6 class="mb-0 fw-bold">{{ $report->fuelStation->name }}</h6>
                                         <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ $report->fuelStation->upazila->name }}</small>
                                     </div>
-                                    <span class="badge bg-{{ $hasAnyFuel ? 'success' : 'danger' }}">
-                                        {{ $hasAnyFuel ? 'আছে' : 'নেই' }}
-                                    </span>
+                                    <div class="text-end">
+                                        <span class="badge bg-{{ $hasAnyFuel ? 'success' : 'danger' }}">
+                                            {{ $hasAnyFuel ? 'আছে' : 'নেই' }}
+                                        </span>
+                                        @if($isVerified)
+                                            <span class="badge bg-warning text-dark d-block mt-1" title="যাচাইকৃত তথ্য">
+                                                <i class="fas fa-check-circle"></i> যাচাইকৃত
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="d-flex gap-2 mb-2">
                                     <span class="badge {{ $report->petrol_available ? 'bg-success' : 'bg-secondary' }}">
@@ -1290,11 +1298,25 @@
                                         অকটেন {{ $report->octane_available ? '✓' : '✗' }}
                                     </span>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="badge bg-{{ $report->queue_status == 'none' ? 'success' : ($report->queue_status == 'short' ? 'info' : ($report->queue_status == 'medium' ? 'warning' : 'danger')) }}">
                                         <i class="fas fa-users me-1"></i>{{ $report->queue_status_bangla }}
                                     </span>
-                                    <small class="text-muted">{{ $report->created_at->diffForHumans() }}</small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
+                                    </small>
+                                </div>
+                                <div class="text-center border-top pt-2">
+                                    <small class="text-muted d-block">
+                                        <i class="fas fa-clock me-1"></i>{{ $report->created_at->diffForHumans() }}
+                                    </small>
+                                    <small class="text-muted">
+                                        {{ $report->created_at->format('d M Y, h:i A') }}
+                                    </small>
+                                </div>
+                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                    <span class="badge bg-success"><i class="fas fa-thumbs-up me-1"></i>{{ $report->correct_votes ?? 0 }}</span>
+                                    <span class="badge bg-danger"><i class="fas fa-thumbs-down me-1"></i>{{ $report->incorrect_votes ?? 0 }}</span>
                                 </div>
                             </div>
                         </div>
