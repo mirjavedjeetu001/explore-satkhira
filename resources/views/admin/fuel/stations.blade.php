@@ -96,15 +96,26 @@ function deleteStation(id) {
         fetch(`/admin/fuel/stations/${id}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Delete failed');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
+                alert('পাম্প মুছে ফেলা হয়েছে');
                 location.reload();
             }
+        })
+        .catch(error => {
+            alert('মুছতে সমস্যা হয়েছে। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
+            console.error('Error:', error);
         });
     }
 }

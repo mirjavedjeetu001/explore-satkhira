@@ -47,7 +47,7 @@
                     @php $latestReport = $station->reports->first(); @endphp
                     <div class="card shadow-sm mb-4 border-{{ ($latestReport->petrol_available || $latestReport->diesel_available || $latestReport->octane_available) ? 'success' : 'danger' }}" style="border-width: 2px;">
                         <div class="card-header bg-{{ ($latestReport->petrol_available || $latestReport->diesel_available || $latestReport->octane_available) ? 'success' : 'danger' }} text-white">
-                            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>সর্বশেষ আপডেট - {{ $latestReport->created_at->diffForHumans() }}</h5>
+                            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>সর্বশেষ আপডেট - {{ $latestReport->created_at->diffForHumans() }} ({{ $latestReport->created_at->format('d M Y, h:i A') }})</h5>
                         </div>
                         <div class="card-body">
                             <div class="row g-4">

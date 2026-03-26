@@ -125,7 +125,7 @@
                                 <!-- Time & Reporter -->
                                 <div class="text-center text-muted small">
                                     <i class="fas fa-clock me-1"></i>{{ $report->created_at->diffForHumans() }}
-                                    <br>
+                                    <span class="d-block">{{ $report->created_at->format('d M Y, h:i A') }}</span>
                                     <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
                                 </div>
                             @else
