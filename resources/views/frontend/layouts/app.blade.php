@@ -48,7 +48,16 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/icon-512x512.png') }}">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#28a745">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Explore Satkhira">
+    <meta name="mobile-web-app-capable" content="yes">
     
     @yield('structured_data')
     
@@ -1391,5 +1400,160 @@
         }
     </style>
     @endif
+
+    <!-- Service Worker + Push Notification + App Install -->
+    <script>
+        const VAPID_PUBLIC_KEY = '{{ config("services.vapid.public_key") }}';
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async function() {
+                try {
+                    const reg = await navigator.serviceWorker.register('/sw.js');
+                    // Auto-subscribe to push after registration
+                    if ('PushManager' in window && VAPID_PUBLIC_KEY) {
+                        setTimeout(() => subscribeToPush(reg), 3000);
+                    }
+                } catch(e) {}
+            });
+        }
+        
+        async function subscribeToPush(reg) {
+            try {
+                // Check if notifications are supported
+                if (!('Notification' in window)) return;
+                
+                // Request permission explicitly (required on mobile/TWA)
+                let permission = Notification.permission;
+                if (permission === 'denied') return;
+                if (permission === 'default') {
+                    permission = await Notification.requestPermission();
+                    if (permission !== 'granted') return;
+                }
+                
+                let sub = await reg.pushManager.getSubscription();
+                if (sub) return; // Already subscribed
+                
+                const key = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: key
+                });
+                
+                const ua = navigator.userAgent;
+                let deviceType = 'desktop';
+                if (/android/i.test(ua)) deviceType = 'android';
+                else if (/iphone|ipad/i.test(ua)) deviceType = 'ios';
+                else if (/mobile/i.test(ua)) deviceType = 'mobile';
+                
+                let browser = 'unknown';
+                if (/chrome/i.test(ua) && !/edg/i.test(ua)) browser = 'Chrome';
+                else if (/firefox/i.test(ua)) browser = 'Firefox';
+                else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+                else if (/edg/i.test(ua)) browser = 'Edge';
+                
+                await fetch('/push/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        endpoint: sub.endpoint,
+                        keys: {
+                            p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
+                            auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))))
+                        },
+                        device_type: deviceType,
+                        browser: browser
+                    })
+                });
+            } catch(e) {}
+        }
+        
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = atob(base64);
+            return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+        }
+        
+        // App Install Banner
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+        
+        function showInstallBanner() {
+            if (document.querySelector('.app-install-banner')) return;
+            if (localStorage.getItem('installBannerDismissed')) return;
+            
+            const banner = document.createElement('div');
+            banner.className = 'app-install-banner';
+            banner.innerHTML = `
+                <div class="install-banner-content">
+                    <img src="/icons/icon-96x96.png" alt="App Icon" class="install-banner-icon">
+                    <div class="install-banner-text">
+                        <strong>Explore Satkhira অ্যাপ</strong>
+                        <small>দ্রুত অ্যাক্সেসের জন্য ইনস্টল করুন</small>
+                    </div>
+                    <button class="install-banner-btn" onclick="installApp()">ইনস্টল</button>
+                    <button class="install-banner-close" onclick="dismissInstallBanner()">&times;</button>
+                </div>
+            `;
+            document.body.appendChild(banner);
+        }
+        
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+            }
+            dismissInstallBanner();
+        }
+        
+        function dismissInstallBanner() {
+            const banner = document.querySelector('.app-install-banner');
+            if (banner) banner.remove();
+            localStorage.setItem('installBannerDismissed', Date.now());
+        }
+    </script>
+    
+    <style>
+        .app-install-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+            z-index: 9999;
+            padding: 12px 16px;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .install-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .install-banner-icon { width: 48px; height: 48px; border-radius: 10px; }
+        .install-banner-text { flex: 1; line-height: 1.3; }
+        .install-banner-text strong { display: block; font-size: 14px; color: #1a3c34; }
+        .install-banner-text small { color: #6c757d; font-size: 12px; }
+        .install-banner-btn {
+            background: #28a745; color: #fff; border: none; padding: 8px 20px;
+            border-radius: 20px; font-weight: 600; font-size: 14px; cursor: pointer;
+            white-space: nowrap;
+        }
+        .install-banner-close {
+            background: none; border: none; font-size: 24px; color: #999;
+            cursor: pointer; padding: 0 4px; line-height: 1;
+        }
+    </style>
 </body>
 </html>

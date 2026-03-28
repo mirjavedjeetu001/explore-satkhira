@@ -407,6 +407,11 @@
                     {{ $fuelEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.push-notifications.index') }}" class="nav-link {{ request()->routeIs('admin.push-notifications.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i> <span>📲 পুশ নোটিফিকেশন</span>
+                @php $pushCount = \App\Models\PushSubscription::where('is_active', true)->count(); @endphp
+                <span class="badge bg-info text-white">{{ $pushCount }}</span>
+            </a>
             
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

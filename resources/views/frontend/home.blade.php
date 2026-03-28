@@ -8,7 +8,7 @@
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 @forelse($sliders as $index => $slider)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ $slider->image ? asset('storage/' . $slider->image) : 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920' }}')">
+                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)), url('{{ $slider->image ? asset('storage/' . $slider->image) . '?v=' . $slider->updated_at->timestamp : 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920' }}')">
                         <div class="carousel-caption">
                             <h2 data-aos="fade-up">{{ app()->getLocale() == 'bn' ? ($slider->title_bn ?? $slider->title ?? __('messages.hero_title')) : ($slider->title ?? __('messages.hero_title')) }}</h2>
                             <p data-aos="fade-up" data-aos-delay="100">{{ $slider->subtitle ?? __('messages.hero_subtitle') }}</p>
@@ -20,7 +20,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="carousel-item active" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920')">
+                    <div class="carousel-item active" style="background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)), url('https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1920')">
                         <div class="carousel-caption">
                             <h2>{{ __('messages.hero_title') }}</h2>
                             <p>{{ __('messages.hero_subtitle') }}</p>

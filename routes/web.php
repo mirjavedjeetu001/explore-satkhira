@@ -299,6 +299,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::put('settings', [\App\Http\Controllers\Admin\FuelController::class, 'updateSettings'])->name('settings.update');
         Route::post('toggle', [\App\Http\Controllers\Admin\FuelController::class, 'toggleFeature'])->name('toggle');
     });
+    
+    // Push Notifications Management
+    Route::prefix('push-notifications')->name('push-notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\Admin\PushNotificationController::class, 'create'])->name('create');
+        Route::post('send', [\App\Http\Controllers\Admin\PushNotificationController::class, 'send'])->name('send');
+        Route::get('subscribers', [\App\Http\Controllers\Admin\PushNotificationController::class, 'subscribers'])->name('subscribers');
+        Route::delete('{pushNotification}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
+    });
 });
+
+// Push Subscription API (public, no auth needed)
+Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
+Route::post('/push/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
+Route::get('/push/vapid-key', [\App\Http\Controllers\PushSubscriptionController::class, 'vapidPublicKey'])->name('push.vapid-key');
+
+// App Download Page
+Route::get('/app', [\App\Http\Controllers\AppDownloadController::class, 'show'])->name('app.download');
+Route::get('/app/download', [\App\Http\Controllers\AppDownloadController::class, 'download'])->name('app.download.file');
 
 require __DIR__.'/auth.php';

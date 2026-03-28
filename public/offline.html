@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#28a745">
+    <title>অফলাইন - এক্সপ্লোর সাতক্ষীরা</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #1a3c34;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #6c757d;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #28a745;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📡</div>
+        <h1>ইন্টারনেট সংযোগ নেই</h1>
+        <p>আপনার ডিভাইসটি বর্তমানে অফলাইনে আছে। অনুগ্রহ করে ইন্টারনেট সংযোগ পুনরুদ্ধার করে আবার চেষ্টা করুন।</p>
+        <button class="btn" onclick="window.location.reload()">আবার চেষ্টা করুন</button>
+    </div>
+</body>
+</html>
