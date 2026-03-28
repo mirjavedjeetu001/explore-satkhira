@@ -16,8 +16,9 @@ class FuelController extends Controller
         $upazilas = Upazila::orderBy('name')->get();
         $selectedUpazila = $request->get('upazila');
         
-        // Get latest VERIFIED report for each station
+        // Get stations with comment counts
         $stationsQuery = FuelStation::with(['upazila'])
+            ->withCount('comments')
             ->active()
             ->orderBy('name');
         
@@ -27,23 +28,23 @@ class FuelController extends Controller
         
         $stations = $stationsQuery->get();
         
-        // Attach latest verified report for each station
+        // Attach latest report for each station (most recent first)
         $stations->each(function($station) {
             $station->displayReport = FuelReport::where('fuel_station_id', $station->id)
-                ->where('is_verified', true)
                 ->orderByDesc('created_at')
                 ->first();
-            
-            // If no verified report, get latest unverified
-            if (!$station->displayReport) {
-                $station->displayReport = FuelReport::where('fuel_station_id', $station->id)
-                    ->orderByDesc('created_at')
-                    ->first();
-            }
         });
         
-        // Get total page views
-        $totalViews = FuelStation::sum('view_count');
+        // Sort by latest update time (most recent first)
+        $stations = $stations->sortBy(function($station) {
+            $report = $station->displayReport;
+            if (!$report) return PHP_INT_MAX; // no report = last
+            return -$report->created_at->timestamp;
+        })->values();
+        
+        // Increment and get total page views
+        FuelSetting::incrementPageViews();
+        $totalViews = (int) FuelSetting::get('fuel_page_views', 0);
         
         // Get my reports using session
         $sessionId = $request->cookie('fuel_session_id');
@@ -61,7 +62,17 @@ class FuelController extends Controller
     public function showStation($id)
     {
         $station = FuelStation::with(['upazila', 'reports' => function($q) {
-            $q->orderByDesc('is_verified')->orderByDesc('created_at')->limit(10);
+            // Verified first, then by created_at desc, hide 10+ dislikes unless verified
+            $q->where(function($query) {
+                $query->where('is_verified', true)
+                      ->orWhere('incorrect_votes', '<', 10)
+                      ->orWhereNull('incorrect_votes');
+            })
+            ->orderByDesc('is_verified')
+            ->orderByDesc('created_at')
+            ->limit(20);
+        }, 'comments' => function($q) {
+            $q->orderByDesc('created_at')->limit(50);
         }])->findOrFail($id);
         
         // Increment view count
@@ -75,6 +86,10 @@ class FuelController extends Controller
         $station = null;
         if ($stationId) {
             $station = FuelStation::with('upazila')->findOrFail($stationId);
+            if ($station->is_locked) {
+                return redirect()->route('fuel.station', $station->id)
+                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে যোগাযোগ করুন: 01811480222');
+            }
         }
         $upazilas = Upazila::orderBy('name')->get();
         
@@ -98,10 +113,16 @@ class FuelController extends Controller
             'diesel_available' => 'nullable|boolean',
             'octane_available' => 'nullable|boolean',
             'petrol_price' => 'nullable|numeric|min:0',
+            'petrol_selling_price' => 'nullable|numeric|min:0',
             'diesel_price' => 'nullable|numeric|min:0',
+            'diesel_selling_price' => 'nullable|numeric|min:0',
             'octane_price' => 'nullable|numeric|min:0',
+            'octane_selling_price' => 'nullable|numeric|min:0',
+            'fixed_amount' => 'nullable|numeric|min:0',
             'queue_status' => 'required|in:none,short,medium,long',
             'notes' => 'nullable|string|max:500',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ], [
             'fuel_station_id.required_without' => 'একটি পেট্রোল পাম্প নির্বাচন করুন অথবা নতুন পাম্প যুক্ত করুন।',
             'fuel_station_id.exists' => 'নির্বাচিত পাম্পটি সঠিক নয়।',
@@ -112,7 +133,24 @@ class FuelController extends Controller
             'edit_pin.required' => '৪ সংখ্যার PIN দিন।',
             'edit_pin.digits' => 'PIN অবশ্যই ৪ সংখ্যার হতে হবে।',
             'queue_status.required' => 'লাইনের অবস্থা নির্বাচন করুন।',
+            'images.required' => 'পাম্পের ছবি আপলোড করা বাধ্যতামূলক।',
+            'images.min' => 'কমপক্ষে ১টি ছবি আপলোড করুন।',
+            'images.*.image' => 'ফাইলটি অবশ্যই একটি ছবি হতে হবে।',
+            'images.*.mimes' => 'ছবি jpeg, png, jpg, gif বা webp ফরম্যাটে হতে হবে।',
+            'images.*.max' => 'প্রতিটি ছবির সাইজ ৫MB এর বেশি হতে পারবে না।',
         ]);
+        
+        // Handle multiple image uploads
+        $imagePaths = [];
+        $firstImage = null;
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imageName = 'fuel_' . time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/fuel'), $imageName);
+                $imagePaths[] = $imageName;
+            }
+            $firstImage = $imagePaths[0] ?? null;
+        }
         
         // Handle new station creation
         if ($request->is_new_station) {
@@ -126,6 +164,12 @@ class FuelController extends Controller
             $fuelStationId = $station->id;
         } else {
             $fuelStationId = $stationId ?? $validated['fuel_station_id'];
+            // Check if station is locked
+            $checkStation = FuelStation::find($fuelStationId);
+            if ($checkStation && $checkStation->is_locked) {
+                return redirect()->route('fuel.station', $fuelStationId)
+                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে যোগাযোগ করুন: 01811480222');
+            }
         }
         
         // Get or create session ID
@@ -145,10 +189,16 @@ class FuelController extends Controller
             'diesel_available' => $request->boolean('diesel_available'),
             'octane_available' => $request->boolean('octane_available'),
             'petrol_price' => $validated['petrol_price'] ?? null,
+            'petrol_selling_price' => $validated['petrol_selling_price'] ?? null,
             'diesel_price' => $validated['diesel_price'] ?? null,
+            'diesel_selling_price' => $validated['diesel_selling_price'] ?? null,
             'octane_price' => $validated['octane_price'] ?? null,
+            'octane_selling_price' => $validated['octane_selling_price'] ?? null,
+            'fixed_amount' => $validated['fixed_amount'] ?? null,
             'queue_status' => $validated['queue_status'],
             'notes' => $validated['notes'] ?? null,
+            'image' => $firstImage,
+            'images' => $imagePaths,
         ]);
         
         return redirect()->route('fuel.index')
@@ -221,22 +271,46 @@ class FuelController extends Controller
             'diesel_available' => 'nullable|boolean',
             'octane_available' => 'nullable|boolean',
             'petrol_price' => 'nullable|numeric|min:0',
+            'petrol_selling_price' => 'nullable|numeric|min:0',
             'diesel_price' => 'nullable|numeric|min:0',
+            'diesel_selling_price' => 'nullable|numeric|min:0',
             'octane_price' => 'nullable|numeric|min:0',
+            'octane_selling_price' => 'nullable|numeric|min:0',
+            'fixed_amount' => 'nullable|numeric|min:0',
             'queue_status' => 'required|in:none,short,medium,long',
             'notes' => 'nullable|string|max:500',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
         
-        $report->update([
+        // Handle new images
+        $updateData = [
             'petrol_available' => $request->boolean('petrol_available'),
             'diesel_available' => $request->boolean('diesel_available'),
             'octane_available' => $request->boolean('octane_available'),
             'petrol_price' => $validated['petrol_price'] ?? null,
+            'petrol_selling_price' => $validated['petrol_selling_price'] ?? null,
             'diesel_price' => $validated['diesel_price'] ?? null,
+            'diesel_selling_price' => $validated['diesel_selling_price'] ?? null,
             'octane_price' => $validated['octane_price'] ?? null,
+            'octane_selling_price' => $validated['octane_selling_price'] ?? null,
+            'fixed_amount' => $validated['fixed_amount'] ?? null,
             'queue_status' => $validated['queue_status'],
             'notes' => $validated['notes'] ?? null,
-        ]);
+        ];
+        
+        if ($request->hasFile('images')) {
+            $imagePaths = $report->images ?? [];
+            foreach ($request->file('images') as $image) {
+                $imageName = 'fuel_' . time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/fuel'), $imageName);
+                $imagePaths[] = $imageName;
+            }
+            $updateData['images'] = $imagePaths;
+            $updateData['image'] = $imagePaths[0] ?? $report->image;
+        }
+        
+        $report->update($updateData);
         
         return redirect()->route('fuel.index')
             ->with('success', 'রিপোর্ট সফলভাবে আপডেট হয়েছে।');
@@ -336,6 +410,7 @@ class FuelController extends Controller
                 'petrol_price' => $latestReport->petrol_price,
                 'diesel_price' => $latestReport->diesel_price,
                 'octane_price' => $latestReport->octane_price,
+                'fixed_amount' => $latestReport->fixed_amount,
                 'queue_status' => $latestReport->queue_status,
                 'notes' => $latestReport->notes,
                 'reporter_name' => $latestReport->reporter_name,
@@ -381,5 +456,31 @@ class FuelController extends Controller
             'incorrect_votes' => $report->incorrect_votes,
             'is_verified' => $report->is_verified,
         ])->cookie('fuel_voted_reports', json_encode($votedReports), 60 * 24 * 30); // 30 days
+    }
+    
+    // Store comment for a station
+    public function storeComment(Request $request, $stationId)
+    {
+        $validated = $request->validate([
+            'commenter_name' => 'required|string|max:100',
+            'commenter_phone' => 'required|string|max:20',
+            'comment' => 'required|string|max:500',
+        ], [
+            'commenter_name.required' => 'আপনার নাম দিন।',
+            'commenter_phone.required' => 'মোবাইল নম্বর দিন।',
+            'comment.required' => 'মন্তব্য লিখুন।',
+        ]);
+        
+        $station = FuelStation::findOrFail($stationId);
+        
+        $comment = \App\Models\FuelComment::create([
+            'fuel_station_id' => $stationId,
+            'commenter_name' => $validated['commenter_name'],
+            'commenter_phone' => $validated['commenter_phone'],
+            'comment' => $validated['comment'],
+        ]);
+        
+        return redirect()->route('fuel.station', $stationId)
+            ->with('success', 'আপনার মন্তব্য সফলভাবে যুক্ত হয়েছে।');
     }
 }

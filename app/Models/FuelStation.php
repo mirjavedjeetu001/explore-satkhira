@@ -18,11 +18,13 @@ class FuelStation extends Model
         'latitude',
         'longitude',
         'is_active',
+        'is_locked',
         'view_count',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_locked' => 'boolean',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
@@ -35,6 +37,11 @@ class FuelStation extends Model
     public function reports()
     {
         return $this->hasMany(FuelReport::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(FuelComment::class);
     }
 
     public function latestReport()

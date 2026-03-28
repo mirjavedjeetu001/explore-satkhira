@@ -45,6 +45,11 @@
                                 <i class="fas fa-question-circle me-2"></i>আমার প্রশ্নসমূহ
                             </a>
                         @endif
+                        @if(auth()->user()->is_upazila_moderator || auth()->user()->isAdmin())
+                            <a href="{{ route('dashboard.fuel.reports') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.fuel.*') ? 'active' : '' }}">
+                                <i class="fas fa-gas-pump me-2"></i>জ্বালানি ম্যানেজমেন্ট
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action active">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>

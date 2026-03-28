@@ -73,10 +73,21 @@
                     $report = $station->displayReport;
                     $hasAnyFuel = $report && ($report->petrol_available || $report->diesel_available || $report->octane_available);
                     $isVerified = $report && $report->is_verified;
+                    $isToday = $report && $report->created_at->isToday();
+                    $isLocked = $station->is_locked;
+                    $reportImage = null;
+                    if ($report) {
+                        if ($report->images && count($report->images) > 0) {
+                            $reportImage = $report->images[0];
+                        } elseif ($report->image) {
+                            $reportImage = $report->image;
+                        }
+                    }
                 @endphp
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm station-card {{ $hasAnyFuel ? 'border-success' : 'border-danger' }}" style="border-width: 2px;">
-                        <div class="card-header {{ $hasAnyFuel ? 'bg-success' : 'bg-danger' }} text-white py-3">
+                    <a href="{{ route('fuel.station', $station->id) }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm station-card {{ $isLocked ? 'border-secondary' : ($hasAnyFuel ? 'border-success' : 'border-danger') }}" style="border-width: 2px;">
+                        <div class="card-header {{ $isLocked ? 'bg-secondary' : ($hasAnyFuel ? 'bg-success' : 'bg-danger') }} text-white py-3">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="mb-0 fw-bold">
@@ -84,7 +95,11 @@
                                     </h5>
                                     <small><i class="fas fa-map-marker-alt me-1"></i>{{ $station->upazila->name }}</small>
                                 </div>
-                                @if($isVerified)
+                                @if($isLocked)
+                                    <span class="badge bg-dark" title="অ্যাডমিন বন্ধ রেখেছে">
+                                        <i class="fas fa-lock"></i> বন্ধ
+                                    </span>
+                                @elseif($isVerified)
                                     <span class="badge bg-warning text-dark" title="যাচাইকৃত তথ্য">
                                         <i class="fas fa-check-circle"></i> যাচাইকৃত
                                     </span>
@@ -92,7 +107,27 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            @if($report)
+                            @if($isLocked)
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-lock fa-2x mb-2"></i>
+                                    <p class="mb-1 fw-bold text-danger">অ্যাডমিন বন্ধ রেখেছে</p>
+                                    <p class="mb-0 small">যোগাযোগ করুন: 01811480222</p>
+                                </div>
+                            @elseif($report)
+                                {{-- Image thumbnail --}}
+                                @if($reportImage)
+                                    <div class="text-center mb-2">
+                                        <img src="{{ asset('uploads/fuel/' . $reportImage) }}" alt="ছবি" class="img-fluid rounded" style="max-height: 120px; object-fit: cover; width: 100%;">
+                                    </div>
+                                @endif
+                                
+                                {{-- No update today notice --}}
+                                @if(!$isToday)
+                                    <div class="alert alert-warning py-1 px-2 mb-2 text-center small">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>আজ কোন আপডেট করা হয়নি
+                                    </div>
+                                @endif
+
                                 <!-- Fuel Availability -->
                                 <div class="row g-2 mb-3">
                                     <div class="col-4 text-center">
@@ -103,7 +138,10 @@
                                                 {{ $report->petrol_available ? 'আছে' : 'নেই' }}
                                             </span>
                                             @if($report->petrol_price)
-                                                <small class="d-block text-muted">৳{{ number_format($report->petrol_price, 0) }}</small>
+                                                <small class="d-block text-muted">৳{{ number_format($report->petrol_price, 0) }}/লি.</small>
+                                            @endif
+                                            @if($report->petrol_selling_price)
+                                                <small class="d-block fw-bold text-primary">৳{{ number_format($report->petrol_selling_price, 0) }}</small>
                                             @endif
                                         </div>
                                     </div>
@@ -115,7 +153,10 @@
                                                 {{ $report->diesel_available ? 'আছে' : 'নেই' }}
                                             </span>
                                             @if($report->diesel_price)
-                                                <small class="d-block text-muted">৳{{ number_format($report->diesel_price, 0) }}</small>
+                                                <small class="d-block text-muted">৳{{ number_format($report->diesel_price, 0) }}/লি.</small>
+                                            @endif
+                                            @if($report->diesel_selling_price)
+                                                <small class="d-block fw-bold text-primary">৳{{ number_format($report->diesel_selling_price, 0) }}</small>
                                             @endif
                                         </div>
                                     </div>
@@ -127,7 +168,10 @@
                                                 {{ $report->octane_available ? 'আছে' : 'নেই' }}
                                             </span>
                                             @if($report->octane_price)
-                                                <small class="d-block text-muted">৳{{ number_format($report->octane_price, 0) }}</small>
+                                                <small class="d-block text-muted">৳{{ number_format($report->octane_price, 0) }}/লি.</small>
+                                            @endif
+                                            @if($report->octane_selling_price)
+                                                <small class="d-block fw-bold text-primary">৳{{ number_format($report->octane_selling_price, 0) }}</small>
                                             @endif
                                         </div>
                                     </div>
@@ -138,6 +182,13 @@
                                     <span class="badge bg-{{ $report->queue_status == 'none' ? 'success' : ($report->queue_status == 'short' ? 'info' : ($report->queue_status == 'medium' ? 'warning' : 'danger')) }} fs-6 px-3 py-2">
                                         <i class="fas fa-users me-1"></i>{{ $report->queue_status_bangla }}
                                     </span>
+                                    @if($report->fixed_amount)
+                                        <div class="mt-2">
+                                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                                <i class="fas fa-hand-holding-usd me-1"></i>মাথাপিছু ৳{{ number_format($report->fixed_amount, 0) }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Time & Reporter -->
@@ -154,12 +205,12 @@
                                     <p class="text-center small mb-2">এই তথ্য কি সঠিক?</p>
                                     <div class="d-flex justify-content-center gap-2">
                                         <button type="button" class="btn btn-sm btn-outline-success vote-btn" 
-                                                onclick="voteReport({{ $report->id }}, 'correct')" id="btn-correct-{{ $report->id }}">
+                                                onclick="event.preventDefault(); voteReport({{ $report->id }}, 'correct')" id="btn-correct-{{ $report->id }}">
                                             <i class="fas fa-thumbs-up me-1"></i>সঠিক 
                                             <span class="badge bg-success">{{ $report->correct_votes ?? 0 }}</span>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-danger vote-btn"
-                                                onclick="voteReport({{ $report->id }}, 'incorrect')" id="btn-incorrect-{{ $report->id }}">
+                                                onclick="event.preventDefault(); voteReport({{ $report->id }}, 'incorrect')" id="btn-incorrect-{{ $report->id }}">
                                             <i class="fas fa-thumbs-down me-1"></i>ভুল 
                                             <span class="badge bg-danger">{{ $report->incorrect_votes ?? 0 }}</span>
                                         </button>
@@ -178,23 +229,26 @@
                                 <div class="text-center text-muted py-4">
                                     <i class="fas fa-info-circle fa-2x mb-2"></i>
                                     <p class="mb-0">এই পাম্পে কোন আপডেট নেই</p>
-                                    <a href="{{ route('fuel.create-report', $station->id) }}" class="btn btn-sm btn-outline-primary mt-2">
-                                        <i class="fas fa-plus"></i> আপডেট দিন
-                                    </a>
                                 </div>
                             @endif
                         </div>
                         <div class="card-footer bg-light">
                             <div class="d-flex gap-2">
-                                <a href="{{ route('fuel.station', $station->id) }}" class="btn btn-sm btn-outline-primary flex-fill">
-                                    <i class="fas fa-history me-1"></i>ইতিহাস
-                                </a>
-                                <a href="{{ route('fuel.create-report', $station->id) }}" class="btn btn-sm btn-primary flex-fill">
+                                <span class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="fas fa-eye me-1"></i>বিস্তারিত দেখুন
+                                </span>
+                                <span class="btn btn-sm btn-outline-secondary flex-fill">
+                                    <i class="fas fa-comments me-1"></i>মন্তব্য {{ $station->comments_count > 0 ? '(' . $station->comments_count . ')' : 'করুন' }}
+                                </span>
+                                @if(!$isLocked)
+                                <span class="btn btn-sm btn-primary flex-fill">
                                     <i class="fas fa-plus me-1"></i>আপডেট দিন
-                                </a>
+                                </span>
+                                @endif
                             </div>
                         </div>
                     </div>
+                    </a>
                 </div>
             @empty
                 <div class="col-12">

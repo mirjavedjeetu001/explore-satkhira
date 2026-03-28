@@ -8,6 +8,7 @@ use App\Models\FuelReport;
 use App\Models\FuelSetting;
 use App\Models\Upazila;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class FuelController extends Controller
 {
@@ -90,6 +91,18 @@ class FuelController extends Controller
         $station->delete();
         
         return response()->json(['success' => true, 'message' => 'পাম্প মুছে ফেলা হয়েছে।']);
+    }
+    
+    public function toggleLock($id)
+    {
+        $station = FuelStation::findOrFail($id);
+        $station->update(['is_locked' => !$station->is_locked]);
+        
+        return response()->json([
+            'success' => true,
+            'is_locked' => $station->is_locked,
+            'message' => $station->is_locked ? 'পাম্প লক করা হয়েছে। এখন কেউ আপডেট দিতে পারবে না।' : 'পাম্প আনলক করা হয়েছে।',
+        ]);
     }
     
     // Reports Management
@@ -203,6 +216,100 @@ class FuelController extends Controller
         $report->delete();
         
         return response()->json(['success' => true, 'message' => 'রিপোর্ট মুছে ফেলা হয়েছে।']);
+    }
+    
+    public function showReport($id)
+    {
+        $report = FuelReport::with(['fuelStation.upazila'])->findOrFail($id);
+        return view('admin.fuel.show-report', compact('report'));
+    }
+    
+    public function editReport($id)
+    {
+        $report = FuelReport::with(['fuelStation.upazila'])->findOrFail($id);
+        return view('admin.fuel.edit-report', compact('report'));
+    }
+    
+    public function updateReport(Request $request, $id)
+    {
+        $report = FuelReport::findOrFail($id);
+        
+        $validated = $request->validate([
+            'reporter_name' => 'required|string|max:100',
+            'reporter_phone' => 'required|string|max:20',
+            'petrol_available' => 'nullable|boolean',
+            'diesel_available' => 'nullable|boolean',
+            'octane_available' => 'nullable|boolean',
+            'petrol_price' => 'nullable|numeric|min:0',
+            'petrol_selling_price' => 'nullable|numeric|min:0',
+            'diesel_price' => 'nullable|numeric|min:0',
+            'diesel_selling_price' => 'nullable|numeric|min:0',
+            'octane_price' => 'nullable|numeric|min:0',
+            'octane_selling_price' => 'nullable|numeric|min:0',
+            'fixed_amount' => 'nullable|numeric|min:0',
+            'queue_status' => 'required|in:none,short,medium,long',
+            'notes' => 'nullable|string|max:500',
+            'is_verified' => 'nullable|boolean',
+            'new_images' => 'nullable|array',
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        ]);
+        
+        $updateData = [
+            'reporter_name' => $validated['reporter_name'],
+            'reporter_phone' => $validated['reporter_phone'],
+            'petrol_available' => $request->boolean('petrol_available'),
+            'diesel_available' => $request->boolean('diesel_available'),
+            'octane_available' => $request->boolean('octane_available'),
+            'petrol_price' => $validated['petrol_price'] ?? null,
+            'petrol_selling_price' => $validated['petrol_selling_price'] ?? null,
+            'diesel_price' => $validated['diesel_price'] ?? null,
+            'diesel_selling_price' => $validated['diesel_selling_price'] ?? null,
+            'octane_price' => $validated['octane_price'] ?? null,
+            'octane_selling_price' => $validated['octane_selling_price'] ?? null,
+            'fixed_amount' => $validated['fixed_amount'] ?? null,
+            'queue_status' => $validated['queue_status'],
+            'notes' => $validated['notes'] ?? null,
+            'is_verified' => $request->boolean('is_verified'),
+        ];
+        
+        // Handle new images
+        if ($request->hasFile('new_images')) {
+            $imagePaths = $report->images ?? [];
+            foreach ($request->file('new_images') as $image) {
+                $imageName = 'fuel_' . time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/fuel'), $imageName);
+                $imagePaths[] = $imageName;
+            }
+            $updateData['images'] = $imagePaths;
+            $updateData['image'] = $imagePaths[0] ?? $report->image;
+        }
+        
+        $report->update($updateData);
+        
+        return redirect()->route('admin.fuel.reports')
+            ->with('success', 'রিপোর্ট সফলভাবে আপডেট হয়েছে।');
+    }
+    
+    public function deleteReportImage(Request $request, $id)
+    {
+        $report = FuelReport::findOrFail($id);
+        $imageToDelete = $request->input('image');
+        
+        $images = $report->images ?? [];
+        $images = array_values(array_filter($images, fn($img) => $img !== $imageToDelete));
+        
+        // Delete file from disk
+        $filePath = public_path('uploads/fuel/' . $imageToDelete);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        
+        $report->update([
+            'images' => $images,
+            'image' => $images[0] ?? null,
+        ]);
+        
+        return response()->json(['success' => true, 'message' => 'ছবি মুছে ফেলা হয়েছে।']);
     }
     
     // Settings

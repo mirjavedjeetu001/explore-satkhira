@@ -20,10 +20,16 @@ class FuelReport extends Model
         'diesel_available',
         'octane_available',
         'petrol_price',
+        'petrol_selling_price',
         'diesel_price',
+        'diesel_selling_price',
         'octane_price',
+        'octane_selling_price',
+        'fixed_amount',
         'queue_status',
         'notes',
+        'image',
+        'images',
         'is_verified',
         'correct_votes',
         'incorrect_votes',
@@ -37,6 +43,11 @@ class FuelReport extends Model
         'petrol_price' => 'decimal:2',
         'diesel_price' => 'decimal:2',
         'octane_price' => 'decimal:2',
+        'petrol_selling_price' => 'decimal:2',
+        'diesel_selling_price' => 'decimal:2',
+        'octane_selling_price' => 'decimal:2',
+        'fixed_amount' => 'decimal:2',
+        'images' => 'array',
     ];
 
     public function fuelStation()

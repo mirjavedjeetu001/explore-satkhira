@@ -32,6 +32,11 @@
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-tachometer-alt me-2"></i>ড্যাশবোর্ড
                         </a>
+                        @if(auth()->user()->is_upazila_moderator || auth()->user()->isAdmin())
+                            <a href="{{ route('dashboard.fuel.reports') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.fuel.*') ? 'active' : '' }}">
+                                <i class="fas fa-gas-pump me-2"></i>জ্বালানি ম্যানেজমেন্ট
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>

@@ -63,12 +63,18 @@
                                 <span class="badge {{ $station->is_active ? 'bg-success' : 'bg-secondary' }}">
                                     {{ $station->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়' }}
                                 </span>
+                                @if($station->is_locked)
+                                    <span class="badge bg-danger"><i class="fas fa-lock me-1"></i>লক</span>
+                                @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.fuel.stations.edit', $station->id) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('admin.fuel.stations.edit', $station->id) }}" class="btn btn-sm btn-outline-primary" title="এডিট">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteStation({{ $station->id }})">
+                                <button class="btn btn-sm {{ $station->is_locked ? 'btn-warning' : 'btn-outline-warning' }}" onclick="toggleLock({{ $station->id }})" title="{{ $station->is_locked ? 'আনলক করুন' : 'লক করুন' }}">
+                                    <i class="fas fa-{{ $station->is_locked ? 'lock-open' : 'lock' }}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteStation({{ $station->id }})" title="মুছুন">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -91,6 +97,25 @@
 
 @push('scripts')
 <script>
+function toggleLock(id) {
+    fetch(`/admin/fuel/stations/${id}/toggle-lock`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        }
+    })
+    .catch(error => alert('একটি ত্রুটি হয়েছে'));
+}
+
 function deleteStation(id) {
     if (confirm('আপনি কি এই পাম্পটি মুছে ফেলতে চান? এর সব রিপোর্টও মুছে যাবে।')) {
         fetch(`/admin/fuel/stations/${id}`, {

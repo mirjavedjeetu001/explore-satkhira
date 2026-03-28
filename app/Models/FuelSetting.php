@@ -32,4 +32,14 @@ class FuelSetting extends Model
     {
         return static::get('is_enabled', '1') === '1';
     }
+
+    public static function incrementPageViews()
+    {
+        $updated = static::where('key', 'fuel_page_views')
+            ->update(['value' => \DB::raw('CAST(value AS UNSIGNED) + 1')]);
+        
+        if (!$updated) {
+            static::create(['key' => 'fuel_page_views', 'value' => '1']);
+        }
+    }
 }

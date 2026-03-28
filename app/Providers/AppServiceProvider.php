@@ -14,7 +14,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Fix public path for shared hosting where public_html is separate from app directory
+        $publicHtml = dirname(base_path()) . '/public_html/exploresatkhira.com';
+        if (is_dir($publicHtml)) {
+            $this->app->usePublicPath($publicHtml);
+        }
     }
 
     /**

@@ -194,11 +194,17 @@
                                 <small class="text-muted">{{ $report->created_at->format('h:i A') }}</small>
                             </td>
                             <td>
+                                <a href="{{ route('admin.fuel.reports.show', $report->id) }}" class="btn btn-sm btn-outline-info" title="বিস্তারিত">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.fuel.reports.edit', $report->id) }}" class="btn btn-sm btn-outline-primary" title="এডিট">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <button class="btn btn-sm {{ $report->is_verified ? 'btn-success' : 'btn-outline-success' }}" 
                                         onclick="verifyReport({{ $report->id }})" title="{{ $report->is_verified ? 'ভেরিফাইড' : 'ভেরিফাই করুন' }}">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport({{ $report->id }})">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteReport({{ $report->id }})" title="মুছুন">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>

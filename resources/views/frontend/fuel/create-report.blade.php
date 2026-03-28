@@ -18,7 +18,7 @@
 
                 <div class="card shadow">
                     <div class="card-body p-4">
-                        <form action="{{ route('fuel.store-report', isset($station) ? $station->id : null) }}" method="POST">
+                        <form action="{{ route('fuel.store-report', isset($station) ? $station->id : null) }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             @if(isset($station))
@@ -181,8 +181,10 @@
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
                                                 <input class="form-check-input" type="checkbox" name="petrol_available" value="1" id="petrolAvailable" style="width: 3em; height: 1.5em;">
                                             </div>
-                                            <label class="form-label small text-muted">দাম (ঐচ্ছিক)</label>
-                                            <input type="number" name="petrol_price" class="form-control text-center" placeholder="৳">
+                                            <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="petrol_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="petrol_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
                                         </div>
                                     </div>
                                 </div>
@@ -195,8 +197,10 @@
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
                                                 <input class="form-check-input" type="checkbox" name="diesel_available" value="1" id="dieselAvailable" style="width: 3em; height: 1.5em;">
                                             </div>
-                                            <label class="form-label small text-muted">দাম (ঐচ্ছিক)</label>
-                                            <input type="number" name="diesel_price" class="form-control text-center" placeholder="৳">
+                                            <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="diesel_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="diesel_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
                                         </div>
                                     </div>
                                 </div>
@@ -209,9 +213,27 @@
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
                                                 <input class="form-check-input" type="checkbox" name="octane_available" value="1" id="octaneAvailable" style="width: 3em; height: 1.5em;">
                                             </div>
-                                            <label class="form-label small text-muted">দাম (ঐচ্ছিক)</label>
-                                            <input type="number" name="octane_price" class="form-control text-center" placeholder="৳">
+                                            <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="octane_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
+                                            <input type="number" step="0.01" name="octane_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fixed Amount Limit -->
+                            <div class="mb-4">
+                                <h5 class="mb-3 fw-bold text-primary"><i class="fas fa-hand-holding-usd me-2"></i>মাথাপিছু কত টাকার তেল দিচ্ছে?</h5>
+                                <p class="text-muted small mb-2">তেলের সংকটে পাম্প যদি নির্দিষ্ট পরিমাণে তেল দেয় (যেমন ১০০, ২০০, ৫০০ টাকা) তাহলে এখানে লিখুন</p>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text"><i class="fas fa-money-bill-wave text-success"></i></span>
+                                            <input type="number" name="fixed_amount" class="form-control text-center" placeholder="যেমন: 500" step="1" min="0">
+                                            <span class="input-group-text">টাকা</span>
+                                        </div>
+                                        <small class="text-muted">খালি রাখলে "সীমাহীন" ধরে নেওয়া হবে</small>
                                     </div>
                                 </div>
                             </div>
@@ -247,6 +269,20 @@
                                         <span>বড় লাইন</span>
                                     </label>
                                 </div>
+                            </div>
+
+                            <!-- Image Upload (Required) -->
+                            <div class="mb-4">
+                                <h5 class="mb-3 fw-bold text-primary"><i class="fas fa-camera me-2"></i>ছবি আপলোড করুন (ঐচ্ছিক)</h5>
+                                <p class="text-muted small mb-2">পাম্পের তেল লাইন বা বোর্ডের ছবি দিন (একাধিক ছবি দেওয়া যাবে)</p>
+                                <input type="file" name="images[]" class="form-control form-control-lg @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" accept="image/*" multiple id="imageInput" onchange="previewImages(this)">
+                                @error('images')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                @error('images.*')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div id="imagePreview" class="mt-3 d-flex gap-2 flex-wrap"></div>
                             </div>
 
                             <!-- Notes -->
@@ -333,6 +369,9 @@ function loadStationData() {
                 // Fill queue status
                 const queueRadio = document.querySelector('input[name="queue_status"][value="' + data.latest_report.queue_status + '"]');
                 if (queueRadio) queueRadio.checked = true;
+                
+                // Fill fixed amount
+                document.querySelector('input[name="fixed_amount"]').value = data.latest_report.fixed_amount || '';
             } else {
                 reportBox.style.display = 'none';
                 // Reset form
@@ -342,12 +381,33 @@ function loadStationData() {
                 document.querySelector('input[name="petrol_price"]').value = '';
                 document.querySelector('input[name="diesel_price"]').value = '';
                 document.querySelector('input[name="octane_price"]').value = '';
+                document.querySelector('input[name="fixed_amount"]').value = '';
                 document.querySelector('input[name="queue_status"][value="none"]').checked = true;
             }
         })
         .catch(error => {
             console.error('Error loading station data:', error);
         });
+}
+
+function previewImages(input) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    
+    if (input.files) {
+        Array.from(input.files).forEach(function(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Preview';
+                img.className = 'rounded';
+                img.style.maxHeight = '150px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 }
 </script>
 @endpush

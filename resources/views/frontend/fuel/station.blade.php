@@ -69,7 +69,10 @@
                                             {{ $latestReport->petrol_available ? 'আছে' : 'নেই' }}
                                         </span>
                                         @if($latestReport->petrol_price)
-                                            <p class="mt-2 mb-0 fw-bold">৳{{ number_format($latestReport->petrol_price, 0) }}</p>
+                                            <p class="mt-2 mb-0 small text-muted">প্রতি লিটার: <strong>৳{{ number_format($latestReport->petrol_price, 0) }}</strong></p>
+                                        @endif
+                                        @if($latestReport->petrol_selling_price)
+                                            <p class="mb-0 fw-bold text-primary">বিক্রয় মূল্য: ৳{{ number_format($latestReport->petrol_selling_price, 0) }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -81,7 +84,10 @@
                                             {{ $latestReport->diesel_available ? 'আছে' : 'নেই' }}
                                         </span>
                                         @if($latestReport->diesel_price)
-                                            <p class="mt-2 mb-0 fw-bold">৳{{ number_format($latestReport->diesel_price, 0) }}</p>
+                                            <p class="mt-2 mb-0 small text-muted">প্রতি লিটার: <strong>৳{{ number_format($latestReport->diesel_price, 0) }}</strong></p>
+                                        @endif
+                                        @if($latestReport->diesel_selling_price)
+                                            <p class="mb-0 fw-bold text-primary">বিক্রয় মূল্য: ৳{{ number_format($latestReport->diesel_selling_price, 0) }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -93,7 +99,10 @@
                                             {{ $latestReport->octane_available ? 'আছে' : 'নেই' }}
                                         </span>
                                         @if($latestReport->octane_price)
-                                            <p class="mt-2 mb-0 fw-bold">৳{{ number_format($latestReport->octane_price, 0) }}</p>
+                                            <p class="mt-2 mb-0 small text-muted">প্রতি লিটার: <strong>৳{{ number_format($latestReport->octane_price, 0) }}</strong></p>
+                                        @endif
+                                        @if($latestReport->octane_selling_price)
+                                            <p class="mb-0 fw-bold text-primary">বিক্রয় মূল্য: ৳{{ number_format($latestReport->octane_selling_price, 0) }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -102,12 +111,36 @@
                                 <span class="badge bg-{{ $latestReport->queue_status == 'none' ? 'success' : ($latestReport->queue_status == 'short' ? 'info' : ($latestReport->queue_status == 'medium' ? 'warning' : 'danger')) }} fs-5 px-4 py-2">
                                     <i class="fas fa-users me-2"></i>{{ $latestReport->queue_status_bangla }}
                                 </span>
+                                @if($latestReport->fixed_amount)
+                                    <div class="mt-2">
+                                        <span class="badge bg-warning text-dark fs-5 px-4 py-2">
+                                            <i class="fas fa-hand-holding-usd me-2"></i>মাথাপিছু ৳{{ number_format($latestReport->fixed_amount, 0) }} টাকার তেল দিচ্ছে
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                             @if($latestReport->notes)
                                 <div class="alert alert-info mt-3 mb-0">
                                     <i class="fas fa-info-circle me-2"></i>{{ $latestReport->notes }}
                                 </div>
                             @endif
+                            
+                            @if($latestReport->images && count($latestReport->images) > 0)
+                                <div class="text-center mt-3">
+                                    <p class="text-muted small mb-2"><i class="fas fa-camera me-1"></i>প্রমাণের ছবি</p>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        @foreach($latestReport->images as $img)
+                                            <img src="{{ asset('uploads/fuel/' . $img) }}" alt="তথ্য প্রমাণ" class="img-fluid rounded" style="max-height: 250px; cursor: pointer;" onclick="window.open(this.src)">
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @elseif($latestReport->image)
+                                <div class="text-center mt-3">
+                                    <img src="{{ asset('uploads/fuel/' . $latestReport->image) }}" alt="তথ্য প্রমাণ" class="img-fluid rounded" style="max-height: 300px; cursor: pointer;" onclick="window.open(this.src)">
+                                    <p class="text-muted small mt-2"><i class="fas fa-camera me-1"></i>প্রমাণের ছবি</p>
+                                </div>
+                            @endif
+                            
                             <p class="text-center text-muted mt-3 mb-0 small">
                                 <i class="fas fa-user me-1"></i>আপডেট করেছেন: {{ $latestReport->reporter_name }}
                             </p>
@@ -140,6 +173,71 @@
                         </div>
                     </div>
                 @endif
+
+                <!-- Comments Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-comments me-2"></i>মন্তব্য ({{ $station->comments->count() }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Comment Form -->
+                        <form action="{{ route('fuel.store-comment', $station->id) }}" method="POST" class="mb-4">
+                            @csrf
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">আপনার নাম <span class="text-danger">*</span></label>
+                                    <input type="text" name="commenter_name" class="form-control @error('commenter_name') is-invalid @enderror" placeholder="আপনার নাম লিখুন" required>
+                                    @error('commenter_name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">মোবাইল নম্বর <span class="text-danger">*</span></label>
+                                    <input type="text" name="commenter_phone" class="form-control @error('commenter_phone') is-invalid @enderror" placeholder="01XXXXXXXXX" required>
+                                    @error('commenter_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">মন্তব্য <span class="text-danger">*</span></label>
+                                    <textarea name="comment" class="form-control @error('comment') is-invalid @enderror" rows="3" placeholder="আপনার মন্তব্য লিখুন..." required></textarea>
+                                    @error('comment')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>মন্তব্য করুন
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Existing Comments -->
+                        @if($station->comments && $station->comments->count() > 0)
+                            <hr>
+                            <div class="comments-list">
+                                @foreach($station->comments->sortByDesc('created_at') as $comment)
+                                    <div class="comment-item mb-3 p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong><i class="fas fa-user-circle me-1 text-primary"></i>{{ $comment->commenter_name }}</strong>
+                                                <span class="text-muted small ms-2">{{ $comment->created_at->diffForHumans() }}</span>
+                                            </div>
+                                            <span class="text-muted small">{{ $comment->created_at->format('d M Y, h:i A') }}</span>
+                                        </div>
+                                        <p class="mb-0 mt-2">{{ $comment->comment }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted py-3">
+                                <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                                <p class="mb-0">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
                 <!-- Report History -->
                 <div class="card shadow-sm">

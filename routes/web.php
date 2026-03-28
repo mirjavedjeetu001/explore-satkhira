@@ -11,6 +11,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\FaviconController;
+use App\Http\Controllers\ModeratorFuelController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -107,6 +108,17 @@ Route::middleware(['auth'])->group(function () {
     
     // MP question posting
     Route::post('/mp/question', [MpController::class, 'askQuestion'])->name('mp.question');
+    
+    // Moderator Fuel Management
+    Route::prefix('dashboard/fuel')->name('dashboard.fuel.')->group(function () {
+        Route::get('reports', [ModeratorFuelController::class, 'reports'])->name('reports');
+        Route::get('reports/{id}/show', [ModeratorFuelController::class, 'showReport'])->name('reports.show');
+        Route::get('reports/{id}/edit', [ModeratorFuelController::class, 'editReport'])->name('reports.edit');
+        Route::put('reports/{id}', [ModeratorFuelController::class, 'updateReport'])->name('reports.update');
+        Route::post('reports/{id}/verify', [ModeratorFuelController::class, 'verifyReport'])->name('reports.verify');
+        Route::delete('reports/{id}', [ModeratorFuelController::class, 'deleteReport'])->name('reports.delete');
+        Route::post('reports/{id}/delete-image', [ModeratorFuelController::class, 'deleteReportImage'])->name('reports.delete-image');
+    });
 });
 
 // Listings public routes
@@ -146,6 +158,7 @@ Route::prefix('fuel')->name('fuel.')->group(function () {
     Route::get('/api/latest', [\App\Http\Controllers\FuelController::class, 'getLatestReports'])->name('api.latest');
     Route::get('/api/station/{id}', [\App\Http\Controllers\FuelController::class, 'getStationInfo'])->name('api.station');
     Route::post('/report/{id}/vote', [\App\Http\Controllers\FuelController::class, 'voteReport'])->name('vote-report');
+    Route::post('/station/{id}/comment', [\App\Http\Controllers\FuelController::class, 'storeComment'])->name('store-comment');
 });
 
 // Admin Panel Routes
@@ -271,11 +284,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('stations/{id}/edit', [\App\Http\Controllers\Admin\FuelController::class, 'editStation'])->name('stations.edit');
         Route::put('stations/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'updateStation'])->name('stations.update');
         Route::delete('stations/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'deleteStation'])->name('stations.delete');
+        Route::post('stations/{id}/toggle-lock', [\App\Http\Controllers\Admin\FuelController::class, 'toggleLock'])->name('stations.toggle-lock');
         // Reports
         Route::get('reports', [\App\Http\Controllers\Admin\FuelController::class, 'reports'])->name('reports');
         Route::get('reports/phone/{phone}', [\App\Http\Controllers\Admin\FuelController::class, 'getReportsByPhone'])->name('reports.by-phone');
+        Route::get('reports/{id}/show', [\App\Http\Controllers\Admin\FuelController::class, 'showReport'])->name('reports.show');
+        Route::get('reports/{id}/edit', [\App\Http\Controllers\Admin\FuelController::class, 'editReport'])->name('reports.edit');
+        Route::put('reports/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'updateReport'])->name('reports.update');
         Route::post('reports/{id}/verify', [\App\Http\Controllers\Admin\FuelController::class, 'verifyReport'])->name('reports.verify');
         Route::delete('reports/{id}', [\App\Http\Controllers\Admin\FuelController::class, 'deleteReport'])->name('reports.delete');
+        Route::post('reports/{id}/delete-image', [\App\Http\Controllers\Admin\FuelController::class, 'deleteReportImage'])->name('reports.delete-image');
         // Settings
         Route::get('settings', [\App\Http\Controllers\Admin\FuelController::class, 'settings'])->name('settings');
         Route::put('settings', [\App\Http\Controllers\Admin\FuelController::class, 'updateSettings'])->name('settings.update');

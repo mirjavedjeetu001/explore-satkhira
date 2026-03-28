@@ -1267,59 +1267,128 @@
                     @php
                         $hasAnyFuel = $report->petrol_available || $report->diesel_available || $report->octane_available;
                         $isVerified = $report->is_verified || ($report->correct_votes >= 3 && $report->correct_votes > $report->incorrect_votes);
+                        $isToday = $report->created_at->isToday();
+                        $isLocked = $report->fuelStation->is_locked ?? false;
+                        $reportImage = null;
+                        if ($report->images && count($report->images) > 0) {
+                            $reportImage = $report->images[0];
+                        } elseif ($report->image) {
+                            $reportImage = $report->image;
+                        }
                     @endphp
                     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                        <div class="card h-100 fuel-card {{ $hasAnyFuel ? 'border-success' : 'border-danger' }}" style="border-width: 2px;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
+                        <a href="{{ route('fuel.station', $report->fuel_station_id) }}" class="text-decoration-none">
+                        <div class="card h-100 fuel-card {{ $isLocked ? 'border-secondary' : ($hasAnyFuel ? 'border-success' : 'border-danger') }}" style="border-width: 2px;">
+                            <div class="card-header {{ $isLocked ? 'bg-secondary' : ($hasAnyFuel ? 'bg-success' : 'bg-danger') }} text-white py-2">
+                                <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <h6 class="mb-0 fw-bold">{{ $report->fuelStation->name }}</h6>
-                                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ $report->fuelStation->upazila->name }}</small>
+                                        <h6 class="mb-0 fw-bold"><i class="fas fa-gas-pump me-1"></i>{{ $report->fuelStation->name }}</h6>
+                                        <small><i class="fas fa-map-marker-alt me-1"></i>{{ $report->fuelStation->upazila->name }}</small>
                                     </div>
                                     <div class="text-end">
-                                        <span class="badge bg-{{ $hasAnyFuel ? 'success' : 'danger' }}">
-                                            {{ $hasAnyFuel ? 'আছে' : 'নেই' }}
-                                        </span>
-                                        @if($isVerified)
-                                            <span class="badge bg-warning text-dark d-block mt-1" title="যাচাইকৃত তথ্য">
+                                        @if($isLocked)
+                                            <span class="badge bg-dark"><i class="fas fa-lock"></i> বন্ধ</span>
+                                        @elseif($isVerified)
+                                            <span class="badge bg-warning text-dark" title="যাচাইকৃত তথ্য">
                                                 <i class="fas fa-check-circle"></i> যাচাইকৃত
                                             </span>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="d-flex gap-2 mb-2">
-                                    <span class="badge {{ $report->petrol_available ? 'bg-success' : 'bg-secondary' }}">
-                                        পেট্রোল {{ $report->petrol_available ? '✓' : '✗' }}
-                                    </span>
-                                    <span class="badge {{ $report->diesel_available ? 'bg-success' : 'bg-secondary' }}">
-                                        ডিজেল {{ $report->diesel_available ? '✓' : '✗' }}
-                                    </span>
-                                    <span class="badge {{ $report->octane_available ? 'bg-success' : 'bg-secondary' }}">
-                                        অকটেন {{ $report->octane_available ? '✓' : '✗' }}
-                                    </span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge bg-{{ $report->queue_status == 'none' ? 'success' : ($report->queue_status == 'short' ? 'info' : ($report->queue_status == 'medium' ? 'warning' : 'danger')) }}">
-                                        <i class="fas fa-users me-1"></i>{{ $report->queue_status_bangla }}
-                                    </span>
-                                    <small class="text-muted">
-                                        <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
-                                    </small>
-                                </div>
-                                <div class="text-center border-top pt-2">
-                                    <small class="text-muted d-block">
-                                        <i class="fas fa-clock me-1"></i>{{ $report->created_at->diffForHumans() }}
-                                    </small>
-                                    <small class="text-muted">
-                                        {{ $report->created_at->format('d M Y, h:i A') }}
-                                    </small>
-                                </div>
-                                <div class="d-flex justify-content-center gap-2 mt-2">
-                                    <span class="badge bg-success"><i class="fas fa-thumbs-up me-1"></i>{{ $report->correct_votes ?? 0 }}</span>
-                                    <span class="badge bg-danger"><i class="fas fa-thumbs-down me-1"></i>{{ $report->incorrect_votes ?? 0 }}</span>
-                                </div>
+                            </div>
+                            <div class="card-body py-2">
+                                @if($isLocked)
+                                    <div class="text-center text-muted py-2">
+                                        <i class="fas fa-lock fa-2x mb-1"></i>
+                                        <p class="mb-0 fw-bold text-danger small">অ্যাডমিন বন্ধ রেখেছে</p>
+                                        <p class="mb-0 small">যোগাযোগ: 01811480222</p>
+                                    </div>
+                                @else
+                                    {{-- Image thumbnail --}}
+                                    @if($reportImage)
+                                        <div class="text-center mb-2">
+                                            <img src="{{ asset('uploads/fuel/' . $reportImage) }}" alt="ছবি" class="img-fluid rounded" style="max-height: 100px; object-fit: cover; width: 100%;">
+                                        </div>
+                                    @endif
+                                    
+                                    {{-- No update today --}}
+                                    @if(!$isToday)
+                                        <div class="alert alert-warning py-1 px-2 mb-2 text-center small">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>আজ কোন আপডেট করা হয়নি
+                                        </div>
+                                    @endif
+
+                                    <div class="row g-1 mb-2">
+                                        <div class="col-4 text-center">
+                                            <div class="p-2 rounded {{ $report->petrol_available ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10' }}">
+                                                <span class="d-block fw-bold small">পেট্রোল</span>
+                                                <span class="badge {{ $report->petrol_available ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $report->petrol_available ? 'আছে' : 'নেই' }}
+                                                </span>
+                                                @if($report->petrol_price)
+                                                    <small class="d-block text-muted">৳{{ number_format($report->petrol_price, 0) }}/লি.</small>
+                                                @endif
+                                                @if($report->petrol_selling_price)
+                                                    <small class="d-block fw-bold text-primary">৳{{ number_format($report->petrol_selling_price, 0) }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div class="p-2 rounded {{ $report->diesel_available ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10' }}">
+                                                <span class="d-block fw-bold small">ডিজেল</span>
+                                                <span class="badge {{ $report->diesel_available ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $report->diesel_available ? 'আছে' : 'নেই' }}
+                                                </span>
+                                                @if($report->diesel_price)
+                                                    <small class="d-block text-muted">৳{{ number_format($report->diesel_price, 0) }}/লি.</small>
+                                                @endif
+                                                @if($report->diesel_selling_price)
+                                                    <small class="d-block fw-bold text-primary">৳{{ number_format($report->diesel_selling_price, 0) }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div class="p-2 rounded {{ $report->octane_available ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10' }}">
+                                                <span class="d-block fw-bold small">অকটেন</span>
+                                                <span class="badge {{ $report->octane_available ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $report->octane_available ? 'আছে' : 'নেই' }}
+                                                </span>
+                                                @if($report->octane_price)
+                                                    <small class="d-block text-muted">৳{{ number_format($report->octane_price, 0) }}/লি.</small>
+                                                @endif
+                                                @if($report->octane_selling_price)
+                                                    <small class="d-block fw-bold text-primary">৳{{ number_format($report->octane_selling_price, 0) }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-{{ $report->queue_status == 'none' ? 'success' : ($report->queue_status == 'short' ? 'info' : ($report->queue_status == 'medium' ? 'warning' : 'danger')) }}">
+                                            <i class="fas fa-users me-1"></i>{{ $report->queue_status_bangla }}
+                                        </span>
+                                        @if($report->fixed_amount)
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-hand-holding-usd me-1"></i>৳{{ number_format($report->fixed_amount, 0) }}
+                                            </span>
+                                        @endif
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>{{ $report->reporter_name }}
+                                        </small>
+                                    </div>
+                                    <div class="text-center border-top pt-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>{{ $report->created_at->diffForHumans() }} | {{ $report->created_at->format('d M, h:i A') }}
+                                        </small>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-2 mt-1">
+                                        <span class="badge bg-success"><i class="fas fa-thumbs-up me-1"></i>{{ $report->correct_votes ?? 0 }}</span>
+                                        <span class="badge bg-danger"><i class="fas fa-thumbs-down me-1"></i>{{ $report->incorrect_votes ?? 0 }}</span>
+                                        <span class="badge bg-secondary"><i class="fas fa-comments me-1"></i>মন্তব্য {{ ($report->fuelStation->comments_count ?? 0) > 0 ? '(' . $report->fuelStation->comments_count . ')' : 'করুন' }}</span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
