@@ -1,4 +1,4 @@
-const CACHE_NAME = 'explore-satkhira-v3';
+const CACHE_NAME = 'explore-satkhira-v4';
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE_URLS = [
@@ -113,17 +113,21 @@ self.addEventListener('notificationclick', (event) => {
 
     if (event.action === 'close') return;
 
-    const url = event.notification.data?.url || '/';
+    const urlPath = event.notification.data?.url || '/';
+    // Always use full URL - required for TWA/Android app
+    const fullUrl = new URL(urlPath, self.location.origin).href;
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            // Try to focus an existing window/tab
             for (const client of windowClients) {
-                if (client.url.includes(self.location.origin) && 'focus' in client) {
-                    client.navigate(url);
+                if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+                    client.navigate(fullUrl);
                     return client.focus();
                 }
             }
-            return clients.openWindow(url);
+            // Open new window with full URL
+            return clients.openWindow(fullUrl);
         })
     );
 });

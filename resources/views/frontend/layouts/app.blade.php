@@ -1404,15 +1404,35 @@
     <!-- Service Worker + Push Notification + App Install -->
     <script>
         const VAPID_PUBLIC_KEY = '{{ config("services.vapid.public_key") }}';
+        let swRegistration = null;
         
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async function() {
                 try {
-                    const reg = await navigator.serviceWorker.register('/sw.js');
-                    // Auto-subscribe to push after registration
-                    if ('PushManager' in window && VAPID_PUBLIC_KEY) {
-                        setTimeout(() => subscribeToPush(reg), 3000);
+                    swRegistration = await navigator.serviceWorker.register('/sw.js');
+                    
+                    if ('PushManager' in window && 'Notification' in window && VAPID_PUBLIC_KEY) {
+                        if (Notification.permission === 'granted') {
+                            // Already granted - subscribe silently
+                            subscribeToPush(swRegistration);
+                        } else if (Notification.permission === 'default') {
+                            // Auto-ask on first user interaction (tap/click/scroll)
+                            const askOnce = async () => {
+                                document.removeEventListener('click', askOnce, true);
+                                document.removeEventListener('touchstart', askOnce, true);
+                                document.removeEventListener('scroll', askOnce, true);
+                                try {
+                                    const perm = await Notification.requestPermission();
+                                    if (perm === 'granted' && swRegistration) {
+                                        subscribeToPush(swRegistration);
+                                    }
+                                } catch(e) {}
+                            };
+                            document.addEventListener('click', askOnce, true);
+                            document.addEventListener('touchstart', askOnce, true);
+                            document.addEventListener('scroll', askOnce, { once: true });
+                        }
                     }
                 } catch(e) {}
             });
@@ -1420,16 +1440,7 @@
         
         async function subscribeToPush(reg) {
             try {
-                // Check if notifications are supported
-                if (!('Notification' in window)) return;
-                
-                // Request permission explicitly (required on mobile/TWA)
-                let permission = Notification.permission;
-                if (permission === 'denied') return;
-                if (permission === 'default') {
-                    permission = await Notification.requestPermission();
-                    if (permission !== 'granted') return;
-                }
+                if (!('Notification' in window) || Notification.permission !== 'granted') return;
                 
                 let sub = await reg.pushManager.getSubscription();
                 if (sub) return; // Already subscribed
@@ -1534,6 +1545,7 @@
             animation: slideUp 0.3s ease;
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideUpBanner { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .install-banner-content {
             display: flex;
             align-items: center;
