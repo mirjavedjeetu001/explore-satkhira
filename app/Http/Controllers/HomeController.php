@@ -12,6 +12,7 @@ use App\Models\Upazila;
 use App\Models\FuelReport;
 use App\Models\FuelSetting;
 use App\Models\FuelStation;
+use App\Models\TeamMember;
 
 class HomeController extends Controller
 {
@@ -97,6 +98,11 @@ class HomeController extends Controller
             });
         }
 
+        // Team Members (only admins for homepage)
+        $teamMembers = TeamMember::active()->ordered()->with('user')
+            ->whereIn('website_role', ['super_admin', 'admin'])
+            ->get();
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -107,7 +113,8 @@ class HomeController extends Controller
             'mpProfiles',
             'homepageAds',
             'fuelEnabled',
-            'fuelReports'
+            'fuelReports',
+            'teamMembers'
         ));
     }
 }

@@ -233,7 +233,7 @@
                             @endif
                         </div>
                         <div class="card-footer bg-light">
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 mb-2">
                                 <span class="btn btn-sm btn-outline-primary flex-fill">
                                     <i class="fas fa-eye me-1"></i>বিস্তারিত দেখুন
                                 </span>
@@ -245,6 +245,13 @@
                                     <i class="fas fa-plus me-1"></i>আপডেট দিন
                                 </span>
                                 @endif
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-sm btn-outline-warning fuel-subscribe-btn w-100"
+                                    data-station-id="{{ $station->id }}"
+                                    onclick="event.preventDefault(); event.stopPropagation(); toggleFuelSubscription(this);">
+                                    <i class="far fa-bell"></i> <span>🔔 আপডেট নোটিফিকেশন পান</span>
+                                </button>
                             </div>
                         </div>
                     </div>

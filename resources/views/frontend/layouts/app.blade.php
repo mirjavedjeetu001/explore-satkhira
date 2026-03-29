@@ -923,11 +923,19 @@
     </style>
     
     @stack('styles')
-    <script>document.documentElement.classList.add('preloader-active');</script>
+    <script>
+    // Skip preloader in standalone/TWA mode to avoid double loading
+    var isTWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (!isTWA) {
+        document.documentElement.classList.add('preloader-active');
+    }
+    </script>
 </head>
-<body class="preloader-active">
-    <!-- Preloader -->
-    <div class="preloader" id="preloader">
+<body>
+    <script>if (!isTWA) document.body.classList.add('preloader-active');</script>
+    <!-- Preloader (hidden in TWA/standalone mode) -->
+    <div class="preloader" id="preloader" style="display:none;">
+    <script>if (!isTWA) document.getElementById('preloader').style.display='';</script>
         <div class="preloader-inner">
             <div class="preloader-logo">
                 <i class="fas fa-leaf"></i>{{ __('messages.site_name') }}
@@ -1489,7 +1497,177 @@
             return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
         }
         
+        // Fuel Pump Subscription Toggle
+        async function getPushEndpoint() {
+            if (!('serviceWorker' in navigator)) return null;
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                return sub ? sub.endpoint : null;
+            } catch(e) { return null; }
+        }
+
+        function getFuelSubsLocal() {
+            try { return JSON.parse(localStorage.getItem('fuelSubs') || '[]'); } catch(e) { return []; }
+        }
+        function saveFuelSubsLocal(arr) {
+            localStorage.setItem('fuelSubs', JSON.stringify(arr));
+        }
+        function markBtnSubscribed(btn) {
+            btn.classList.add('subscribed');
+            btn.querySelector('i').className = 'fas fa-bell';
+            btn.querySelector('span').textContent = '🔕 নোটিফিকেশন বন্ধ করুন';
+        }
+        function markBtnUnsubscribed(btn) {
+            btn.classList.remove('subscribed');
+            btn.querySelector('i').className = 'far fa-bell';
+            btn.querySelector('span').textContent = '🔔 আপডেট নোটিফিকেশন পান';
+        }
+
+        function applyFuelSubsFromLocal() {
+            const subs = getFuelSubsLocal();
+            document.querySelectorAll('.fuel-subscribe-btn').forEach(btn => {
+                const stationId = parseInt(btn.dataset.stationId);
+                if (subs.includes(stationId)) {
+                    markBtnSubscribed(btn);
+                } else {
+                    markBtnUnsubscribed(btn);
+                }
+            });
+        }
+
+        async function syncFuelSubsFromServer() {
+            try {
+                const endpoint = await getPushEndpoint();
+                if (!endpoint) return;
+                const res = await fetch('/fuel/subscriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ endpoint: endpoint })
+                });
+                const data = await res.json();
+                const serverSubs = data.station_ids || [];
+                saveFuelSubsLocal(serverSubs);
+                applyFuelSubsFromLocal();
+            } catch(e) {}
+        }
+
+        async function toggleFuelSubscription(btn) {
+            const stationId = parseInt(btn.dataset.stationId);
+            const isSubscribed = btn.classList.contains('subscribed');
+            
+            // Check notification permission first
+            if (!isSubscribed) {
+                if (!('Notification' in window) || !('PushManager' in window)) {
+                    alert('আপনার ব্রাউজার নোটিফিকেশন সাপোর্ট করে না।');
+                    return;
+                }
+                if (Notification.permission === 'denied') {
+                    alert('নোটিফিকেশন ব্লক করা আছে। ব্রাউজার সেটিংস থেকে অনুমতি দিন।');
+                    return;
+                }
+                if (Notification.permission === 'default') {
+                    const perm = await Notification.requestPermission();
+                    if (perm !== 'granted') return;
+                    if (swRegistration) await subscribeToPush(swRegistration);
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+            }
+
+            const endpoint = await getPushEndpoint();
+            if (!endpoint) {
+                alert('পুশ নোটিফিকেশন সাবস্ক্রাইব করা হয়নি। পেজ রিলোড করে আবার চেষ্টা করুন।');
+                return;
+            }
+
+            const url = isSubscribed ? '/fuel/unsubscribe' : '/fuel/subscribe';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ endpoint: endpoint, fuel_station_id: stationId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    let subs = getFuelSubsLocal();
+                    if (isSubscribed) {
+                        subs = subs.filter(id => id !== stationId);
+                        markBtnUnsubscribed(btn);
+                    } else {
+                        if (!subs.includes(stationId)) subs.push(stationId);
+                        markBtnSubscribed(btn);
+                    }
+                    saveFuelSubsLocal(subs);
+                }
+            } catch(e) {
+                alert('সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+            }
+            btn.disabled = false;
+        }
+
+        // On page load: instantly apply from localStorage, then sync from server
+        if (document.querySelector('.fuel-subscribe-btn')) {
+            applyFuelSubsFromLocal();
+            window.addEventListener('load', function() {
+                setTimeout(syncFuelSubsFromServer, 3000);
+            });
+        }
+
         // App Install Banner
+
+        // TWA/APK In-App Update Checker
+        (function() {
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if (!isStandalone) return;
+            var currentVersion = localStorage.getItem('appVersion') || '1.0.0';
+            var dismissedVersion = localStorage.getItem('appUpdateDismissed');
+            fetch('/api/app-version')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.version || data.version <= currentVersion) return;
+                    if (data.version === dismissedVersion) return;
+                    // Styles
+                    var s = document.createElement('style');
+                    s.textContent = '@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}@keyframes fadeOutUp{to{opacity:0;transform:translateY(-100%)}}';
+                    document.head.appendChild(s);
+                    // Banner
+                    var banner = document.createElement('div');
+                    banner.id = 'app-update-banner';
+                    banner.innerHTML = '<div style="display:flex;align-items:center;gap:10px;max-width:600px;margin:0 auto;">' +
+                        '<div style="flex:0 0 40px;width:40px;height:40px;background:linear-gradient(135deg,#28a745,#20c997);border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+                        '<i class="fas fa-arrow-up" style="color:#fff;font-size:16px;"></i></div>' +
+                        '<div style="flex:1;line-height:1.3;">' +
+                        '<strong style="display:block;font-size:13px;color:#1a3c34;">নতুন আপডেট! v' + data.version + '</strong>' +
+                        '<small style="color:#6c757d;font-size:11px;">' + (data.releaseNotes || 'নতুন ফিচার ও বাগ ফিক্স') + '</small></div>' +
+                        '<a id="appUpdateBtn" href="' + data.url + '" style="background:linear-gradient(135deg,#28a745,#20c997);color:#fff;border:none;padding:7px 16px;border-radius:20px;font-weight:600;font-size:12px;text-decoration:none;white-space:nowrap;">আপডেট</a>' +
+                        '<button id="appUpdateClose" style="background:none;border:none;font-size:22px;color:#999;cursor:pointer;padding:0 4px;line-height:1;">&times;</button>' +
+                        '</div>';
+                    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.15);z-index:99999;padding:10px 14px;animation:slideDown 0.3s ease;';
+                    document.body.appendChild(banner);
+                    function closeBanner() {
+                        banner.style.animation = 'fadeOutUp 0.3s ease forwards';
+                        setTimeout(function() { banner.remove(); }, 300);
+                    }
+                    document.getElementById('appUpdateClose').addEventListener('click', function() {
+                        localStorage.setItem('appUpdateDismissed', data.version);
+                        closeBanner();
+                    });
+                    document.getElementById('appUpdateBtn').addEventListener('click', function() {
+                        localStorage.setItem('appVersion', data.version);
+                        localStorage.removeItem('appUpdateDismissed');
+                        closeBanner();
+                    });
+                })
+                .catch(function() {});
+        })();
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();

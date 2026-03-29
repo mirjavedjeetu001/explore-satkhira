@@ -297,6 +297,44 @@
                                 </div>
                             </div>
                             
+                            <!-- Newspaper Specific Fields (shown only for Newspaper category) -->
+                            <div class="mb-4" id="newspaperFields" style="display: none;">
+                                <div class="card border-0" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="fas fa-newspaper text-primary me-2"></i>সংবাদপত্র সম্পর্কিত তথ্য</h6>
+                                        <p class="text-muted small mb-3">এই তথ্যগুলো শুধুমাত্র সংবাদপত্র ক্যাটাগরির জন্য প্রযোজ্য</p>
+                                        
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">সংবাদপত্রের ধরন <span class="text-danger">*</span></label>
+                                                <select name="newspaper_type" class="form-select @error('newspaper_type') is-invalid @enderror">
+                                                    <option value="">ধরন নির্বাচন করুন</option>
+                                                    <option value="local" {{ old('newspaper_type', $listing->extra_fields['newspaper_type'] ?? '') == 'local' ? 'selected' : '' }}>🏘️ স্থানীয় (Local)</option>
+                                                    <option value="national" {{ old('newspaper_type', $listing->extra_fields['newspaper_type'] ?? '') == 'national' ? 'selected' : '' }}>🇧🇩 জাতীয় (National)</option>
+                                                    <option value="international" {{ old('newspaper_type', $listing->extra_fields['newspaper_type'] ?? '') == 'international' ? 'selected' : '' }}>🌍 আন্তর্জাতিক (International)</option>
+                                                </select>
+                                                @error('newspaper_type')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">ফরম্যাট <span class="text-danger">*</span></label>
+                                                <select name="newspaper_format" class="form-select @error('newspaper_format') is-invalid @enderror">
+                                                    <option value="">ফরম্যাট নির্বাচন করুন</option>
+                                                    <option value="online_only" {{ old('newspaper_format', $listing->extra_fields['newspaper_format'] ?? '') == 'online_only' ? 'selected' : '' }}>💻 শুধু অনলাইন পোর্টাল</option>
+                                                    <option value="both" {{ old('newspaper_format', $listing->extra_fields['newspaper_format'] ?? '') == 'both' ? 'selected' : '' }}>📰 অনলাইন + অফলাইন (উভয়)</option>
+                                                    <option value="offline_only" {{ old('newspaper_format', $listing->extra_fields['newspaper_format'] ?? '') == 'offline_only' ? 'selected' : '' }}>🗞️ শুধু অফলাইন (প্রিন্ট)</option>
+                                                </select>
+                                                @error('newspaper_format')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-save me-1"></i>আপডেট করুন
@@ -316,9 +354,10 @@
 
 @push('scripts')
 <script>
-// Doctor category specific fields toggle
+// Category specific fields toggle
 const categorySelect = document.getElementById('category_id');
 const doctorFields = document.getElementById('doctorFields');
+const newspaperFields = document.getElementById('newspaperFields');
 
 // Category data with slug mapping
 const categoryData = {
@@ -335,6 +374,12 @@ function toggleDoctorFields() {
         doctorFields.style.display = 'block';
     } else {
         doctorFields.style.display = 'none';
+    }
+    
+    if (selectedSlug === 'newspaper') {
+        newspaperFields.style.display = 'block';
+    } else {
+        newspaperFields.style.display = 'none';
     }
 }
 

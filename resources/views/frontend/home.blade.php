@@ -30,15 +30,26 @@
                         </div>
                     </div>
                 @endforelse
+                <!-- App Download Promo Slide -->
+                <div class="carousel-item" style="background-image: linear-gradient(135deg, rgba(16,65,40,0.92), rgba(26,107,60,0.88)), url('/icons/icon-512x512.png'); background-size: cover; background-position: center;">
+                    <div class="carousel-caption">
+                        <div class="d-flex align-items-center justify-content-center mb-3" data-aos="fade-up">
+                            <img src="/icons/app-logo-96.png" alt="App Icon" style="width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" class="me-3">
+                            <h2 class="mb-0" style="font-size: 1.8rem;">📱 আমাদের অ্যাপ ডাউনলোড করুন!</h2>
+                        </div>
+                        <p data-aos="fade-up" data-aos-delay="100">এক্সপ্লোর সাতক্ষীরা অ্যাপ দিয়ে সবকিছু হাতের মুঠোয়। জ্বালানি আপডেট, লিস্টিং, সংবাদ — সব এক জায়গায়!</p>
+                        <a href="{{ route('app.download') }}" class="btn btn-warning btn-lg mt-3" data-aos="fade-up" data-aos-delay="200" style="font-weight: 700;">
+                            <i class="fas fa-download me-2"></i>এখনই ডাউনলোড করুন
+                        </a>
+                    </div>
+                </div>
             </div>
-            @if($sliders->count() > 1)
-                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-            @endif
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
         </div>
     </section>
 
@@ -1262,7 +1273,7 @@
                 <div class="underline" style="background: linear-gradient(90deg, #e65100, #ff6d00);"></div>
             </div>
             
-            <div class="row g-3">
+            <div class="row g-3 mobile-scroll-row">
                 @foreach($fuelReports as $report)
                     @php
                         $hasAnyFuel = $report->petrol_available || $report->diesel_available || $report->octane_available;
@@ -1385,6 +1396,14 @@
                                         <span class="badge bg-danger"><i class="fas fa-thumbs-down me-1"></i>{{ $report->incorrect_votes ?? 0 }}</span>
                                         <span class="badge bg-secondary"><i class="fas fa-comments me-1"></i>মন্তব্য {{ ($report->fuelStation->comments_count ?? 0) > 0 ? '(' . $report->fuelStation->comments_count . ')' : 'করুন' }}</span>
                                     </div>
+                                    {{-- Pump notification subscribe button --}}
+                                    <div class="text-center mt-2 pt-2 border-top">
+                                        <button class="btn btn-sm btn-outline-warning fuel-subscribe-btn" 
+                                            data-station-id="{{ $report->fuel_station_id }}"
+                                            onclick="event.preventDefault(); event.stopPropagation(); toggleFuelSubscription(this);">
+                                            <i class="far fa-bell"></i> <span>🔔 আপডেট নোটিফিকেশন পান</span>
+                                        </button>
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -1411,6 +1430,21 @@
         .fuel-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .fuel-subscribe-btn {
+            font-size: 0.75rem;
+            border-radius: 20px;
+            padding: 4px 14px;
+            transition: all 0.3s ease;
+        }
+        .fuel-subscribe-btn.subscribed {
+            background: #ff6d00;
+            border-color: #ff6d00;
+            color: #fff;
+        }
+        .fuel-subscribe-btn.subscribed:hover {
+            background: #e65100;
+            border-color: #e65100;
         }
     </style>
     @endif
@@ -1488,7 +1522,7 @@
                 <div class="underline"></div>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 mobile-scroll-row">
                 @foreach($upazilas as $upazila)
                     <div class="col-lg-3 col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <a href="{{ route('upazilas.show', $upazila) }}" class="text-decoration-none">
@@ -1510,6 +1544,99 @@
             </div>
         </div>
     </section>
+
+    <!-- আমাদের টিম Section -->
+    @if(isset($teamMembers) && $teamMembers->count() > 0)
+    <section class="team-section py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3" style="font-size: 0.9rem; border-radius: 50px;"><i class="fas fa-crown me-1"></i>{{ app()->getLocale() == 'bn' ? 'আমাদের টিম' : 'Our Team' }}</span>
+                <h2 class="fw-bold" style="font-size: 2rem;">{{ app()->getLocale() == 'bn' ? 'যারা এই পোর্টাল পরিচালনা করছেন' : 'The People Behind This Portal' }}</h2>
+                <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #1a73e8, #34a853); border-radius: 2px; margin: 12px auto 0;"></div>
+            </div>
+            <div class="row g-4 justify-content-center mobile-scroll-row">
+                @foreach($teamMembers as $member)
+                    @php
+                        $colors = [
+                            ['from' => '#667eea', 'to' => '#764ba2'],
+                            ['from' => '#f093fb', 'to' => '#f5576c'],
+                            ['from' => '#4facfe', 'to' => '#00f2fe'],
+                        ];
+                        $color = $colors[$loop->index % 3];
+                        $initials = '';
+                        if($member->user) {
+                            $parts = explode(' ', $member->user->name);
+                            $initials = strtoupper(substr($parts[0], 0, 1));
+                            if(count($parts) > 1) $initials .= strtoupper(substr(end($parts), 0, 1));
+                        }
+                        $isSuperAdmin = $member->website_role === 'super_admin';
+                        $ribbonLabels = ['Founder', 'Co-Founder', 'Contributor'];
+                        $ribbonLabelsBn = ['Founder', 'Co-Founder', 'Contributor'];
+                        $ribbonLabel = $ribbonLabels[$loop->index] ?? 'Member';
+                        $ribbonIcons = ['fa-crown', 'fa-star', 'fa-gem'];
+                        $ribbonIcon = $ribbonIcons[$loop->index] ?? 'fa-user';
+                        $ribbonColors = [
+                            'linear-gradient(135deg, #ff9800, #f57c00)',
+                            'linear-gradient(135deg, #1a73e8, #0d47a1)',
+                            'linear-gradient(135deg, #34a853, #1b7a34)',
+                        ];
+                        $ribbonColor = $ribbonColors[$loop->index] ?? 'linear-gradient(135deg, #666, #444)';
+                    @endphp
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 150 }}">
+                        <div class="team-card {{ $isSuperAdmin ? 'team-card-featured' : '' }}">
+                            <div class="team-card-ribbon" style="background: {{ $ribbonColor }};"><i class="fas {{ $ribbonIcon }} me-1"></i>{{ $ribbonLabel }}</div>
+                            <div class="team-card-top" style="background: linear-gradient(135deg, {{ $color['from'] }}, {{ $color['to'] }});">
+                                <div class="team-card-pattern"></div>
+                                @if($member->user && $member->user->avatar)
+                                    <img src="{{ asset('storage/' . $member->user->avatar) }}" alt="{{ $member->user->name }}" class="team-avatar">
+                                @else
+                                    <div class="team-avatar-initials" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+                                        @if($initials)
+                                            <span>{{ $initials }}</span>
+                                        @else
+                                            <i class="fas fa-user fa-2x"></i>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="team-card-body">
+                                <h5 class="fw-bold mb-1">{{ $member->user ? (app()->getLocale() == 'bn' ? ($member->user->name_bn ?? $member->user->name) : $member->user->name) : '' }}</h5>
+                                <div class="team-role-badge" style="background: linear-gradient(135deg, {{ $color['from'] }}20, {{ $color['to'] }}20); color: {{ $color['from'] }};">
+                                    <i class="fas {{ $isSuperAdmin ? 'fa-shield-alt' : 'fa-user-shield' }} me-1"></i>{{ $member->role_display }}
+                                </div>
+                                @if($member->designation_display)
+                                    <p class="text-muted small mt-2 mb-0">{{ $member->designation_display }}</p>
+                                @endif
+                                <div class="team-social mt-3">
+                                    @if($member->phone)
+                                        <a href="tel:{{ $member->phone }}" class="team-social-btn" style="--btn-color: #25D366;" title="{{ $member->phone }}">
+                                            <i class="fas fa-phone-alt"></i>
+                                        </a>
+                                    @endif
+                                    @if($member->email)
+                                        <a href="mailto:{{ $member->email }}" class="team-social-btn" style="--btn-color: #EA4335;" title="{{ $member->email }}">
+                                            <i class="fas fa-envelope"></i>
+                                        </a>
+                                    @endif
+                                    @if($member->facebook_url)
+                                        <a href="{{ $member->facebook_url }}" target="_blank" rel="noopener" class="team-social-btn" style="--btn-color: #1877F2;">
+                                            <i class="fab fa-facebook-f"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="{{ route('about') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-users me-2"></i>{{ app()->getLocale() == 'bn' ? 'উপজেলা মডারেটরস দেখতে এখানে ক্লিক করুন' : 'View Upazila Moderators' }}
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
 
     <!-- Promotional Ads Section -->
     @if($homepageAds->count() > 0)
@@ -1558,7 +1685,7 @@
                 <div class="underline"></div>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 mobile-scroll-row">
                 @foreach($featuredListings as $listing)
                     <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <div class="listing-card">
@@ -1594,7 +1721,7 @@
                 <p class="text-white-50">{{ app()->getLocale() == 'bn' ? 'সংসদ সদস্যদের কাছে প্রশ্ন থাকলে করুন, আমরা পৌঁছে দিবো এবং তারা উত্তর দিলে সেটা দেখতে পারবেন' : 'Ask questions to MPs, we will forward them and you can see when they reply' }}</p>
             </div>
             
-            <div class="row g-4 justify-content-center">
+            <div class="row g-4 justify-content-center mobile-scroll-row">
                 @foreach($mpProfiles as $mpProfile)
                 <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                     <div class="mp-card-new text-center h-100">
@@ -1634,7 +1761,7 @@
                 <div class="underline"></div>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 mobile-scroll-row">
                 @foreach($latestListings as $listing)
                     <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <div class="card h-100 border-0 shadow-sm listing-card-new">
@@ -1697,7 +1824,7 @@
                 <div class="underline"></div>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 mobile-scroll-row">
                 @foreach($latestNews as $news)
                     <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <div class="listing-card">
@@ -1715,6 +1842,80 @@
         </div>
     </section>
     @endif
+
+    <!-- App Download Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, #0d3b1e 0%, #1a6b3c 50%, #0f4d2a 100%); position: relative; overflow: hidden;">
+        <div style="position:absolute;inset:0;opacity:0.05;background-image:url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0" data-aos="fade-right">
+                    <div class="d-inline-block mb-3" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 8px 20px;">
+                        <span style="color: #4ade80; font-weight: 600; font-size: 0.9rem;"><i class="fas fa-mobile-alt me-2"></i>মোবাইল অ্যাপ</span>
+                    </div>
+                    <h2 class="text-white fw-bold mb-3" style="font-size: 2rem; line-height: 1.3;">এক্সপ্লোর সাতক্ষীরা<br><span style="color: #4ade80;">অ্যাপ ডাউনলোড করুন</span></h2>
+                    <p class="text-white-50 mb-4" style="font-size: 1.05rem; line-height: 1.7;">সাতক্ষীরার সকল তথ্য এখন আপনার হাতের মুঠোয়। জ্বালানি তেলের আপডেট, ব্যবসা প্রতিষ্ঠানের তালিকা, সংবাদ, সংসদ সদস্যদের প্রশ্নোত্তর — সবকিছু এক অ্যাপে!</p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start mb-4">
+                        <div class="d-flex align-items-center" style="background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px;">
+                            <i class="fas fa-bolt text-warning me-2" style="font-size: 1.2rem;"></i>
+                            <span class="text-white" style="font-size: 0.85rem;">দ্রুত অ্যাক্সেস</span>
+                        </div>
+                        <div class="d-flex align-items-center" style="background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px;">
+                            <i class="fas fa-bell text-info me-2" style="font-size: 1.2rem;"></i>
+                            <span class="text-white" style="font-size: 0.85rem;">পুশ নোটিফিকেশন</span>
+                        </div>
+                        <div class="d-flex align-items-center" style="background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px;">
+                            <i class="fas fa-wifi me-2 text-danger" style="font-size: 1.2rem;"></i>
+                            <span class="text-white" style="font-size: 0.85rem;">অফলাইন সাপোর্ট</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('app.download') }}" class="btn btn-lg px-5 py-3" style="background: linear-gradient(135deg, #4ade80, #22c55e); color: #0d3b1e; font-weight: 700; border-radius: 14px; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(74,222,128,0.3);">
+                        <i class="fab fa-android me-2"></i>Android APK ডাউনলোড
+                    </a>
+                </div>
+                <div class="col-lg-6 text-center" data-aos="fade-left">
+                    <div style="position: relative; display: inline-block;">
+                        <!-- Phone mockup -->
+                        <div style="width: 260px; height: 480px; background: #111; border-radius: 36px; border: 3px solid #333; padding: 12px; margin: 0 auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
+                            <div style="width: 100%; height: 100%; border-radius: 26px; overflow: hidden; position: relative;">
+                                <img src="/icons/icon-512x512.png" alt="App Preview" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.2;">
+                                <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+                                    <img src="/icons/app-logo-96.png" alt="Logo" style="width: 72px; height: 72px; border-radius: 18px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <h5 class="text-white fw-bold mb-1" style="font-size: 1rem;">এক্সপ্লোর সাতক্ষীরা</h5>
+                                    <small style="color: #4ade80;">v1.1.0</small>
+                                </div>
+                            </div>
+                            <!-- Notch -->
+                            <div style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 80px; height: 22px; background: #111; border-radius: 0 0 14px 14px;"></div>
+                        </div>
+                        <!-- Floating badges -->
+                        <div style="position: absolute; top: 30px; right: -20px; background: #fff; border-radius: 12px; padding: 8px 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); animation: float 3s ease-in-out infinite;">
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #1a6b3c;"><i class="fas fa-gas-pump text-warning me-1"></i>তেল আপডেট</span>
+                        </div>
+                        <div style="position: absolute; bottom: 60px; left: -20px; background: #fff; border-radius: 12px; padding: 8px 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); animation: float 3s ease-in-out infinite 1.5s;">
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #1a6b3c;"><i class="fas fa-bell text-info me-1"></i>নোটিফিকেশন</span>
+                        </div>
+                    </div>
+                    <!-- Store badges -->
+                    <div class="mt-4 d-flex flex-wrap gap-2 justify-content-center">
+                        <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 18px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fab fa-google-play" style="font-size: 1.4rem; color: #4ade80;"></i>
+                            <div style="text-align: left;">
+                                <small style="color: #999; font-size: 0.65rem; display: block;">Google Play</small>
+                                <span style="color: #fff; font-weight: 600; font-size: 0.8rem;">শীঘ্রই আসছে</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 18px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fab fa-apple" style="font-size: 1.5rem; color: #fff;"></i>
+                            <div style="text-align: left;">
+                                <small style="color: #999; font-size: 0.65rem; display: block;">App Store</small>
+                                <span style="color: #fff; font-weight: 600; font-size: 0.8rem;">শীঘ্রই আসছে</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Call to Action -->
     <section class="py-5" style="background: linear-gradient(135deg, #28a745 0%, #1a5f2a 100%);">
@@ -1931,6 +2132,183 @@ function flipCategories() {
     .ad-img-mini {
         height: 100px;
     }
+    /* Mobile Carousel for card rows */
+    .mobile-scroll-row {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        margin-left: -4px;
+        margin-right: -4px;
+        scrollbar-width: none;
+        scroll-behavior: smooth;
+        justify-content: flex-start !important;
+    }
+    .mobile-scroll-row::-webkit-scrollbar {
+        display: none;
+    }
+    .mobile-scroll-row > [class*="col-"] {
+        flex: 0 0 85%;
+        max-width: 85%;
+        scroll-snap-align: center;
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+    .mobile-scroll-row > [class*="col-"]:first-child {
+        margin-left: 7.5%;
+    }
+    .mobile-scroll-row > [class*="col-"]:last-child {
+        margin-right: 7.5%;
+    }
+    /* Carousel dot indicators */
+    .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 0 4px;
+    }
+    .carousel-dots .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #ccc;
+        transition: all 0.3s ease;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+    .carousel-dots .dot.active {
+        width: 20px;
+        border-radius: 4px;
+        background: var(--primary, #1a6b3c);
+    }
+}
+
+/* Team Section */
+.team-section {
+    background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+    position: relative;
+}
+.team-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    height: 100%;
+}
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(26,115,232,0.15);
+}
+.team-card-featured {
+    border: 2px solid rgba(102,126,234,0.3);
+}
+.team-card-ribbon {
+    position: absolute;
+    top: 16px;
+    right: -8px;
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: #fff;
+    padding: 4px 16px 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px 0 0 4px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(255,152,0,0.4);
+}
+.team-card-ribbon::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -8px;
+    border-top: 8px solid #e65100;
+    border-right: 8px solid transparent;
+}
+.team-card-top {
+    padding: 40px 20px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.team-card-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+.team-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.9);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+}
+.team-avatar-initials {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.9);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+}
+.team-avatar-initials span {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.team-card-body {
+    padding: 24px 24px 28px;
+    text-align: center;
+}
+.team-role-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.team-social {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.team-social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e9ecef;
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+.team-social-btn:hover {
+    background: var(--btn-color);
+    border-color: var(--btn-color);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 </style>
 @endpush
@@ -1945,6 +2323,90 @@ function scrollAds(direction) {
     } else {
         slider.scrollLeft += scrollAmount;
     }
+}
+
+// Modern mobile carousel with dots & auto-slide
+if (window.innerWidth <= 768) {
+    document.querySelectorAll('.mobile-scroll-row').forEach(function(row) {
+        if (row.scrollWidth <= row.clientWidth) return;
+        var cards = Array.from(row.querySelectorAll(':scope > [class*="col-"]'));
+        if (cards.length < 2) return;
+
+        // Force scroll to first card immediately (no animation)
+        row.style.scrollBehavior = 'auto';
+        row.scrollLeft = 0;
+        // Re-enable smooth scroll after a tick
+        setTimeout(function() { row.style.scrollBehavior = ''; }, 50);
+
+        // Create dot indicators
+        var dotsWrap = document.createElement('div');
+        dotsWrap.className = 'carousel-dots';
+        cards.forEach(function(_, i) {
+            var d = document.createElement('button');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            d.setAttribute('aria-label', 'Slide ' + (i + 1));
+            d.addEventListener('click', function() {
+                goTo(i);
+                pauseAuto();
+            });
+            dotsWrap.appendChild(d);
+        });
+        row.parentNode.insertBefore(dotsWrap, row.nextSibling);
+        var dots = dotsWrap.querySelectorAll('.dot');
+
+        var current = 0;
+        var paused = false;
+        var pauseTimer;
+
+        function updateDots(idx) {
+            dots.forEach(function(d, i) {
+                d.classList.toggle('active', i === idx);
+            });
+        }
+
+        function goTo(idx) {
+            current = idx;
+            var card = cards[idx];
+            var scrollPos = card.offsetLeft - row.offsetLeft - (row.clientWidth - card.offsetWidth) / 2;
+            row.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
+            updateDots(idx);
+        }
+
+        function pauseAuto() {
+            paused = true;
+            clearTimeout(pauseTimer);
+            pauseTimer = setTimeout(function() { paused = false; }, 5000);
+        }
+
+        // Detect current card on scroll (for manual swipe)
+        var scrollDebounce;
+        row.addEventListener('scroll', function() {
+            clearTimeout(scrollDebounce);
+            scrollDebounce = setTimeout(function() {
+                var center = row.scrollLeft + row.clientWidth / 2;
+                var closest = 0;
+                var minDist = Infinity;
+                cards.forEach(function(card, i) {
+                    var cardCenter = card.offsetLeft - row.offsetLeft + card.offsetWidth / 2;
+                    var dist = Math.abs(center - cardCenter);
+                    if (dist < minDist) { minDist = dist; closest = i; }
+                });
+                current = closest;
+                updateDots(closest);
+            }, 80);
+        });
+
+        // Pause on touch
+        row.addEventListener('touchstart', function() { pauseAuto(); }, { passive: true });
+
+        // Auto-slide: show 1st card for 3.5s, then advance
+        setInterval(function() {
+            if (paused) return;
+            current++;
+            if (current >= cards.length) current = 0;
+            goTo(current);
+        }, 3500);
+    });
 }
 </script>
 @endpush

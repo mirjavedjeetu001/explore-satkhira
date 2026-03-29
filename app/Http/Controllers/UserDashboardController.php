@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Models\NewspaperEdition;
 use App\Models\Upazila;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -110,9 +112,11 @@ class UserDashboardController extends Controller
         $isDoctorCategory = false;
         $isJobCircularCategory = false;
         $isEventsCategory = false;
+        $isNewspaperCategory = false;
         if ($request->category_id) {
             $category = \App\Models\Category::find($request->category_id);
             $isDoctorCategory = $category && $category->slug === 'doctor';
+            $isNewspaperCategory = $category && $category->slug === 'newspaper';
             $isJobCircularCategory = $request->category_id == 21;
             $isEventsCategory = $request->category_id == 22;
         }
@@ -126,7 +130,7 @@ class UserDashboardController extends Controller
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'images' => 'required|array|min:1|max:5',
+            'images' => $isNewspaperCategory ? 'nullable|array|max:5' : 'required|array|min:1|max:5',
             'images.*' => 'image|max:2048',
             'map_embed' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
@@ -155,6 +159,12 @@ class UserDashboardController extends Controller
             $rules['event_end_date'] = 'required|date|after_or_equal:event_start_date';
         }
         
+        // Add Newspaper-specific validation
+        if ($isNewspaperCategory) {
+            $rules['newspaper_type'] = 'required|in:local,national,international';
+            $rules['newspaper_format'] = 'required|in:online_only,both,offline_only';
+        }
+        
         $validated = $request->validate($rules);
 
         $validated['user_id'] = auth()->id();
@@ -172,9 +182,17 @@ class UserDashboardController extends Controller
                 'visit_fee' => $request->visit_fee,
                 'serial_number' => $request->serial_number,
             ];
-            // Remove these from validated array as they're now in extra_fields
             unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
                   $validated['degrees'], $validated['chamber_time'], $validated['visit_fee'], $validated['serial_number']);
+        }
+
+        // Handle newspaper-specific extra fields
+        if ($isNewspaperCategory) {
+            $validated['extra_fields'] = [
+                'newspaper_type' => $request->newspaper_type,
+                'newspaper_format' => $request->newspaper_format,
+            ];
+            unset($validated['newspaper_type'], $validated['newspaper_format']);
         }
 
         // Handle multiple images
@@ -258,9 +276,11 @@ class UserDashboardController extends Controller
         
         // Check if Doctor category is selected (slug = 'doctor')
         $isDoctorCategory = false;
+        $isNewspaperCategory = false;
         if ($request->category_id) {
             $category = \App\Models\Category::find($request->category_id);
             $isDoctorCategory = $category && $category->slug === 'doctor';
+            $isNewspaperCategory = $category && $category->slug === 'newspaper';
         }
 
         $rules = [
@@ -290,6 +310,12 @@ class UserDashboardController extends Controller
             $rules['serial_number'] = 'nullable|string|max:50';
         }
 
+        // Add newspaper-specific validation rules
+        if ($isNewspaperCategory) {
+            $rules['newspaper_type'] = 'required|in:local,national,international';
+            $rules['newspaper_format'] = 'required|in:online_only,both,offline_only';
+        }
+
         $validated = $request->validate($rules);
         
         // Handle doctor-specific extra fields
@@ -303,11 +329,16 @@ class UserDashboardController extends Controller
                 'visit_fee' => $request->visit_fee,
                 'serial_number' => $request->serial_number,
             ];
-            // Remove these from validated array as they're now in extra_fields
             unset($validated['hospital_name'], $validated['specialization'], $validated['diseases_treated'], 
                   $validated['degrees'], $validated['chamber_time'], $validated['visit_fee'], $validated['serial_number']);
+        } elseif ($isNewspaperCategory) {
+            $validated['extra_fields'] = [
+                'newspaper_type' => $request->newspaper_type,
+                'newspaper_format' => $request->newspaper_format,
+            ];
+            unset($validated['newspaper_type'], $validated['newspaper_format']);
         } else {
-            // Clear extra_fields if category changed from doctor to something else
+            // Clear extra_fields if category changed
             $validated['extra_fields'] = null;
         }
 
@@ -521,5 +552,95 @@ class UserDashboardController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function newspaperEditions(Listing $listing)
+    {
+        if ($listing->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $category = Category::where('slug', 'newspaper')->first();
+        if (!$category || $listing->category_id !== $category->id) {
+            abort(404);
+        }
+
+        $editions = NewspaperEdition::where('listing_id', $listing->id)
+            ->orderByDesc('edition_date')
+            ->paginate(20);
+
+        return view('frontend.dashboard.newspaper.editions', compact('listing', 'editions'));
+    }
+
+    public function storeNewspaperEdition(Request $request, Listing $listing)
+    {
+        if ($listing->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $category = Category::where('slug', 'newspaper')->first();
+        if (!$category || $listing->category_id !== $category->id || $listing->status !== 'approved') {
+            abort(404);
+        }
+
+        $request->validate([
+            'edition_date' => 'required|date|unique:newspaper_editions,edition_date,NULL,id,listing_id,' . $listing->id,
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'pages' => 'required|array|min:1|max:30',
+            'pages.*' => 'image|mimes:jpeg,jpg,png,webp|max:5120',
+            'pdf_file' => 'nullable|mimes:pdf|max:20480',
+        ], [
+            'edition_date.unique' => 'এই তারিখের সংস্করণ আগেই আপলোড করা হয়েছে।',
+            'pages.required' => 'কমপক্ষে একটি পৃষ্ঠার ছবি আপলোড করুন।',
+            'pages.*.max' => 'প্রতিটি ছবি সর্বোচ্চ ৫MB হতে পারে।',
+            'pdf_file.max' => 'PDF ফাইল সর্বোচ্চ ২০MB হতে পারে।',
+        ]);
+
+        $pages = [];
+        foreach ($request->file('pages') as $page) {
+            $pages[] = $page->store('newspapers/' . $listing->id, 'public');
+        }
+
+        $pdfPath = null;
+        if ($request->hasFile('pdf_file')) {
+            $pdfPath = $request->file('pdf_file')->store('newspapers/' . $listing->id . '/pdf', 'public');
+        }
+
+        NewspaperEdition::create([
+            'listing_id' => $listing->id,
+            'uploaded_by' => auth()->id(),
+            'edition_date' => $request->edition_date,
+            'title' => $request->title,
+            'description' => $request->description,
+            'pages' => $pages,
+            'pdf_file' => $pdfPath,
+        ]);
+
+        return back()->with('success', 'সংস্করণ সফলভাবে আপলোড করা হয়েছে!');
+    }
+
+    public function deleteNewspaperEdition(Listing $listing, NewspaperEdition $edition)
+    {
+        if ($listing->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($edition->listing_id !== $listing->id) {
+            abort(404);
+        }
+
+        if ($edition->pages) {
+            foreach ($edition->pages as $page) {
+                Storage::disk('public')->delete($page);
+            }
+        }
+        if ($edition->pdf_file) {
+            Storage::disk('public')->delete($edition->pdf_file);
+        }
+
+        $edition->delete();
+
+        return back()->with('success', 'সংস্করণ মুছে ফেলা হয়েছে।');
     }
 }

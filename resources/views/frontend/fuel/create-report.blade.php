@@ -28,6 +28,13 @@
                                     <h5 class="mb-1"><i class="fas fa-gas-pump me-2"></i>{{ $station->name }}</h5>
                                     <small><i class="fas fa-map-marker-alt me-1"></i>{{ $station->upazila->name }}</small>
                                 </div>
+                                @if(isset($latestReport))
+                                    <div class="alert alert-warning mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>{{ $latestReport->reporter_name }}</strong> সর্বশেষ আপডেট দিয়েছেন {{ $latestReport->created_at->diffForHumans() }}।
+                                        নিচে সেই তথ্য পূরণ করা হয়েছে।
+                                    </div>
+                                @endif
                             @else
                                 <!-- Select or Create Station -->
                                 <div class="mb-4">
@@ -179,12 +186,15 @@
                                             <i class="fas fa-gas-pump fa-2x text-warning mb-2"></i>
                                             <h6 class="fw-bold">পেট্রোল</h6>
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
-                                                <input class="form-check-input" type="checkbox" name="petrol_available" value="1" id="petrolAvailable" style="width: 3em; height: 1.5em;">
+                                                <input class="form-check-input" type="checkbox" name="petrol_available" value="1" id="petrolAvailable" 
+                                                       {{ isset($latestReport) && $latestReport->petrol_available ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
                                             </div>
                                             <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="petrol_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <input type="number" step="0.01" name="petrol_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার"
+                                                   value="{{ isset($latestReport) && $latestReport->petrol_price ? $latestReport->petrol_price : '' }}">
                                             <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="petrol_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
+                                            <input type="number" step="0.01" name="petrol_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য"
+                                                   value="{{ isset($latestReport) && $latestReport->petrol_selling_price ? $latestReport->petrol_selling_price : '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -195,12 +205,15 @@
                                             <i class="fas fa-gas-pump fa-2x text-success mb-2"></i>
                                             <h6 class="fw-bold">ডিজেল</h6>
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
-                                                <input class="form-check-input" type="checkbox" name="diesel_available" value="1" id="dieselAvailable" style="width: 3em; height: 1.5em;">
+                                                <input class="form-check-input" type="checkbox" name="diesel_available" value="1" id="dieselAvailable" 
+                                                       {{ isset($latestReport) && $latestReport->diesel_available ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
                                             </div>
                                             <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="diesel_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <input type="number" step="0.01" name="diesel_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার"
+                                                   value="{{ isset($latestReport) && $latestReport->diesel_price ? $latestReport->diesel_price : '' }}">
                                             <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="diesel_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
+                                            <input type="number" step="0.01" name="diesel_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য"
+                                                   value="{{ isset($latestReport) && $latestReport->diesel_selling_price ? $latestReport->diesel_selling_price : '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -211,12 +224,15 @@
                                             <i class="fas fa-gas-pump fa-2x text-danger mb-2"></i>
                                             <h6 class="fw-bold">অকটেন</h6>
                                             <div class="form-check form-switch d-flex justify-content-center mb-2">
-                                                <input class="form-check-input" type="checkbox" name="octane_available" value="1" id="octaneAvailable" style="width: 3em; height: 1.5em;">
+                                                <input class="form-check-input" type="checkbox" name="octane_available" value="1" id="octaneAvailable" 
+                                                       {{ isset($latestReport) && $latestReport->octane_available ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
                                             </div>
                                             <label class="form-label small text-muted">প্রতি লিটার দাম (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="octane_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার">
+                                            <input type="number" step="0.01" name="octane_price" class="form-control text-center mb-2" placeholder="৳ প্রতি লিটার"
+                                                   value="{{ isset($latestReport) && $latestReport->octane_price ? $latestReport->octane_price : '' }}">
                                             <label class="form-label small text-muted">কত টাকায় দিচ্ছে (ঐচ্ছিক)</label>
-                                            <input type="number" step="0.01" name="octane_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য">
+                                            <input type="number" step="0.01" name="octane_selling_price" class="form-control text-center" placeholder="৳ বিক্রয় মূল্য"
+                                                   value="{{ isset($latestReport) && $latestReport->octane_selling_price ? $latestReport->octane_selling_price : '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -230,7 +246,8 @@
                                     <div class="col-md-6">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-text"><i class="fas fa-money-bill-wave text-success"></i></span>
-                                            <input type="number" name="fixed_amount" class="form-control text-center" placeholder="যেমন: 500" step="1" min="0">
+                                            <input type="number" name="fixed_amount" class="form-control text-center" placeholder="যেমন: 500" step="1" min="0"
+                                                   value="{{ isset($latestReport) && $latestReport->fixed_amount ? $latestReport->fixed_amount : '' }}">
                                             <span class="input-group-text">টাকা</span>
                                         </div>
                                         <small class="text-muted">খালি রাখলে "সীমাহীন" ধরে নেওয়া হবে</small>
@@ -242,28 +259,32 @@
                             <h5 class="mb-3 fw-bold text-primary"><i class="fas fa-users me-2"></i>লাইনের অবস্থা</h5>
                             <div class="row g-2 mb-4">
                                 <div class="col-6 col-md-3">
-                                    <input type="radio" class="btn-check" name="queue_status" id="queueNone" value="none" checked>
+                                    <input type="radio" class="btn-check" name="queue_status" id="queueNone" value="none" 
+                                           {{ !isset($latestReport) || $latestReport->queue_status == 'none' ? 'checked' : '' }}>
                                     <label class="btn btn-outline-success w-100 py-3" for="queueNone">
                                         <i class="fas fa-smile fa-lg d-block mb-1"></i>
                                         <span>কোন লাইন নেই</span>
                                     </label>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <input type="radio" class="btn-check" name="queue_status" id="queueShort" value="short">
+                                    <input type="radio" class="btn-check" name="queue_status" id="queueShort" value="short"
+                                           {{ isset($latestReport) && $latestReport->queue_status == 'short' ? 'checked' : '' }}>
                                     <label class="btn btn-outline-info w-100 py-3" for="queueShort">
                                         <i class="fas fa-meh fa-lg d-block mb-1"></i>
                                         <span>ছোট লাইন</span>
                                     </label>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <input type="radio" class="btn-check" name="queue_status" id="queueMedium" value="medium">
+                                    <input type="radio" class="btn-check" name="queue_status" id="queueMedium" value="medium"
+                                           {{ isset($latestReport) && $latestReport->queue_status == 'medium' ? 'checked' : '' }}>
                                     <label class="btn btn-outline-warning w-100 py-3" for="queueMedium">
                                         <i class="fas fa-frown fa-lg d-block mb-1"></i>
                                         <span>মাঝারি লাইন</span>
                                     </label>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <input type="radio" class="btn-check" name="queue_status" id="queueLong" value="long">
+                                    <input type="radio" class="btn-check" name="queue_status" id="queueLong" value="long"
+                                           {{ isset($latestReport) && $latestReport->queue_status == 'long' ? 'checked' : '' }}>
                                     <label class="btn btn-outline-danger w-100 py-3" for="queueLong">
                                         <i class="fas fa-sad-tear fa-lg d-block mb-1"></i>
                                         <span>বড় লাইন</span>

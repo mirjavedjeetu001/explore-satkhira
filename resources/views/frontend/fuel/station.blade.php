@@ -34,9 +34,16 @@
                                 @endif
                             </div>
                             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                <a href="{{ route('fuel.create-report', $station->id) }}" class="btn btn-primary btn-lg">
+                                <a href="{{ route('fuel.create-report', $station->id) }}" class="btn btn-primary btn-lg mb-2">
                                     <i class="fas fa-plus-circle me-2"></i>আপডেট দিন
                                 </a>
+                                <div>
+                                    <button class="btn btn-outline-warning fuel-subscribe-btn"
+                                        data-station-id="{{ $station->id }}"
+                                        onclick="toggleFuelSubscription(this);">
+                                        <i class="far fa-bell"></i> <span>🔔 আপডেট নোটিফিকেশন পান</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

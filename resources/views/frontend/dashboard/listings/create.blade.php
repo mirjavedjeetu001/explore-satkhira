@@ -97,6 +97,44 @@
                                     <small class="text-muted"><i class="fas fa-info-circle me-1"></i>এই তারিখ পার হলে বিজ্ঞপ্তি স্বয়ংক্রিয়ভাবে লুকিয়ে যাবে</small>
                                 </div>
                                 
+                                <!-- Newspaper Specific Fields (shown only for Newspaper category) -->
+                                <div class="col-12" id="newspaperFields" style="display: none;">
+                                    <div class="card border-0" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                        <div class="card-body">
+                                            <h6 class="card-title"><i class="fas fa-newspaper text-primary me-2"></i>সংবাদপত্র সম্পর্কিত তথ্য</h6>
+                                            <p class="text-muted small mb-3">এই তথ্যগুলো শুধুমাত্র সংবাদপত্র ক্যাটাগরির জন্য প্রযোজ্য</p>
+                                            
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">সংবাদপত্রের ধরন <span class="text-danger">*</span></label>
+                                                    <select name="newspaper_type" class="form-select @error('newspaper_type') is-invalid @enderror">
+                                                        <option value="">ধরন নির্বাচন করুন</option>
+                                                        <option value="local" {{ old('newspaper_type') == 'local' ? 'selected' : '' }}>🏘️ স্থানীয় (Local)</option>
+                                                        <option value="national" {{ old('newspaper_type') == 'national' ? 'selected' : '' }}>🇧🇩 জাতীয় (National)</option>
+                                                        <option value="international" {{ old('newspaper_type') == 'international' ? 'selected' : '' }}>🌍 আন্তর্জাতিক (International)</option>
+                                                    </select>
+                                                    @error('newspaper_type')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                
+                                                <div class="col-md-6">
+                                                    <label class="form-label">ফরম্যাট <span class="text-danger">*</span></label>
+                                                    <select name="newspaper_format" class="form-select @error('newspaper_format') is-invalid @enderror">
+                                                        <option value="">ফরম্যাট নির্বাচন করুন</option>
+                                                        <option value="online_only" {{ old('newspaper_format') == 'online_only' ? 'selected' : '' }}>💻 শুধু অনলাইন পোর্টাল</option>
+                                                        <option value="both" {{ old('newspaper_format') == 'both' ? 'selected' : '' }}>📰 অনলাইন + অফলাইন (উভয়)</option>
+                                                        <option value="offline_only" {{ old('newspaper_format') == 'offline_only' ? 'selected' : '' }}>🗞️ শুধু অফলাইন (প্রিন্ট)</option>
+                                                    </select>
+                                                    @error('newspaper_format')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- Event Dates Fields (shown only for Events category - id 22) -->
                                 <div class="col-md-6" id="eventStartField" style="display: none;">
                                     <label class="form-label">ইভেন্ট শুরুর তারিখ <span class="text-danger">*</span></label>
@@ -164,8 +202,8 @@
                                     @enderror
                                 </div>
                                 
-                                <div class="col-12">
-                                    <label class="form-label">ছবি <span class="text-danger">*</span></label>
+                                <div class="col-12" id="imageFieldContainer">
+                                    <label class="form-label" id="imageLabel">ছবি <span class="text-danger" id="imageRequired">*</span></label>
                                     <input type="file" name="images[]" id="imageInput" class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" accept="image/*" multiple required>
                                     @error('images')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -173,7 +211,7 @@
                                     @error('images.*')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted"><i class="fas fa-info-circle me-1"></i>সর্বনিম্ন ১টি ছবি আবশ্যক। একাধিক ছবি নির্বাচন করতে পারবেন (সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)</small>
+                                    <small class="text-muted" id="imageHelp"><i class="fas fa-info-circle me-1"></i>সর্বনিম্ন ১টি ছবি আবশ্যক। একাধিক ছবি নির্বাচন করতে পারবেন (সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)</small>
                                     <div id="imagePreview" class="mt-2 d-flex flex-wrap gap-2"></div>
                                 </div>
                                 
@@ -331,9 +369,13 @@
 // Category specific fields toggle
 const categorySelect = document.querySelector('select[name="category_id"]');
 const doctorFields = document.getElementById('doctorFields');
+const newspaperFields = document.getElementById('newspaperFields');
 const jobDeadlineField = document.getElementById('jobDeadlineField');
 const eventStartField = document.getElementById('eventStartField');
 const eventEndField = document.getElementById('eventEndField');
+const imageInput = document.getElementById('imageInput');
+const imageRequired = document.getElementById('imageRequired');
+const imageHelp = document.getElementById('imageHelp');
 
 // Category data with slug mapping
 const categoryData = {
@@ -355,6 +397,25 @@ function toggleCategoryFields() {
         doctorFields.style.display = 'none';
         doctorFields.querySelector('input[name="hospital_name"]').required = false;
         doctorFields.querySelector('input[name="specialization"]').required = false;
+    }
+    
+    // Newspaper fields
+    if (selectedSlug === 'newspaper') {
+        newspaperFields.style.display = 'block';
+        newspaperFields.querySelector('select[name="newspaper_type"]').required = true;
+        newspaperFields.querySelector('select[name="newspaper_format"]').required = true;
+        // Make image optional for newspaper
+        imageInput.required = false;
+        imageRequired.style.display = 'none';
+        imageHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>সংবাদপত্রের লোগো/ছবি দিতে পারেন (ঐচ্ছিক, সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)';
+    } else {
+        newspaperFields.style.display = 'none';
+        newspaperFields.querySelector('select[name="newspaper_type"]').required = false;
+        newspaperFields.querySelector('select[name="newspaper_format"]').required = false;
+        // Image required for other categories
+        imageInput.required = true;
+        imageRequired.style.display = 'inline';
+        imageHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>সর্বনিম্ন ১টি ছবি আবশ্যক। একাধিক ছবি নির্বাচন করতে পারবেন (সর্বোচ্চ ৫টি, প্রতিটি সর্বোচ্চ 2MB)';
     }
     
     // Job Circular deadline field (category_id = 21)

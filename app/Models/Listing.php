@@ -94,6 +94,11 @@ class Listing extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    public function editions()
+    {
+        return $this->hasMany(NewspaperEdition::class);
+    }
+
     public function approvedComments(): MorphMany
     {
         return $this->comments()->where('status', 'approved');

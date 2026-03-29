@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\FuelStation;
 use App\Models\FuelReport;
 use App\Models\FuelSetting;
+use App\Models\FuelStationSubscription;
+use App\Models\PushSubscription;
 use App\Models\Upazila;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -62,13 +64,12 @@ class FuelController extends Controller
     public function showStation($id)
     {
         $station = FuelStation::with(['upazila', 'reports' => function($q) {
-            // Verified first, then by created_at desc, hide 10+ dislikes unless verified
+            // Latest first, hide 10+ dislikes unless verified
             $q->where(function($query) {
                 $query->where('is_verified', true)
                       ->orWhere('incorrect_votes', '<', 10)
                       ->orWhereNull('incorrect_votes');
             })
-            ->orderByDesc('is_verified')
             ->orderByDesc('created_at')
             ->limit(20);
         }, 'comments' => function($q) {
@@ -84,16 +85,20 @@ class FuelController extends Controller
     public function createReport($stationId = null)
     {
         $station = null;
+        $latestReport = null;
         if ($stationId) {
             $station = FuelStation::with('upazila')->findOrFail($stationId);
             if ($station->is_locked) {
                 return redirect()->route('fuel.station', $station->id)
                     ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে যোগাযোগ করুন: 01811480222');
             }
+            $latestReport = FuelReport::where('fuel_station_id', $stationId)
+                ->orderByDesc('created_at')
+                ->first();
         }
         $upazilas = Upazila::orderBy('name')->get();
         
-        return view('frontend.fuel.create-report', compact('station', 'upazilas'));
+        return view('frontend.fuel.create-report', compact('station', 'upazilas', 'latestReport'));
     }
     
     public function storeReport(Request $request, $stationId = null)
@@ -200,6 +205,13 @@ class FuelController extends Controller
             'image' => $firstImage,
             'images' => $imagePaths,
         ]);
+
+        // Notify pump subscribers
+        try {
+            self::notifyFuelSubscribers($fuelStationId, $report);
+        } catch (\Exception $e) {
+            \Log::warning('Fuel subscriber notification failed', ['error' => $e->getMessage()]);
+        }
         
         return redirect()->route('fuel.index')
             ->with('success', 'আপনার রিপোর্ট সফলভাবে জমা হয়েছে। আপনার PIN: ' . $validated['edit_pin'] . ' (এটি দিয়ে পরে এডিট করতে পারবেন)')
@@ -482,5 +494,132 @@ class FuelController extends Controller
         
         return redirect()->route('fuel.station', $stationId)
             ->with('success', 'আপনার মন্তব্য সফলভাবে যুক্ত হয়েছে।');
+    }
+
+    /**
+     * Subscribe to a fuel station's push notifications.
+     */
+    public function subscribePump(Request $request)
+    {
+        $validated = $request->validate([
+            'fuel_station_id' => 'required|exists:fuel_stations,id',
+            'endpoint' => 'required|string',
+        ]);
+
+        $pushSub = PushSubscription::where('endpoint', $validated['endpoint'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$pushSub) {
+            return response()->json(['error' => 'Push subscription not found. Please enable notifications first.'], 404);
+        }
+
+        FuelStationSubscription::updateOrCreate(
+            [
+                'fuel_station_id' => $validated['fuel_station_id'],
+                'push_subscription_id' => $pushSub->id,
+            ],
+            ['is_active' => true]
+        );
+
+        return response()->json(['success' => true, 'subscribed' => true]);
+    }
+
+    /**
+     * Unsubscribe from a fuel station's push notifications.
+     */
+    public function unsubscribePump(Request $request)
+    {
+        $validated = $request->validate([
+            'fuel_station_id' => 'required|exists:fuel_stations,id',
+            'endpoint' => 'required|string',
+        ]);
+
+        $pushSub = PushSubscription::where('endpoint', $validated['endpoint'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$pushSub) {
+            return response()->json(['error' => 'Not found'], 404);
+        }
+
+        FuelStationSubscription::where('fuel_station_id', $validated['fuel_station_id'])
+            ->where('push_subscription_id', $pushSub->id)
+            ->update(['is_active' => false]);
+
+        return response()->json(['success' => true, 'subscribed' => false]);
+    }
+
+    /**
+     * Get subscribed station IDs for a push endpoint.
+     */
+    public function getSubscriptions(Request $request)
+    {
+        $validated = $request->validate([
+            'endpoint' => 'required|string',
+        ]);
+
+        $pushSub = PushSubscription::where('endpoint', $validated['endpoint'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$pushSub) {
+            return response()->json(['station_ids' => []]);
+        }
+
+        $stationIds = FuelStationSubscription::where('push_subscription_id', $pushSub->id)
+            ->where('is_active', true)
+            ->pluck('fuel_station_id');
+
+        return response()->json(['station_ids' => $stationIds]);
+    }
+
+    /**
+     * Send push notifications to subscribers when a fuel report is created.
+     */
+    public static function notifyFuelSubscribers(int $fuelStationId, FuelReport $report)
+    {
+        $station = FuelStation::find($fuelStationId);
+        if (!$station) return;
+
+        $subs = FuelStationSubscription::where('fuel_station_id', $fuelStationId)
+            ->where('is_active', true)
+            ->with('pushSubscription')
+            ->get();
+
+        if ($subs->isEmpty()) return;
+
+        $fuels = [];
+        if ($report->petrol_available) $fuels[] = 'পেট্রোল ✅';
+        if ($report->diesel_available) $fuels[] = 'ডিজেল ✅';
+        if ($report->octane_available) $fuels[] = 'অকটেন ✅';
+        $fuelText = $fuels ? implode(', ', $fuels) : 'সব তেল নেই ❌';
+
+        $payload = json_encode([
+            'title' => '⛽ ' . $station->name . ' - তেল আপডেট',
+            'body' => $fuelText . ($report->queue_status !== 'none' ? ' | লাইন: ' . $report->queue_status_bangla : ''),
+            'icon' => asset('icons/icon-192x192.png'),
+            'badge' => asset('icons/icon-96x96.png'),
+            'url' => route('fuel.station', $fuelStationId),
+        ]);
+
+        $pushCtrl = new \App\Http\Controllers\Admin\PushNotificationController();
+        $ref = new \ReflectionMethod($pushCtrl, 'sendWebPush');
+        $ref->setAccessible(true);
+
+        foreach ($subs as $sub) {
+            $ps = $sub->pushSubscription;
+            if (!$ps || !$ps->is_active) continue;
+
+            try {
+                $result = $ref->invoke($pushCtrl, $ps->endpoint, $ps->p256dh, $ps->auth, $payload);
+                if ($result === 'gone') {
+                    $ps->update(['is_active' => false]);
+                    $sub->update(['is_active' => false]);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Fuel pump push failed', ['station' => $fuelStationId, 'error' => $e->getMessage()]);
+            }
+        }
     }
 }

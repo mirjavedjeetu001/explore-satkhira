@@ -12,6 +12,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\ModeratorFuelController;
+use App\Http\Controllers\NewspaperController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -89,6 +90,11 @@ Route::middleware(['auth'])->group(function () {
     // Duplicate Check API
     Route::post('/dashboard/listings/check-duplicate', [UserDashboardController::class, 'checkDuplicate'])->name('dashboard.listings.check-duplicate');
     
+    // Newspaper Edition Management (Dashboard)
+    Route::get('/dashboard/newspaper/{listing}/editions', [UserDashboardController::class, 'newspaperEditions'])->name('dashboard.newspaper.editions');
+    Route::post('/dashboard/newspaper/{listing}/editions', [UserDashboardController::class, 'storeNewspaperEdition'])->name('dashboard.newspaper.editions.store');
+    Route::delete('/dashboard/newspaper/{listing}/editions/{edition}', [UserDashboardController::class, 'deleteNewspaperEdition'])->name('dashboard.newspaper.editions.delete');
+    
     // Listing Images (Offers, Promotions, Banners)
     Route::get('/dashboard/listings/{listing}/images', [ListingImageController::class, 'index'])->name('dashboard.listings.images');
     Route::get('/dashboard/listings/{listing}/images/create', [ListingImageController::class, 'create'])->name('dashboard.listings.images.create');
@@ -123,6 +129,15 @@ Route::middleware(['auth'])->group(function () {
 
 // Listings public routes
 Route::post('/listing/{listing}/comment', [ListingController::class, 'storeComment'])->name('listings.comment')->middleware('auth');
+
+// Newspaper Section Routes
+Route::prefix('newspapers')->name('newspapers.')->group(function () {
+    Route::get('/', [NewspaperController::class, 'index'])->name('index');
+    Route::get('/{newspaper}', [NewspaperController::class, 'show'])->name('show');
+    Route::get('/{newspaper}/edition/{edition}', [NewspaperController::class, 'readEdition'])->name('edition.read');
+    Route::post('/{newspaper}/edition', [NewspaperController::class, 'storeEdition'])->name('edition.store')->middleware('auth');
+    Route::delete('/{newspaper}/edition/{edition}', [NewspaperController::class, 'deleteEdition'])->name('edition.delete')->middleware('auth');
+});
 
 // Salami Calculator Routes (Eid Feature)
 Route::prefix('salami')->name('salami.')->group(function () {
@@ -315,8 +330,24 @@ Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController
 Route::post('/push/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
 Route::get('/push/vapid-key', [\App\Http\Controllers\PushSubscriptionController::class, 'vapidPublicKey'])->name('push.vapid-key');
 
+// Fuel Station Push Subscription (per-pump notification)
+Route::post('/fuel/subscribe', [\App\Http\Controllers\FuelController::class, 'subscribePump'])->name('fuel.subscribe');
+Route::post('/fuel/unsubscribe', [\App\Http\Controllers\FuelController::class, 'unsubscribePump'])->name('fuel.unsubscribe');
+Route::post('/fuel/subscriptions', [\App\Http\Controllers\FuelController::class, 'getSubscriptions'])->name('fuel.subscriptions');
+
 // App Download Page
 Route::get('/app', [\App\Http\Controllers\AppDownloadController::class, 'show'])->name('app.download');
 Route::get('/app/download', [\App\Http\Controllers\AppDownloadController::class, 'download'])->name('app.download.file');
+
+// App Version Check API (for TWA in-app update)
+Route::get('/api/app-version', function () {
+    return response()->json([
+        'version' => '1.1.0',
+        'versionCode' => 2,
+        'url' => url('/explore-satkhira.apk'),
+        'releaseNotes' => 'পুশ নোটিফিকেশন সাপোর্ট যোগ করা হয়েছে। পারফরমেন্স উন্নত করা হয়েছে।',
+        'forceUpdate' => true,
+    ]);
+});
 
 require __DIR__.'/auth.php';
