@@ -2,6 +2,60 @@
 
 {{-- Title not set here so homepage shows only site name in browser tab --}}
 
+@section('structured_data')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "WebSite",
+    "name": "এক্সপ্লোর সাতক্ষীরা - Explore Satkhira",
+    "alternateName": "Explore Satkhira",
+    "url": "{{ url('/') }}",
+    "description": "সাতক্ষীরা জেলার সকল তথ্য এক জায়গায়। হোম টিউটর, টু-লেট, রেস্টুরেন্ট, হাসপাতাল, স্কুল, কলেজ, ডাক্তার, ফার্মেসি, ব্যাংক, সরকারি অফিস, পর্যটন স্পট খুঁজুন।",
+    "inLanguage": ["bn", "en"],
+    "potentialAction": {
+        "@@type": "SearchAction",
+        "target": "{{ url('/listings') }}?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "Organization",
+    "name": "এক্সপ্লোর সাতক্ষীরা",
+    "url": "{{ url('/') }}",
+    "logo": "{{ asset('icons/icon-512x512.png') }}",
+    "sameAs": [],
+    "contactPoint": {
+        "@@type": "ContactPoint",
+        "contactType": "customer service",
+        "areaServed": "BD",
+        "availableLanguage": ["Bengali", "English"]
+    },
+    "address": {
+        "@@type": "PostalAddress",
+        "addressLocality": "Satkhira",
+        "addressRegion": "Khulna",
+        "addressCountry": "BD",
+        "postalCode": "9400"
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [{
+        "@@type": "ListItem",
+        "position": 1,
+        "name": "হোম",
+        "item": "{{ url('/') }}"
+    }]
+}
+</script>
+@endsection
+
 @section('content')
     <!-- Hero Slider -->
     <section class="hero-slider">
@@ -1545,6 +1599,47 @@
         </div>
     </section>
 
+    <!-- Stats Counter Section -->
+    <section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d6e3a 0%, #1a8a4a 50%, #0d6e3a 100%);">
+        <div class="position-absolute w-100 h-100" style="top:0;left:0;background:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><circle cx=%2240%22 cy=%2240%22 r=%221%22 fill=%22rgba(255,255,255,0.05)%22/></svg>') repeat;"></div>
+        <div class="container position-relative">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold text-white" style="font-size: 2rem;">{{ app()->getLocale() == 'bn' ? 'সাতক্ষীরা জেলার তথ্য ভান্ডার' : 'Satkhira District Data Hub' }}</h2>
+                <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.6); border-radius: 2px; margin: 12px auto 0;"></div>
+            </div>
+            <div class="row g-4 text-center">
+                <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="0">
+                    <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15);">
+                        <i class="fas fa-eye fa-2x text-white mb-3"></i>
+                        <h3 class="fw-bold text-white mb-1 counter" data-target="{{ $totalVisitors }}">0</h3>
+                        <p class="text-white-50 mb-0 small">{{ app()->getLocale() == 'bn' ? 'মোট ভিজিটর' : 'Total Visitors' }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15);">
+                        <i class="fas fa-list-alt fa-2x text-white mb-3"></i>
+                        <h3 class="fw-bold text-white mb-1 counter" data-target="{{ $totalListings }}">0</h3>
+                        <p class="text-white-50 mb-0 small">{{ app()->getLocale() == 'bn' ? 'মোট তথ্য' : 'Total Listings' }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15);">
+                        <i class="fas fa-th-large fa-2x text-white mb-3"></i>
+                        <h3 class="fw-bold text-white mb-1 counter" data-target="{{ $categories->count() }}">0</h3>
+                        <p class="text-white-50 mb-0 small">{{ app()->getLocale() == 'bn' ? 'ক্যাটাগরি' : 'Categories' }}</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15);">
+                        <i class="fas fa-map-marked-alt fa-2x text-white mb-3"></i>
+                        <h3 class="fw-bold text-white mb-1 counter" data-target="{{ $upazilas->count() }}">0</h3>
+                        <p class="text-white-50 mb-0 small">{{ app()->getLocale() == 'bn' ? 'উপজেলা' : 'Upazilas' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- আমাদের টিম Section -->
     @if(isset($teamMembers) && $teamMembers->count() > 0)
     <section class="team-section py-5">
@@ -2408,5 +2503,29 @@ if (window.innerWidth <= 768) {
         }, 3500);
     });
 }
+
+// Stats counter animation
+const counters = document.querySelectorAll('.counter');
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
+            entry.target.classList.add('counted');
+            const target = +entry.target.getAttribute('data-target');
+            const duration = 2000;
+            const step = Math.max(1, Math.ceil(target / (duration / 16)));
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    entry.target.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    entry.target.textContent = current.toLocaleString();
+                }
+            }, 16);
+        }
+    });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
 </script>
 @endpush

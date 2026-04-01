@@ -103,6 +103,10 @@ class HomeController extends Controller
             ->whereIn('website_role', ['super_admin', 'admin'])
             ->get();
 
+        // Stats for counter section
+        $totalListings = Listing::approved()->count();
+        $totalVisitors = \App\Models\Visitor::count();
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -114,7 +118,9 @@ class HomeController extends Controller
             'homepageAds',
             'fuelEnabled',
             'fuelReports',
-            'teamMembers'
+            'teamMembers',
+            'totalListings',
+            'totalVisitors'
         ));
     }
 }

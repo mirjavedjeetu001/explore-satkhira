@@ -1745,5 +1745,15 @@
             cursor: pointer; padding: 0 4px; line-height: 1;
         }
     </style>
+    
+    <!-- Source Code Protection -->
+    <script>
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+        }
+    });
+    </script>
 </body>
 </html>
