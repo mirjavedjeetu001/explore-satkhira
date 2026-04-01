@@ -13,6 +13,8 @@ use App\Models\FuelReport;
 use App\Models\FuelSetting;
 use App\Models\FuelStation;
 use App\Models\TeamMember;
+use App\Models\BloodDonor;
+use App\Models\BloodSetting;
 
 class HomeController extends Controller
 {
@@ -107,6 +109,21 @@ class HomeController extends Controller
         $totalListings = Listing::approved()->count();
         $totalVisitors = \App\Models\Visitor::count();
 
+        // Blood top donors for homepage
+        $bloodOnHomepage = BloodSetting::get('show_on_homepage', '0') === '1' && BloodSetting::isEnabled();
+        $topBloodDonors = collect();
+        if ($bloodOnHomepage) {
+            $topBloodDonors = BloodDonor::active()
+                ->individual()
+                ->whereNull('parent_id')
+                ->withCount('donationHistories')
+                ->having('donation_histories_count', '>', 0)
+                ->orderByDesc('donation_histories_count')
+                ->latest()
+                ->take(6)
+                ->get();
+        }
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -120,7 +137,9 @@ class HomeController extends Controller
             'fuelReports',
             'teamMembers',
             'totalListings',
-            'totalVisitors'
+            'totalVisitors',
+            'bloodOnHomepage',
+            'topBloodDonors'
         ));
     }
 }

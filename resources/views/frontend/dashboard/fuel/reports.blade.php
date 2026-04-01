@@ -48,6 +48,17 @@
                         <a href="{{ route('dashboard.fuel.reports') }}" class="list-group-item list-group-item-action active">
                             <i class="fas fa-gas-pump me-2"></i>জ্বালানি ম্যানেজমেন্ট
                         </a>
+                        @if(auth()->user()->is_upazila_moderator || auth()->user()->isAdmin())
+                            <a href="{{ route('dashboard.blood.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('dashboard.blood.*') ? 'active' : '' }}">
+                                <i class="fas fa-tint me-2 text-danger"></i>রক্তদাতা ম্যানেজমেন্ট
+                            </a>
+                        @endif
+                        @php $bloodDonor = \App\Models\BloodDonor::where('phone', auth()->user()->phone)->where('status', 'active')->first(); @endphp
+                        @if($bloodDonor)
+                            <a href="{{ route('dashboard.blood.my-profile') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-heartbeat me-2 text-danger"></i>আমার রক্তদাতা প্রোফাইল
+                            </a>
+                        @endif
                         <a href="{{ route('dashboard.profile') }}" class="list-group-item list-group-item-action">
                             <i class="fas fa-user-edit me-2"></i>প্রোফাইল সম্পাদনা
                         </a>

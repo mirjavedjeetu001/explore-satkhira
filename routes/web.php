@@ -12,6 +12,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\ModeratorFuelController;
+use App\Http\Controllers\ModeratorBloodController;
 use App\Http\Controllers\NewspaperController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -30,6 +31,8 @@ use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\SalamiController as AdminSalamiController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SalamiController;
+use App\Http\Controllers\BloodController;
+use App\Http\Controllers\Admin\BloodController as AdminBloodController;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap Routes (for SEO)
@@ -125,6 +128,17 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('reports/{id}', [ModeratorFuelController::class, 'deleteReport'])->name('reports.delete');
         Route::post('reports/{id}/delete-image', [ModeratorFuelController::class, 'deleteReportImage'])->name('reports.delete-image');
     });
+
+    // Moderator Blood Donor Management
+    Route::prefix('dashboard/blood')->name('dashboard.blood.')->group(function () {
+        Route::get('/', [ModeratorBloodController::class, 'index'])->name('index');
+        Route::get('{id}/show', [ModeratorBloodController::class, 'show'])->name('show');
+        Route::get('{id}/edit', [ModeratorBloodController::class, 'edit'])->name('edit');
+        Route::put('{id}', [ModeratorBloodController::class, 'update'])->name('update');
+        Route::post('{id}/toggle-status', [ModeratorBloodController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('{id}/reset-reachable', [ModeratorBloodController::class, 'resetReachable'])->name('reset-reachable');
+        Route::get('my-profile', [ModeratorBloodController::class, 'myBloodProfile'])->name('my-profile');
+    });
 });
 
 // Listings public routes
@@ -174,6 +188,42 @@ Route::prefix('fuel')->name('fuel.')->group(function () {
     Route::get('/api/station/{id}', [\App\Http\Controllers\FuelController::class, 'getStationInfo'])->name('api.station');
     Route::post('/report/{id}/vote', [\App\Http\Controllers\FuelController::class, 'voteReport'])->name('vote-report');
     Route::post('/station/{id}/comment', [\App\Http\Controllers\FuelController::class, 'storeComment'])->name('store-comment');
+});
+
+// Explore Blood - Blood Donor Routes
+Route::prefix('blood')->name('blood.')->group(function () {
+    // Public pages
+    Route::get('/', [BloodController::class, 'index'])->name('index');
+    Route::get('/donor/{id}', [BloodController::class, 'show'])->name('show');
+    
+    // Donor auth
+    Route::get('/register', [BloodController::class, 'registerForm'])->name('register');
+    Route::post('/register', [BloodController::class, 'register'])->name('register.submit');
+    Route::get('/login', [BloodController::class, 'loginForm'])->name('login');
+    Route::post('/login', [BloodController::class, 'login'])->name('login.submit');
+    Route::get('/logout', [BloodController::class, 'logout'])->name('logout');
+    Route::get('/forgot-password', [BloodController::class, 'forgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password', [BloodController::class, 'sendResetLink'])->name('forgot-password.submit');
+    
+    // Donor dashboard (session-based auth)
+    Route::get('/dashboard', [BloodController::class, 'dashboard'])->name('dashboard');
+    Route::post('/update-profile', [BloodController::class, 'updateProfile'])->name('update-profile');
+    Route::post('/change-password', [BloodController::class, 'changePassword'])->name('change-password');
+    Route::post('/toggle-availability', [BloodController::class, 'toggleAvailability'])->name('toggle-availability');
+    Route::post('/record-donation', [BloodController::class, 'recordDonation'])->name('record-donation');
+    
+    // Organization donor management
+    Route::get('/org-donors', [BloodController::class, 'orgDonors'])->name('org-donors');
+    Route::get('/org-donors/add', [BloodController::class, 'orgAddDonorForm'])->name('org-add-donor');
+    Route::post('/org-donors', [BloodController::class, 'orgStoreDonor'])->name('org-store-donor');
+    Route::get('/org-donors/{id}/edit', [BloodController::class, 'orgEditDonor'])->name('org-edit-donor');
+    Route::put('/org-donors/{id}', [BloodController::class, 'orgUpdateDonor'])->name('org-update-donor');
+    Route::post('/org-donors/{id}/toggle', [BloodController::class, 'orgToggleDonor'])->name('org-toggle-donor');
+    Route::delete('/org-donors/{id}', [BloodController::class, 'orgDeleteDonor'])->name('org-delete-donor');
+    
+    // Visitor actions
+    Route::post('/donor/{id}/report', [BloodController::class, 'reportNotReachable'])->name('report');
+    Route::post('/donor/{id}/comment', [BloodController::class, 'storeComment'])->name('comment');
 });
 
 // Admin Panel Routes
@@ -313,6 +363,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('settings', [\App\Http\Controllers\Admin\FuelController::class, 'settings'])->name('settings');
         Route::put('settings', [\App\Http\Controllers\Admin\FuelController::class, 'updateSettings'])->name('settings.update');
         Route::post('toggle', [\App\Http\Controllers\Admin\FuelController::class, 'toggleFeature'])->name('toggle');
+    });
+    
+    // Explore Blood Management
+    Route::prefix('blood')->name('blood.')->group(function () {
+        Route::get('/', [AdminBloodController::class, 'index'])->name('index');
+        Route::get('comments', [AdminBloodController::class, 'comments'])->name('comments');
+        Route::delete('comments/{id}', [AdminBloodController::class, 'deleteComment'])->name('comments.delete');
+        Route::get('settings', [AdminBloodController::class, 'settings'])->name('settings');
+        Route::post('settings', [AdminBloodController::class, 'updateSettings'])->name('settings.update');
+        Route::post('toggle', [AdminBloodController::class, 'toggleFeature'])->name('toggle');
+        Route::post('toggle-homepage', [AdminBloodController::class, 'toggleHomepage'])->name('toggle-homepage');
+        Route::get('create', [AdminBloodController::class, 'create'])->name('create');
+        Route::post('/', [AdminBloodController::class, 'store'])->name('store');
+        Route::get('{id}', [AdminBloodController::class, 'show'])->name('show');
+        Route::get('{id}/edit', [AdminBloodController::class, 'edit'])->name('edit');
+        Route::put('{id}', [AdminBloodController::class, 'update'])->name('update');
+        Route::delete('{id}', [AdminBloodController::class, 'destroy'])->name('destroy');
+        Route::post('{id}/toggle-status', [AdminBloodController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('{id}/reset-reachable', [AdminBloodController::class, 'resetReachable'])->name('reset-reachable');
     });
     
     // Push Notifications Management

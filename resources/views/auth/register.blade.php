@@ -722,6 +722,14 @@
                     <i class="fas fa-lightbulb" style="color: #ffc107;"></i>
                     <span style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'টিপস: মডারেটর না হলে শুধু ক্যাটাগরি সিলেক্ট করুন' : 'Tip: If not moderator, just select categories' }}</span>
                 </div>
+                
+                @if(\App\Models\BloodSetting::isEnabled())
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+                <div class="feature-item" style="background: rgba(220,53,69,0.3); padding: 10px; border-radius: 8px;">
+                    <span style="font-size: 1.3rem; margin-right: 10px;">🩸</span>
+                    <span style="font-size: 0.85rem;">{{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর রক্তদাতা - রক্তদাতা হিসেবে আলাদা রেজিস্ট্রেশন করুন' : 'Explore Blood - Register separately as blood donor' }}</span>
+                </div>
+                @endif
             </div>
         </div>
         
@@ -874,6 +882,20 @@
                         </div>
                     </label>
                 </div>
+                
+                <!-- Blood Donor Registration Option -->
+                @if(\App\Models\BloodSetting::isEnabled())
+                <a href="{{ route('blood.register') }}" class="blood-register-option mb-3 d-block text-decoration-none" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%); border-radius: 12px; padding: 15px 20px; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center;">
+                        <span style="font-size: 28px; margin-right: 12px;">🩸</span>
+                        <div style="flex: 1;">
+                            <span style="color: #fff; font-size: 16px; font-weight: 600; display: block;">{{ app()->getLocale() == 'bn' ? 'এক্সপ্লোর রক্তদাতা হিসেবে রেজিস্ট্রেশন করুন' : 'Register as Explore Blood Donor' }}</span>
+                            <small style="display: block; color: rgba(255,255,255,0.8); font-size: 12px;">{{ app()->getLocale() == 'bn' ? 'রক্তদাতা হিসেবে নিবন্ধন করুন এবং জরুরি সময়ে মানুষের পাশে দাঁড়ান' : 'Register as a blood donor and help people in emergencies' }}</small>
+                        </div>
+                        <i class="fas fa-arrow-right" style="font-size: 20px; color: rgba(255,255,255,0.7);"></i>
+                    </div>
+                </a>
+                @endif
                 
                 <!-- Category Selection (only for listing contributors) -->
                 <div class="category-section p-3 mb-3" id="categorySection" style="background: #f8f9fa; border-radius: 12px; border: 1px solid #e9ecef;">

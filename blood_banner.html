@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Blood Banner Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; display: flex; flex-direction: column; align-items: center; background: #f0f0f0; padding: 30px; font-family: 'Hind Siliguri', sans-serif; }
+        canvas { border: 2px solid #333; border-radius: 8px; }
+        .download-btn { margin-top: 20px; padding: 15px 40px; background: #dc3545; color: #fff; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Hind Siliguri', sans-serif; font-weight: 700; }
+        .download-btn:hover { background: #a71d2a; }
+    </style>
+</head>
+<body>
+    <h2>🩸 এক্সপ্লোর রক্তদাতা - ব্যানার</h2>
+    <canvas id="banner" width="1200" height="630"></canvas>
+    <button class="download-btn" onclick="downloadBanner()">📥 ব্যানার ডাউনলোড করুন (PNG)</button>
+
+    <script>
+    function drawBanner() {
+        const c = document.getElementById('banner');
+        const ctx = c.getContext('2d');
+        const W = 1200, H = 630;
+
+        // Background gradient
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#dc3545');
+        grad.addColorStop(0.5, '#a71d2a');
+        grad.addColorStop(1, '#6a040f');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Decorative circles
+        ctx.globalAlpha = 0.06;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(100, 100, 200, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(1100, 530, 250, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(900, 80, 150, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(200, 500, 180, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Blood drop icon (large, left side)
+        ctx.save();
+        ctx.translate(150, 250);
+        ctx.scale(3, 3);
+        // Draw blood drop shape
+        ctx.beginPath();
+        ctx.moveTo(0, -30);
+        ctx.bezierCurveTo(-5, -20, -25, 10, -25, 25);
+        ctx.bezierCurveTo(-25, 45, 0, 55, 0, 55);
+        ctx.bezierCurveTo(0, 55, 25, 45, 25, 25);
+        ctx.bezierCurveTo(25, 10, 5, -20, 0, -30);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        // Heart icon (right side)
+        ctx.save();
+        ctx.translate(1050, 180);
+        ctx.scale(2.5, 2.5);
+        ctx.beginPath();
+        ctx.moveTo(0, 10);
+        ctx.bezierCurveTo(-5, 0, -20, 0, -20, 15);
+        ctx.bezierCurveTo(-20, 30, 0, 40, 0, 45);
+        ctx.bezierCurveTo(0, 40, 20, 30, 20, 15);
+        ctx.bezierCurveTo(20, 0, 5, 0, 0, 10);
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.fill();
+        ctx.restore();
+
+        // Top bar
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(0, 0, W, 60);
+
+        // Top text
+        ctx.font = '700 22px "Hind Siliguri", sans-serif';
+        ctx.fillStyle = '#ffc107';
+        ctx.textAlign = 'center';
+        ctx.fillText('exploresatkhira.com', W/2, 40);
+
+        // Main title
+        ctx.font = '700 56px "Hind Siliguri", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText('🩸 এক্সপ্লোর রক্তদাতা', W/2, 160);
+
+        // Subtitle
+        ctx.font = '600 28px "Hind Siliguri", sans-serif';
+        ctx.fillStyle = '#ffcdd2';
+        ctx.fillText('রক্ত দিন, জীবন বাঁচান', W/2, 210);
+
+        // Divider line
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(300, 240);
+        ctx.lineTo(900, 240);
+        ctx.stroke();
+
+        // Feature boxes
+        const features = [
+            { icon: '🔍', text: 'রক্তদাতা খুঁজুন' },
+            { icon: '📝', text: 'ডোনর হিসেবে যোগ দিন' },
+            { icon: '🏢', text: 'সংগঠন হিসেবে নিবন্ধন' },
+            { icon: '🏆', text: 'টপ ডোনরদের তালিকা' },
+        ];
+
+        const boxW = 220, boxH = 70, startX = 90, startY = 270, gap = 25;
+        features.forEach((f, i) => {
+            const x = startX + i * (boxW + gap);
+            const y = startY;
+            
+            // Box background
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            const radius = 12;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + boxW - radius, y);
+            ctx.quadraticCurveTo(x + boxW, y, x + boxW, y + radius);
+            ctx.lineTo(x + boxW, y + boxH - radius);
+            ctx.quadraticCurveTo(x + boxW, y + boxH, x + boxW - radius, y + boxH);
+            ctx.lineTo(x + radius, y + boxH);
+            ctx.quadraticCurveTo(x, y + boxH, x, y + boxH - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Icon + text
+            ctx.font = '28px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(f.icon, x + boxW/2, y + 32);
+            ctx.font = '600 16px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(f.text, x + boxW/2, y + 58);
+        });
+
+        // Blood groups display
+        const groups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+        const circleR = 28, circleY = 410, circleStartX = 160, circleGap = 115;
+        groups.forEach((g, i) => {
+            const cx = circleStartX + i * circleGap;
+            
+            ctx.beginPath();
+            ctx.arc(cx, circleY, circleR, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.font = '700 18px "Hind Siliguri", sans-serif';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(g, cx, circleY);
+        });
+        ctx.textBaseline = 'alphabetic';
+
+        // CTA
+        // Button background
+        const btnW = 380, btnH = 55, btnX = (W - btnW) / 2, btnY = 480;
+        ctx.fillStyle = '#ffc107';
+        const btnR = 30;
+        ctx.beginPath();
+        ctx.moveTo(btnX + btnR, btnY);
+        ctx.lineTo(btnX + btnW - btnR, btnY);
+        ctx.quadraticCurveTo(btnX + btnW, btnY, btnX + btnW, btnY + btnR);
+        ctx.lineTo(btnX + btnW, btnY + btnH - btnR);
+        ctx.quadraticCurveTo(btnX + btnW, btnY + btnH, btnX + btnW - btnR, btnY + btnH);
+        ctx.lineTo(btnX + btnR, btnY + btnH);
+        ctx.quadraticCurveTo(btnX, btnY + btnH, btnX, btnY + btnH - btnR);
+        ctx.lineTo(btnX, btnY + btnR);
+        ctx.quadraticCurveTo(btnX, btnY, btnX + btnR, btnY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = '700 24px "Hind Siliguri", sans-serif';
+        ctx.fillStyle = '#6a040f';
+        ctx.textAlign = 'center';
+        ctx.fillText('📱 এখনই রেজিস্ট্রেশন করুন!', W/2, btnY + 37);
+
+        // Bottom bar
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fillRect(0, H - 50, W, 50);
+        
+        ctx.font = '600 18px "Hind Siliguri", sans-serif';
+        ctx.fillStyle = '#ffcdd2';
+        ctx.textAlign = 'center';
+        ctx.fillText('এক্সপ্লোর সাতক্ষীরা | সাতক্ষীরা জেলার সবচেয়ে বড় কমিউনিটি প্ল্যাটফর্ম', W/2, H - 18);
+    }
+
+    function downloadBanner() {
+        const c = document.getElementById('banner');
+        const link = document.createElement('a');
+        link.download = 'explore_blood_banner.png';
+        link.href = c.toDataURL('image/png');
+        link.click();
+    }
+
+    // Wait for font to load then draw
+    document.fonts.ready.then(drawBanner);
+    </script>
+</body>
+</html>

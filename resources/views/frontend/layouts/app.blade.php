@@ -1348,6 +1348,71 @@
     </style>
     @endif
 
+    <!-- Floating Explore Blood Button -->
+    @php
+        $bloodEnabled = \App\Models\BloodSetting::isEnabled();
+    @endphp
+    @if($bloodEnabled && !request()->routeIs('blood.*'))
+    <a href="{{ route('blood.index') }}" class="blood-float-btn" title="এক্সপ্লোর রক্তদাতা">
+        <span class="blood-float-icon">🩸</span>
+        <span class="blood-float-text">এক্সপ্লোর রক্তদাতা</span>
+    </a>
+    <style>
+        .blood-float-btn {
+            position: fixed;
+            @php
+                // Stack above fuel button (fuel is ~60px tall, so add 70px gap)
+                $fuelBottom = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
+                $bloodBottom = ($fuelEnabled ?? false) ? ($fuelBottom + 70) : $fuelBottom;
+            @endphp
+            bottom: {{ $bloodBottom }}px;
+            right: 30px;
+            background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(220, 53, 69, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: bloodPulse 2s infinite;
+        }
+        .blood-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(220, 53, 69, 0.5);
+            color: white;
+        }
+        .blood-float-icon {
+            font-size: 1.5rem;
+        }
+        .blood-float-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes bloodPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(220, 53, 69, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(220, 53, 69, 0.6); }
+        }
+        @media (max-width: 576px) {
+            .blood-float-btn {
+                @php
+                    $fuelBottomMobile = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
+                    $bloodBottomMobile = ($fuelEnabled ?? false) ? ($fuelBottomMobile + 60) : $fuelBottomMobile;
+                @endphp
+                bottom: {{ $bloodBottomMobile }}px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .blood-float-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
+
     <!-- Floating Eid Card Maker Button -->
     @php
         $eidCardEnabled = \App\Models\EidCardSetting::first()?->is_enabled ?? false;

@@ -407,6 +407,15 @@
                     {{ $fuelEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.blood.index') }}" class="nav-link {{ request()->routeIs('admin.blood.*') ? 'active' : '' }}">
+                <i class="fas fa-tint"></i> <span>🩸 এক্সপ্লোর রক্তদাতা</span>
+                @php 
+                    $bloodEnabled = \App\Models\BloodSetting::isEnabled();
+                @endphp
+                <span class="badge {{ $bloodEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $bloodEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             <a href="{{ route('admin.push-notifications.index') }}" class="nav-link {{ request()->routeIs('admin.push-notifications.*') ? 'active' : '' }}">
                 <i class="fas fa-bell"></i> <span>📲 পুশ নোটিফিকেশন</span>
                 @php $pushCount = \App\Models\PushSubscription::where('is_active', true)->count(); @endphp

@@ -1503,6 +1503,117 @@
     </style>
     @endif
 
+    <!-- Blood Top Donors Section -->
+    @if($bloodOnHomepage && $topBloodDonors->count() > 0)
+    <section class="py-5 blood-home-section">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2><i class="fas fa-tint me-2 text-danger"></i>🩸 এক্সপ্লোর রক্তদাতা</h2>
+                <p class="text-muted">সাতক্ষীরার সেরা রক্তদাতা যারা সবচেয়ে বেশিবার রক্তদান করেছেন</p>
+                <div class="underline" style="background: linear-gradient(90deg, #dc3545, #a71d2a);"></div>
+            </div>
+            
+            <div class="row g-3 justify-content-center">
+                @foreach($topBloodDonors->take(3) as $index => $donor)
+                    <div class="col-md-4 col-6" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                        <div class="card border-0 shadow-sm blood-donor-card h-100 text-center {{ $index === 0 ? 'top-donor-card' : '' }}">
+                            <div class="card-body py-4">
+                                @if($index === 0)
+                                    <div class="top-donor-crown mb-2">
+                                        <i class="fas fa-crown text-warning" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                @endif
+                                <div class="blood-donor-avatar mx-auto mb-3 {{ $index === 0 ? 'top-avatar' : '' }}">
+                                    <span class="blood-group-badge">{{ $donor->blood_group }}</span>
+                                </div>
+                                <h6 class="fw-bold mb-1">{{ $donor->name }}</h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ $donor->upazila ? $donor->upazila->name_bn ?? $donor->upazila->name : ($donor->outside_area ?? 'সাতক্ষীরা') }}
+                                </p>
+                                <div class="donation-count-badge">
+                                    <i class="fas fa-heart text-danger me-1"></i>
+                                    <strong>{{ $donor->donation_histories_count }}</strong> বার রক্তদান
+                                </div>
+                                @if($donor->last_donation_date)
+                                    <small class="text-muted d-block mt-1">
+                                        সর্বশেষ: {{ $donor->last_donation_date->format('d M, Y') }}
+                                    </small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="{{ route('blood.index') }}" class="btn btn-danger btn-lg">
+                    <i class="fas fa-tint me-2"></i>সকল রক্তদাতা দেখুন
+                </a>
+                <a href="{{ route('blood.register') }}" class="btn btn-outline-danger btn-lg ms-2">
+                    <i class="fas fa-user-plus me-1"></i>রক্তদাতা হিসেবে যোগ দিন
+                </a>
+            </div>
+        </div>
+    </section>
+    <style>
+        .blood-home-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+        }
+        .blood-donor-card {
+            border-radius: 16px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .blood-donor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(220,53,69,0.15) !important;
+        }
+        .top-donor-card {
+            border: 2px solid #ffc107 !important;
+            background: linear-gradient(135deg, #fffdf0, #fff9e6);
+        }
+        .blood-donor-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc3545, #a71d2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .blood-donor-avatar.top-avatar {
+            width: 85px;
+            height: 85px;
+            box-shadow: 0 0 0 4px #ffc107;
+        }
+        .blood-group-badge {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .top-avatar .blood-group-badge {
+            font-size: 1.4rem;
+        }
+        .donation-count-badge {
+            display: inline-block;
+            background: #fff5f5;
+            border: 1px solid #ffcdd2;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            color: #c62828;
+        }
+        .top-donor-crown {
+            animation: crownBounce 2s infinite;
+        }
+        @keyframes crownBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+    @endif
+
     <!-- Categories Section -->
     <section class="py-5">
         <div class="container">
