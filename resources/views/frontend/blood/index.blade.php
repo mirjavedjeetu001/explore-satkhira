@@ -205,8 +205,13 @@
                                     @else
                                         <span class="text-muted"><i class="fas fa-phone-slash me-1"></i>ফোন গোপন</span>
                                     @endif
-                                    @if($donor->whatsapp_number)
-                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $donor->whatsapp_number) }}" target="_blank" class="text-success"><i class="fab fa-whatsapp me-1"></i>WhatsApp</a>
+                                    @if($donor->whatsapp_number || (!$donor->hide_phone && $donor->phone))
+                                        @php
+                                            $waRaw = $donor->whatsapp_number ?: $donor->phone;
+                                            $waNum = preg_replace('/[^0-9]/', '', $waRaw);
+                                            if (str_starts_with($waNum, '0')) $waNum = '880' . substr($waNum, 1);
+                                        @endphp
+                                        <a href="https://wa.me/{{ $waNum }}" target="_blank" class="text-success"><i class="fab fa-whatsapp me-1"></i>WhatsApp</a>
                                     @endif
                                 </div>
 

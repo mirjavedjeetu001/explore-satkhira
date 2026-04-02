@@ -30,7 +30,17 @@
                              alt="{{ auth()->user()->name }}" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
                         <h5 class="mb-1">{{ auth()->user()->name }}</h5>
                         <p class="text-muted small mb-0">{{ auth()->user()->email }}</p>
-                        <span class="badge bg-warning text-dark mt-2"><i class="fas fa-shield-alt me-1"></i>উপজেলা মডারেটর</span>
+                        @if(auth()->user()->isSuperAdmin())
+                            <span class="badge bg-danger mt-2"><i class="fas fa-crown me-1"></i>সুপার অ্যাডমিন</span>
+                        @elseif(auth()->user()->isAdmin())
+                            <span class="badge bg-primary mt-2"><i class="fas fa-user-shield me-1"></i>অ্যাডমিন</span>
+                        @elseif(auth()->user()->is_upazila_moderator)
+                            <span class="badge bg-warning text-dark mt-2"><i class="fas fa-shield-alt me-1"></i>উপজেলা মডারেটর</span>
+                        @elseif(auth()->user()->is_own_business_moderator)
+                            <span class="badge bg-info mt-2"><i class="fas fa-store me-1"></i>নিজস্ব ব্যবসা মডারেটর</span>
+                        @else
+                            <span class="badge bg-success mt-2">{{ auth()->user()->role->display_name ?? 'User' }}</span>
+                        @endif
                     </div>
                     <div class="list-group list-group-flush">
                         <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action">

@@ -157,8 +157,15 @@
                             @endif
                         @endif
 
-                        @if($donor->whatsapp_number)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $donor->whatsapp_number) }}" target="_blank" class="btn btn-outline-success w-100 mb-2">
+                        @php
+                            $waRaw = $donor->whatsapp_number ?: ($donor->hide_phone ? null : $donor->phone);
+                        @endphp
+                        @if($waRaw)
+                            @php
+                                $waNum = preg_replace('/[^0-9]/', '', $waRaw);
+                                if (str_starts_with($waNum, '0')) $waNum = '880' . substr($waNum, 1);
+                            @endphp
+                            <a href="https://wa.me/{{ $waNum }}" target="_blank" class="btn btn-outline-success w-100 mb-2">
                                 <i class="fab fa-whatsapp me-2"></i>WhatsApp
                             </a>
                         @endif
