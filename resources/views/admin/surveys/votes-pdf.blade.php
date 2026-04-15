@@ -1,31 +1,19 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <style>
-        @font-face {
-            font-family: 'bangla';
-            src: url({{ storage_path('fonts/NotoSansBengali-Regular.ttf') }}) format('truetype');
-            font-weight: normal;
-        }
-        @font-face {
-            font-family: 'bangla';
-            src: url({{ storage_path('fonts/NotoSansBengali-Bold.ttf') }}) format('truetype');
-            font-weight: bold;
-        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'bangla', 'Noto Sans Bengali', sans-serif;
+            font-family: 'Helvetica', 'Arial', sans-serif;
         }
         body {
             font-size: 11px;
             color: #1a1a2e;
             line-height: 1.5;
         }
-
-        /* Header */
         .header {
             text-align: center;
             padding: 20px 0 15px;
@@ -47,8 +35,6 @@
             color: #888;
             margin-top: 5px;
         }
-
-        /* Survey Info Box */
         .survey-info {
             background: #f0f4ff;
             border: 1px solid #c5cae9;
@@ -72,13 +58,11 @@
         .info-label {
             font-weight: bold;
             color: #333;
-            width: 100px;
+            width: 120px;
         }
         .info-value {
             color: #555;
         }
-
-        /* Results Summary */
         .results-summary {
             margin-bottom: 18px;
         }
@@ -96,7 +80,6 @@
             background: #e8eaf6;
             border-radius: 4px;
             height: 22px;
-            position: relative;
             overflow: hidden;
         }
         .result-bar {
@@ -116,8 +99,6 @@
             float: right;
             color: #666;
         }
-
-        /* Vote Table */
         .votes-section h3 {
             font-size: 13px;
             color: #1a237e;
@@ -145,9 +126,6 @@
         table.votes-table tbody tr:nth-child(even) {
             background: #f5f7ff;
         }
-        table.votes-table tbody tr:hover {
-            background: #e8eaf6;
-        }
         .badge {
             display: inline-block;
             padding: 2px 8px;
@@ -162,8 +140,6 @@
         .badge-other { background: #1e88e5; }
         .badge-inter { background: #00acc1; }
         .badge-honours { background: #5e35b1; }
-
-        /* Footer */
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -172,7 +148,6 @@
             font-size: 9px;
             color: #999;
         }
-
         .total-badge {
             display: inline-block;
             background: #1a237e;
@@ -185,51 +160,48 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
-        <h1>📊 সার্ভে ভোটার রিপোর্ট</h1>
-        <div class="subtitle">এক্সপ্লোর সাতক্ষীরা — Survey Voter Report</div>
-        <div class="date-info">তারিখ: {{ now()->format('d/m/Y h:i A') }}</div>
+        <h1>Survey Voter Report</h1>
+        <div class="subtitle">Explore Satkhira</div>
+        <div class="date-info">Date: {{ now()->format('d/m/Y h:i A') }}</div>
     </div>
 
-    <!-- Survey Info -->
     <div class="survey-info">
         <h2>{{ $survey->title }}</h2>
         <table class="info-grid">
             <tr>
-                <td class="info-label">প্রশ্ন:</td>
+                <td class="info-label">Question:</td>
                 <td class="info-value">{{ $survey->question }}</td>
             </tr>
             <tr>
-                <td class="info-label">সময়কাল:</td>
+                <td class="info-label">Duration:</td>
                 <td class="info-value">
                     {{ $survey->start_time ? \Carbon\Carbon::parse($survey->start_time)->format('d/m/Y h:i A') : '-' }}
-                    —
+                    to
                     {{ $survey->end_time ? \Carbon\Carbon::parse($survey->end_time)->format('d/m/Y h:i A') : '-' }}
                 </td>
             </tr>
             <tr>
-                <td class="info-label">অবস্থা:</td>
+                <td class="info-label">Status:</td>
                 <td class="info-value">
-                    @if($survey->is_live) ● চলমান (LIVE) @elseif($survey->is_ended) ■ শেষ হয়েছে @else ○ আসন্ন @endif
+                    @if($survey->is_live) LIVE @elseif($survey->is_ended) ENDED @else UPCOMING @endif
                 </td>
             </tr>
             <tr>
-                <td class="info-label">মোট ভোট:</td>
-                <td class="info-value"><span class="total-badge">{{ $totalVotes }} জন</span></td>
+                <td class="info-label">Total Votes:</td>
+                <td class="info-value"><span class="total-badge">{{ $totalVotes }}</span></td>
             </tr>
         </table>
     </div>
 
-    <!-- Results Summary -->
     <div class="results-summary">
-        <h3>📈 ফলাফল সারাংশ</h3>
+        <h3>Results Summary</h3>
         @php $barColors = ['bar-green', 'bar-red', 'bar-yellow', 'bar-blue']; @endphp
         @foreach($results as $i => $result)
             <div class="result-row">
                 <div class="result-label">
-                    <strong>{{ $result['option'] }}</strong>
-                    <span>{{ $result['count'] }} ভোট ({{ $result['percentage'] }}%)</span>
+                    <strong>Option {{ $i + 1 }}</strong>
+                    <span>{{ $result['count'] }} votes ({{ $result['percentage'] }}%)</span>
                 </div>
                 <div class="result-bar-wrap">
                     <div class="result-bar {{ $barColors[$i % 4] }}" style="width: {{ max($result['percentage'], 1) }}%;"></div>
@@ -238,22 +210,21 @@
         @endforeach
     </div>
 
-    <!-- Voter List -->
     <div class="votes-section">
-        <h3>📋 সম্পূর্ণ ভোটার তালিকা ({{ $totalVotes }} জন)</h3>
+        <h3>Complete Voter List ({{ $totalVotes }} voters)</h3>
         <table class="votes-table">
             <thead>
                 <tr>
                     <th style="width:30px">#</th>
-                    <th>নাম</th>
-                    <th>ফোন</th>
-                    <th>ক্লাস</th>
-                    <th>বিভাগ/ডিপার্টমেন্ট</th>
-                    <th>বর্ষ</th>
-                    <th>সেশন</th>
-                    <th>ভোট</th>
-                    <th>মতামত</th>
-                    <th>সময়</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Class</th>
+                    <th>Dept/Division</th>
+                    <th>Year</th>
+                    <th>Session</th>
+                    <th>Vote</th>
+                    <th>Comment</th>
+                    <th>Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -264,9 +235,9 @@
                         <td>{{ $vote->phone }}</td>
                         <td>
                             @if($vote->class_type == 'intermediate')
-                                <span class="badge badge-inter">ইন্টারমিডিয়েট</span>
+                                <span class="badge badge-inter">Intermediate</span>
                             @elseif($vote->class_type == 'honours')
-                                <span class="badge badge-honours">অনার্স</span>
+                                <span class="badge badge-honours">Honours</span>
                             @else
                                 {{ $vote->class_type ?? '-' }}
                             @endif
@@ -277,28 +248,27 @@
                         <td>
                             @php $optIndex = array_search($vote->selected_option, $survey->options); @endphp
                             @if($optIndex === 0)
-                                <span class="badge badge-yes">{{ $vote->selected_option }}</span>
+                                <span class="badge badge-yes">Option 1</span>
                             @elseif($optIndex === 1)
-                                <span class="badge badge-no">{{ $vote->selected_option }}</span>
+                                <span class="badge badge-no">Option 2</span>
                             @elseif($optIndex === 2)
-                                <span class="badge badge-neutral">{{ $vote->selected_option }}</span>
+                                <span class="badge badge-neutral">Option 3</span>
                             @else
-                                <span class="badge badge-other">{{ $vote->selected_option }}</span>
+                                <span class="badge badge-other">Option {{ $optIndex !== false ? $optIndex + 1 : '?' }}</span>
                             @endif
                         </td>
                         <td>{{ $vote->comment ? \Illuminate\Support\Str::limit($vote->comment, 40) : '-' }}</td>
                         <td>{{ $vote->created_at->format('d/m/y h:i A') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="10" style="text-align:center; padding:20px; color:#999;">কোনো ভোট পাওয়া যায়নি।</td></tr>
+                    <tr><td colspan="10" style="text-align:center; padding:20px; color:#999;">No votes found.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-        এক্সপ্লোর সাতক্ষীরা | demosatkhira.metasoftinfo.com | রিপোর্ট তৈরি: {{ now()->format('d/m/Y h:i A') }}
+        Explore Satkhira | exploresatkhira.com | Report generated: {{ now()->format('d/m/Y h:i A') }}
     </div>
 </body>
 </html>
