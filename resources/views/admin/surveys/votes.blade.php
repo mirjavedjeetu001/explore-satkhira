@@ -10,7 +10,10 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between">
         <span><i class="fas fa-list me-2"></i>মোট ভোটার: {{ $votes->total() }}</span>
-        <a href="{{ route('admin.surveys.votes.pdf', $survey->id) }}" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf me-1"></i>PDF ডাউনলোড</a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.surveys.votes.pdf', $survey->id) }}" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf me-1"></i>PDF</a>
+            <a href="{{ route('admin.surveys.votes.excel', $survey->id) }}" class="btn btn-sm btn-success"><i class="fas fa-file-excel me-1"></i>Excel</a>
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">

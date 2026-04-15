@@ -461,6 +461,8 @@
 <script>
     // Device fingerprint
     (function() {
+        const fpEl = document.getElementById('deviceFingerprint');
+        if (!fpEl) return;
         const fp = [
             navigator.userAgent,
             navigator.language,
@@ -474,7 +476,7 @@
             hash = ((hash << 5) - hash) + char;
             hash |= 0;
         }
-        document.getElementById('deviceFingerprint').value = Math.abs(hash).toString(36);
+        fpEl.value = Math.abs(hash).toString(36);
     })();
 
     // Countdown
@@ -544,34 +546,37 @@
         labels: {!! json_encode(collect($results)->pluck('option')) !!},
         counts: {!! json_encode(collect($results)->pluck('count')) !!}
     };
-    const ctx = document.getElementById('surveyChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: chartData.labels,
-            datasets: [{
-                data: chartData.counts,
-                backgroundColor: chartColors.slice(0, chartData.labels.length),
-                borderWidth: 3,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 15 } },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                            return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+    let chart = null;
+    if (typeof Chart !== 'undefined') {
+        const ctx = document.getElementById('surveyChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    data: chartData.counts,
+                    backgroundColor: chartColors.slice(0, chartData.labels.length),
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 15 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     // Live polling (every 10 seconds)
     @if($survey->is_live)
@@ -595,8 +600,10 @@
                 // Update total
                 document.getElementById('totalVotes').textContent = 'মোট ভোট: ' + data.totalVotes;
                 // Update chart
-                chart.data.datasets[0].data = data.results.map(r => r.count);
-                chart.update();
+                if (chart) {
+                    chart.data.datasets[0].data = data.results.map(r => r.count);
+                    chart.update();
+                }
             })
             .catch(() => {});
     }, 10000);

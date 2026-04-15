@@ -137,4 +137,20 @@ class SurveyController extends Controller
         $filename = 'survey-votes-' . $survey->id . '-' . now()->format('Y-m-d') . '.pdf';
         return $pdf->download($filename);
     }
+
+    public function votesExcel($id)
+    {
+        $survey = Survey::findOrFail($id);
+        $votes = SurveyVote::where('survey_id', $id)->orderBy('created_at', 'desc')->get();
+        $results = $survey->results;
+        $totalVotes = $votes->count();
+
+        $html = view('admin.surveys.votes-excel', compact('survey', 'votes', 'results', 'totalVotes'))->render();
+
+        $filename = 'survey-votes-' . $survey->id . '-' . now()->format('Y-m-d') . '.xls';
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Cache-Control', 'max-age=0');
+    }
 }

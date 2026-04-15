@@ -407,6 +407,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('{id}/toggle-status', [AdminSurveyController::class, 'toggleStatus'])->name('toggle-status');
         Route::get('{id}/votes', [AdminSurveyController::class, 'votes'])->name('votes');
         Route::get('{id}/votes/pdf', [AdminSurveyController::class, 'votesPdf'])->name('votes.pdf');
+        Route::get('{id}/votes/excel', [AdminSurveyController::class, 'votesExcel'])->name('votes.excel');
     });
 });
 

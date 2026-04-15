@@ -12,269 +12,268 @@
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'bangla', 'Helvetica', 'Arial', sans-serif;
+            font-family: 'bangla', 'Helvetica', sans-serif;
         }
         body {
-            font-size: 11px;
-            color: #1a1a2e;
-            line-height: 1.5;
-        }
-        .header {
-            text-align: center;
-            padding: 20px 0 15px;
-            border-bottom: 3px solid #1a237e;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 22px;
-            color: #1a237e;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-        .header .subtitle {
-            font-size: 13px;
-            color: #555;
-        }
-        .header .date-info {
             font-size: 10px;
-            color: #888;
-            margin-top: 5px;
+            color: #222;
+            padding: 15px;
         }
-        .survey-info {
-            background: #f0f4ff;
-            border: 1px solid #c5cae9;
-            border-radius: 8px;
-            padding: 12px 18px;
-            margin-bottom: 18px;
-        }
-        .survey-info h2 {
-            font-size: 15px;
-            color: #1a237e;
-            margin-bottom: 8px;
-        }
-        .info-grid {
+
+        /* Header */
+        .header-table {
             width: 100%;
+            border-bottom: 3px solid #1a237e;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
         }
-        .info-grid td {
-            padding: 3px 10px 3px 0;
-            font-size: 11px;
-            vertical-align: top;
+        .header-table td {
+            text-align: center;
         }
-        .info-label {
-            font-weight: bold;
-            color: #333;
-            width: 120px;
-        }
-        .info-value {
-            color: #555;
-        }
-        .results-summary {
-            margin-bottom: 18px;
-        }
-        .results-summary h3 {
-            font-size: 13px;
+        .title {
+            font-size: 20px;
             color: #1a237e;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 2px solid #e8eaf6;
+            font-weight: bold;
         }
-        .result-row {
-            margin-bottom: 6px;
-        }
-        .result-bar-wrap {
-            background: #e8eaf6;
-            border-radius: 4px;
-            height: 22px;
-            overflow: hidden;
-        }
-        .result-bar {
-            height: 100%;
-            border-radius: 4px;
-            min-width: 2px;
-        }
-        .bar-green { background: #43a047; }
-        .bar-red { background: #e53935; }
-        .bar-yellow { background: #fb8c00; }
-        .bar-blue { background: #1e88e5; }
-        .result-label {
-            font-size: 11px;
-            margin-bottom: 2px;
-        }
-        .result-label span {
-            float: right;
+        .subtitle {
+            font-size: 12px;
             color: #666;
         }
-        .votes-section h3 {
-            font-size: 13px;
-            color: #1a237e;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 2px solid #e8eaf6;
-        }
-        table.votes-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-        }
-        table.votes-table thead th {
-            background: #1a237e;
-            color: white;
-            padding: 7px 6px;
-            text-align: left;
-            font-weight: bold;
-            font-size: 10px;
-        }
-        table.votes-table tbody td {
-            padding: 6px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        table.votes-table tbody tr:nth-child(even) {
-            background: #f5f7ff;
-        }
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 9px;
-            font-weight: bold;
-            color: white;
-        }
-        .badge-yes { background: #43a047; }
-        .badge-no { background: #e53935; }
-        .badge-neutral { background: #fb8c00; }
-        .badge-other { background: #1e88e5; }
-        .badge-inter { background: #00acc1; }
-        .badge-honours { background: #5e35b1; }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 2px solid #e8eaf6;
+        .date-text {
             font-size: 9px;
             color: #999;
         }
-        .total-badge {
-            display: inline-block;
+
+        /* Info section */
+        .info-table {
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid #c5cae9;
+            background: #f5f7ff;
+        }
+        .info-table td {
+            padding: 5px 10px;
+            font-size: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-table .label {
+            font-weight: bold;
+            width: 80px;
+            color: #333;
+            background: #e8eaf6;
+        }
+
+        /* Results table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .results-table th {
             background: #1a237e;
             color: white;
-            padding: 4px 16px;
-            border-radius: 15px;
+            padding: 6px 8px;
+            text-align: left;
+            font-size: 10px;
+        }
+        .results-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #ddd;
+            font-size: 10px;
+        }
+        .results-table tr:nth-child(even) td {
+            background: #f5f7ff;
+        }
+
+        /* Bar using table cell background trick */
+        .bar-cell {
+            padding: 0 !important;
+            width: 50%;
+        }
+        .bar-inner {
+            height: 16px;
+        }
+        .bg-green { background-color: #43a047; }
+        .bg-red { background-color: #e53935; }
+        .bg-yellow { background-color: #fb8c00; }
+        .bg-blue { background-color: #1e88e5; }
+
+        /* Votes table */
+        .votes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .votes-table th {
+            background: #1a237e;
+            color: white;
+            padding: 5px 4px;
+            text-align: left;
+            font-size: 9px;
+        }
+        .votes-table td {
+            padding: 4px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 9px;
+        }
+        .votes-table tr:nth-child(even) td {
+            background: #f5f7ff;
+        }
+
+        .section-title {
             font-size: 12px;
+            color: #1a237e;
+            font-weight: bold;
+            padding: 8px 0 5px;
+            border-bottom: 2px solid #c5cae9;
+            margin-bottom: 8px;
+        }
+
+        .footer-table {
+            width: 100%;
+            margin-top: 15px;
+            border-top: 2px solid #e8eaf6;
+            padding-top: 8px;
+        }
+        .footer-table td {
+            text-align: center;
+            font-size: 8px;
+            color: #999;
+        }
+
+        .badge-text {
+            padding: 1px 6px;
+            border-radius: 8px;
+            color: white;
+            font-size: 8px;
+            font-weight: bold;
+        }
+        .total-box {
+            background: #1a237e;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 10px;
+            font-size: 11px;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>সার্ভে ভোটার রিপোর্ট</h1>
-        <div class="subtitle">এক্সপ্লোর সাতক্ষীরা</div>
-        <div class="date-info">তারিখ: {{ now()->format('d/m/Y h:i A') }}</div>
-    </div>
 
-    <div class="survey-info">
-        <h2>{{ $survey->title }}</h2>
-        <table class="info-grid">
+    {{-- HEADER --}}
+    <table class="header-table">
+        <tr><td class="title">সার্ভে ভোটার রিপোর্ট</td></tr>
+        <tr><td class="subtitle">এক্সপ্লোর সাতক্ষীরা</td></tr>
+        <tr><td class="date-text">তারিখ: {{ now()->format('d/m/Y h:i A') }}</td></tr>
+    </table>
+
+    {{-- SURVEY INFO --}}
+    <table class="info-table">
+        <tr>
+            <td class="label">শিরোনাম</td>
+            <td>{{ $survey->title }}</td>
+        </tr>
+        <tr>
+            <td class="label">প্রশ্ন</td>
+            <td>{{ $survey->question }}</td>
+        </tr>
+        <tr>
+            <td class="label">সময়কাল</td>
+            <td>{{ $survey->start_time ? \Carbon\Carbon::parse($survey->start_time)->format('d/m/Y h:i A') : '-' }} — {{ $survey->end_time ? \Carbon\Carbon::parse($survey->end_time)->format('d/m/Y h:i A') : '-' }}</td>
+        </tr>
+        <tr>
+            <td class="label">অবস্থা</td>
+            <td>@if($survey->is_live) চলমান (LIVE) @elseif($survey->is_ended) শেষ হয়েছে @else আসন্ন @endif</td>
+        </tr>
+        <tr>
+            <td class="label">মোট ভোট</td>
+            <td><span class="total-box">{{ $totalVotes }} জন</span></td>
+        </tr>
+    </table>
+
+    {{-- RESULTS --}}
+    <p class="section-title">ফলাফল সারাংশ</p>
+    @php $bgColors = ['bg-green', 'bg-red', 'bg-yellow', 'bg-blue']; @endphp
+    <table class="results-table">
+        <thead>
             <tr>
-                <td class="info-label">প্রশ্ন:</td>
-                <td class="info-value">{{ $survey->question }}</td>
+                <th style="width:30%">অপশন</th>
+                <th style="width:15%">ভোট</th>
+                <th style="width:15%">শতাংশ</th>
+                <th style="width:40%">গ্রাফ</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach($results as $i => $result)
             <tr>
-                <td class="info-label">সময়কাল:</td>
-                <td class="info-value">
-                    {{ $survey->start_time ? \Carbon\Carbon::parse($survey->start_time)->format('d/m/Y h:i A') : '-' }}
-                    —
-                    {{ $survey->end_time ? \Carbon\Carbon::parse($survey->end_time)->format('d/m/Y h:i A') : '-' }}
+                <td><strong>{{ $result['option'] }}</strong></td>
+                <td>{{ $result['count'] }} জন</td>
+                <td>{{ $result['percentage'] }}%</td>
+                <td class="bar-cell">
+                    <table style="width:100%; border-collapse:collapse">
+                        <tr>
+                            @if($result['percentage'] > 0)
+                            <td style="width:{{ $result['percentage'] }}%; padding:0"><div class="bar-inner {{ $bgColors[$i % 4] }}"></div></td>
+                            @endif
+                            <td style="padding:0"></td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{-- VOTER LIST --}}
+    <p class="section-title">সম্পূর্ণ ভোটার তালিকা ({{ $totalVotes }} জন)</p>
+    <table class="votes-table">
+        <thead>
             <tr>
-                <td class="info-label">অবস্থা:</td>
-                <td class="info-value">
-                    @if($survey->is_live) চলমান (LIVE) @elseif($survey->is_ended) শেষ হয়েছে @else আসন্ন @endif
+                <th style="width:20px">#</th>
+                <th>নাম</th>
+                <th>ফোন</th>
+                <th>ক্লাস</th>
+                <th>বিভাগ/ডিপার্টমেন্ট</th>
+                <th>বর্ষ</th>
+                <th>সেশন</th>
+                <th>ভোট</th>
+                <th>মতামত</th>
+                <th>সময়</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($votes as $vote)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $vote->name }}</td>
+                <td>{{ $vote->phone }}</td>
+                <td>
+                    @if($vote->class_type == 'intermediate')
+                        ইন্টারমিডিয়েট
+                    @elseif($vote->class_type == 'honours')
+                        অনার্স
+                    @else
+                        {{ $vote->class_type ?? '-' }}
+                    @endif
                 </td>
+                <td>{{ $vote->department ?? '-' }}</td>
+                <td>{{ $vote->year ?? '-' }}</td>
+                <td>{{ $vote->session ?? '-' }}</td>
+                <td>{{ $vote->selected_option }}</td>
+                <td>{{ $vote->comment ? \Illuminate\Support\Str::limit($vote->comment, 30) : '-' }}</td>
+                <td>{{ $vote->created_at->format('d/m/y h:i A') }}</td>
             </tr>
+            @empty
             <tr>
-                <td class="info-label">মোট ভোট:</td>
-                <td class="info-value"><span class="total-badge">{{ $totalVotes }} জন</span></td>
+                <td colspan="10" style="text-align:center; padding:15px; color:#999;">কোনো ভোট পাওয়া যায়নি।</td>
             </tr>
-        </table>
-    </div>
+            @endforelse
+        </tbody>
+    </table>
 
-    <div class="results-summary">
-        <h3>ফলাফল সারাংশ</h3>
-        @php $barColors = ['bar-green', 'bar-red', 'bar-yellow', 'bar-blue']; @endphp
-        @foreach($results as $i => $result)
-            <div class="result-row">
-                <div class="result-label">
-                    <strong>{{ $result['option'] }}</strong>
-                    <span>{{ $result['count'] }} ভোট ({{ $result['percentage'] }}%)</span>
-                </div>
-                <div class="result-bar-wrap">
-                    <div class="result-bar {{ $barColors[$i % 4] }}" style="width: {{ max($result['percentage'], 1) }}%;"></div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+    {{-- FOOTER --}}
+    <table class="footer-table">
+        <tr><td>এক্সপ্লোর সাতক্ষীরা | exploresatkhira.com | রিপোর্ট তৈরি: {{ now()->format('d/m/Y h:i A') }}</td></tr>
+    </table>
 
-    <div class="votes-section">
-        <h3>সম্পূর্ণ ভোটার তালিকা ({{ $totalVotes }} জন)</h3>
-        <table class="votes-table">
-            <thead>
-                <tr>
-                    <th style="width:30px">#</th>
-                    <th>নাম</th>
-                    <th>ফোন</th>
-                    <th>ক্লাস</th>
-                    <th>বিভাগ/ডিপার্টমেন্ট</th>
-                    <th>বর্ষ</th>
-                    <th>সেশন</th>
-                    <th>ভোট</th>
-                    <th>মতামত</th>
-                    <th>সময়</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($votes as $vote)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $vote->name }}</td>
-                        <td>{{ $vote->phone }}</td>
-                        <td>
-                            @if($vote->class_type == 'intermediate')
-                                <span class="badge badge-inter">ইন্টারমিডিয়েট</span>
-                            @elseif($vote->class_type == 'honours')
-                                <span class="badge badge-honours">অনার্স</span>
-                            @else
-                                {{ $vote->class_type ?? '-' }}
-                            @endif
-                        </td>
-                        <td>{{ $vote->department ?? '-' }}</td>
-                        <td>{{ $vote->year ?? '-' }}</td>
-                        <td>{{ $vote->session ?? '-' }}</td>
-                        <td>
-                            @php $optIndex = array_search($vote->selected_option, $survey->options); @endphp
-                            @if($optIndex === 0)
-                                <span class="badge badge-yes">{{ $vote->selected_option }}</span>
-                            @elseif($optIndex === 1)
-                                <span class="badge badge-no">{{ $vote->selected_option }}</span>
-                            @elseif($optIndex === 2)
-                                <span class="badge badge-neutral">{{ $vote->selected_option }}</span>
-                            @else
-                                <span class="badge badge-other">{{ $vote->selected_option }}</span>
-                            @endif
-                        </td>
-                        <td>{{ $vote->comment ? \Illuminate\Support\Str::limit($vote->comment, 40) : '-' }}</td>
-                        <td>{{ $vote->created_at->format('d/m/y h:i A') }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="10" style="text-align:center; padding:20px; color:#999;">কোনো ভোট পাওয়া যায়নি।</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <div class="footer">
-        এক্সপ্লোর সাতক্ষীরা | exploresatkhira.com | রিপোর্ট তৈরি: {{ now()->format('d/m/Y h:i A') }}
-    </div>
 </body>
 </html>
