@@ -14,6 +14,7 @@ use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\ModeratorFuelController;
 use App\Http\Controllers\ModeratorBloodController;
 use App\Http\Controllers\NewspaperController;
+use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SalamiController;
 use App\Http\Controllers\BloodController;
 use App\Http\Controllers\Admin\BloodController as AdminBloodController;
+use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap Routes (for SEO)
@@ -392,6 +394,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('subscribers', [\App\Http\Controllers\Admin\PushNotificationController::class, 'subscribers'])->name('subscribers');
         Route::delete('{pushNotification}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
     });
+
+    // Survey Management
+    Route::prefix('surveys')->name('surveys.')->group(function () {
+        Route::get('/', [AdminSurveyController::class, 'index'])->name('index');
+        Route::get('create', [AdminSurveyController::class, 'create'])->name('create');
+        Route::post('/', [AdminSurveyController::class, 'store'])->name('store');
+        Route::get('{id}', [AdminSurveyController::class, 'show'])->name('show');
+        Route::get('{id}/edit', [AdminSurveyController::class, 'edit'])->name('edit');
+        Route::put('{id}', [AdminSurveyController::class, 'update'])->name('update');
+        Route::delete('{id}', [AdminSurveyController::class, 'destroy'])->name('destroy');
+        Route::post('{id}/toggle-status', [AdminSurveyController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('{id}/votes', [AdminSurveyController::class, 'votes'])->name('votes');
+    });
 });
 
 // Push Subscription API (public, no auth needed)
@@ -407,6 +422,13 @@ Route::post('/fuel/subscriptions', [\App\Http\Controllers\FuelController::class,
 // App Download Page
 Route::get('/app', [\App\Http\Controllers\AppDownloadController::class, 'show'])->name('app.download');
 Route::get('/app/download', [\App\Http\Controllers\AppDownloadController::class, 'download'])->name('app.download.file');
+
+// Survey (Public)
+Route::prefix('survey')->name('survey.')->group(function () {
+    Route::get('{id}', [SurveyController::class, 'show'])->name('show');
+    Route::post('{id}/vote', [SurveyController::class, 'vote'])->name('vote');
+    Route::get('{id}/results', [SurveyController::class, 'results'])->name('results');
+});
 
 // App Version Check API (for TWA in-app update)
 Route::get('/api/app-version', function () {

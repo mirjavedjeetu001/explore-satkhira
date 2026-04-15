@@ -421,6 +421,13 @@
                 @php $pushCount = \App\Models\PushSubscription::where('is_active', true)->count(); @endphp
                 <span class="badge bg-info text-white">{{ $pushCount }}</span>
             </a>
+            <a href="{{ route('admin.surveys.index') }}" class="nav-link {{ request()->routeIs('admin.surveys.*') ? 'active' : '' }}">
+                <i class="fas fa-poll"></i> <span>📊 সার্ভে</span>
+                @php $activeSurveyCount = \App\Models\Survey::active()->count(); @endphp
+                <span class="badge {{ $activeSurveyCount > 0 ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $activeSurveyCount > 0 ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             
             <div class="nav-title">Users & Settings</div>
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">

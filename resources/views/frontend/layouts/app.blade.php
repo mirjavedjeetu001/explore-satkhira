@@ -1292,6 +1292,81 @@
     </style>
     @endif
 
+    <!-- Floating Survey Button -->
+    @php
+        $activeSurvey = \App\Models\Survey::getActiveSurvey();
+    @endphp
+    @if($activeSurvey && !request()->routeIs('survey.*'))
+    <a href="{{ route('survey.show', $activeSurvey->id) }}" class="survey-float-btn" title="{{ $activeSurvey->title }}">
+        <span class="survey-float-icon">📊</span>
+        <span class="survey-float-text">সার্ভে</span>
+        @if($activeSurvey->is_live)
+            <span class="survey-live-dot"></span>
+        @endif
+    </a>
+    <style>
+        .survey-float-btn {
+            position: fixed;
+            @php
+                $surveyBaseBottom = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
+                $surveyBottom = ($fuelEnabled ?? false) ? ($surveyBaseBottom + 70) : $surveyBaseBottom;
+                $surveyBottom = (\App\Models\BloodSetting::isEnabled()) ? ($surveyBottom + 70) : $surveyBottom;
+            @endphp
+            bottom: {{ $surveyBottom }}px;
+            right: 30px;
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(26, 35, 126, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: surveyPulse 2s infinite;
+            position: relative;
+        }
+        .survey-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(26, 35, 126, 0.5);
+            color: white;
+        }
+        .survey-float-icon { font-size: 1.5rem; }
+        .survey-float-text { font-weight: 600; font-size: 0.95rem; }
+        .survey-live-dot {
+            width: 10px; height: 10px;
+            background: #e53935;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px; right: 8px;
+            animation: dotBlink 1s infinite;
+        }
+        @keyframes surveyPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(26, 35, 126, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(26, 35, 126, 0.6); }
+        }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @media (max-width: 576px) {
+            .survey-float-btn {
+                @php
+                    $surveyBaseBottomMobile = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
+                    $surveyBottomMobile = ($fuelEnabled ?? false) ? ($surveyBaseBottomMobile + 60) : $surveyBaseBottomMobile;
+                    $surveyBottomMobile = (\App\Models\BloodSetting::isEnabled()) ? ($surveyBottomMobile + 60) : $surveyBottomMobile;
+                @endphp
+                bottom: {{ $surveyBottomMobile }}px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .survey-float-text { font-size: 0.85rem; }
+        }
+    </style>
+    @endif
+
     <!-- Floating Fuel Tracker Button -->
     @php
         $fuelEnabled = \App\Models\FuelSetting::isEnabled();
