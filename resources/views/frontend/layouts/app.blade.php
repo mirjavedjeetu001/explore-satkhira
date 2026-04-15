@@ -1295,6 +1295,7 @@
     <!-- Floating Survey Button -->
     @php
         $activeSurvey = \App\Models\Survey::getActiveSurvey();
+        $fuelEnabled = \App\Models\FuelSetting::isEnabled();
     @endphp
     @if($activeSurvey && !request()->routeIs('survey.*'))
     <a href="{{ route('survey.show', $activeSurvey->id) }}" class="survey-float-btn" title="{{ $activeSurvey->title }}">
@@ -1326,7 +1327,6 @@
             z-index: 1000;
             transition: all 0.3s ease;
             animation: surveyPulse 2s infinite;
-            position: relative;
         }
         .survey-float-btn:hover {
             transform: scale(1.05) translateY(-3px);
