@@ -7,6 +7,7 @@ use App\Models\Survey;
 use App\Models\SurveyVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SurveyController extends Controller
 {
@@ -121,5 +122,19 @@ class SurveyController extends Controller
         $survey = Survey::findOrFail($id);
         $votes = SurveyVote::where('survey_id', $id)->orderBy('created_at', 'desc')->paginate(50);
         return view('admin.surveys.votes', compact('survey', 'votes'));
+    }
+
+    public function votesPdf($id)
+    {
+        $survey = Survey::findOrFail($id);
+        $votes = SurveyVote::where('survey_id', $id)->orderBy('created_at', 'desc')->get();
+        $results = $survey->results;
+        $totalVotes = $votes->count();
+
+        $pdf = Pdf::loadView('admin.surveys.votes-pdf', compact('survey', 'votes', 'results', 'totalVotes'));
+        $pdf->setPaper('a4', 'landscape');
+
+        $filename = 'survey-votes-' . $survey->id . '-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
     }
 }

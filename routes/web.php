@@ -406,6 +406,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('{id}', [AdminSurveyController::class, 'destroy'])->name('destroy');
         Route::post('{id}/toggle-status', [AdminSurveyController::class, 'toggleStatus'])->name('toggle-status');
         Route::get('{id}/votes', [AdminSurveyController::class, 'votes'])->name('votes');
+        Route::get('{id}/votes/pdf', [AdminSurveyController::class, 'votesPdf'])->name('votes.pdf');
     });
 });
 

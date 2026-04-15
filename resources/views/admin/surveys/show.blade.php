@@ -5,6 +5,7 @@
 <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <h1><i class="fas fa-chart-bar me-2"></i>{{ $survey->title }}</h1>
     <div class="d-flex gap-2">
+        <a href="{{ route('admin.surveys.votes.pdf', $survey->id) }}" class="btn btn-danger"><i class="fas fa-file-pdf me-1"></i>PDF ডাউনলোড</a>
         <a href="{{ route('admin.surveys.votes', $survey->id) }}" class="btn btn-outline-info"><i class="fas fa-users me-1"></i>ভোটার তালিকা ({{ $totalVotes }})</a>
         <a href="{{ route('admin.surveys.edit', $survey->id) }}" class="btn btn-outline-warning"><i class="fas fa-edit me-1"></i>এডিট</a>
         <a href="{{ route('admin.surveys.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>ফিরে যান</a>
