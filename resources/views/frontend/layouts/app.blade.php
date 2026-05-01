@@ -1494,7 +1494,7 @@
     @php
         $bloodEnabled = \App\Models\BloodSetting::isEnabled();
     @endphp
-    @if($bloodEnabled && !request()->routeIs('blood.*'))
+    @if($bloodEnabled && !request()->routeIs('blood.*') && !request()->routeIs('mango.*'))
     <a href="{{ route('blood.index') }}" class="blood-float-btn" title="এক্সপ্লোর রক্তদাতা">
         <span class="blood-float-icon">🩸</span>
         <span class="blood-float-text">এক্সপ্লোর রক্তদাতা</span>

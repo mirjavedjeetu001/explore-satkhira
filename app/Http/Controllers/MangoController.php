@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\Storage;
 
 class MangoController extends Controller
 {
+    private function normalizePhone(?string $value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        return preg_replace('/\D+/', '', $value);
+    }
+
     private function requireFeatureEnabled()
     {
         if (!MangoSetting::isEnabled()) {
@@ -76,22 +85,28 @@ class MangoController extends Controller
     {
         if ($redirect = $this->requireFeatureEnabled()) return $redirect;
 
+        $request->merge([
+            'phone' => $this->normalizePhone($request->phone),
+            'whatsapp' => $this->normalizePhone($request->whatsapp),
+        ]);
+
         $request->validate([
             'owner_name'   => 'required|string|max:100',
             'store_name'   => 'required|string|max:150',
-            'phone'        => 'required|string|max:20|unique:mango_stores,phone',
+            'phone'        => 'required|string|min:10|max:20|unique:mango_stores,phone',
             'password'     => 'required|string|min:6|confirmed',
             'upazila_id'   => 'nullable|exists:upazilas,id',
             'address'      => 'nullable|string|max:255',
             'description'  => 'nullable|string|max:1000',
             'delivery_info'=> 'nullable|string|max:1000',
-            'whatsapp'     => 'nullable|string|max:20',
+            'whatsapp'     => 'nullable|string|min:10|max:20',
             'facebook_url' => 'nullable|url|max:255',
             'logo'         => 'nullable|image|max:2048',
         ], [
             'phone.unique'       => 'এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি স্টোর আছে।',
             'password.confirmed' => 'পাসওয়ার্ড মিলছে না।',
             'password.min'       => 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।',
+            'whatsapp.max'       => 'WhatsApp নম্বর সর্বোচ্চ ২০ ডিজিটের হতে পারবে।',
         ]);
 
         $logoPath = null;
@@ -102,13 +117,13 @@ class MangoController extends Controller
         $store = MangoStore::create([
             'owner_name'    => $request->owner_name,
             'store_name'    => $request->store_name,
-            'phone'         => preg_replace('/[^0-9]/', '', $request->phone),
+            'phone'         => $request->phone,
             'password'      => Hash::make($request->password),
             'upazila_id'    => $request->upazila_id,
             'address'       => $request->address,
             'description'   => $request->description,
             'delivery_info' => $request->delivery_info,
-            'whatsapp'      => $request->whatsapp ? preg_replace('/[^0-9]/', '', $request->whatsapp) : null,
+            'whatsapp'      => $request->whatsapp,
             'facebook_url'  => $request->facebook_url,
             'logo'          => $logoPath,
         ]);
@@ -133,12 +148,16 @@ class MangoController extends Controller
     {
         if ($redirect = $this->requireFeatureEnabled()) return $redirect;
 
+        $request->merge([
+            'phone' => $this->normalizePhone($request->phone),
+        ]);
+
         $request->validate([
             'phone'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $phone = preg_replace('/[^0-9]/', '', $request->phone);
+        $phone = $request->phone;
         $store = MangoStore::where('phone', $phone)->first();
 
         if (!$store || !Hash::check($request->password, $store->password)) {
@@ -178,6 +197,10 @@ class MangoController extends Controller
 
         $store = MangoStore::findOrFail(session('mango_store_id'));
 
+        $request->merge([
+            'whatsapp' => $this->normalizePhone($request->whatsapp),
+        ]);
+
         $request->validate([
             'owner_name'    => 'required|string|max:100',
             'store_name'    => 'required|string|max:150',
@@ -185,7 +208,7 @@ class MangoController extends Controller
             'address'       => 'nullable|string|max:255',
             'description'   => 'nullable|string|max:1000',
             'delivery_info' => 'nullable|string|max:1000',
-            'whatsapp'      => 'nullable|string|max:20',
+            'whatsapp'      => 'nullable|string|min:10|max:20',
             'facebook_url'  => 'nullable|url|max:255',
             'logo'          => 'nullable|image|max:2048',
             'password'      => 'nullable|string|min:6|confirmed',
@@ -193,9 +216,7 @@ class MangoController extends Controller
 
         $data = $request->only(['owner_name', 'store_name', 'upazila_id', 'address', 'description', 'delivery_info', 'facebook_url']);
 
-        if ($request->whatsapp) {
-            $data['whatsapp'] = preg_replace('/[^0-9]/', '', $request->whatsapp);
-        }
+        $data['whatsapp'] = $request->whatsapp;
 
         if ($request->hasFile('logo')) {
             if ($store->logo) {
