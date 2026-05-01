@@ -311,7 +311,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">মোবাইল নম্বর <span class="text-danger">*</span></label>
-                                            <input type="text" name="phone" class="form-control" required value="{{ old('phone') }}" placeholder="01XXXXXXXXX" maxlength="11" pattern="[0-9]{11}">
+                                            <input type="text" name="phone" class="form-control" required value="{{ old('phone') }}" placeholder="01XXXXXXXXX" maxlength="11" pattern="01[3-9][0-9]{8}" title="সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন: 01712345678)">
                                             @error('phone')<small class="text-danger">{{ $message }}</small>@enderror
                                         </div>
                                         <div class="col-md-6">
@@ -421,7 +421,14 @@
                         @endforeach
 
                         <div class="text-center mt-4">
-                            <span class="total-votes-badge" id="totalVotes">মোট ভোট: {{ $totalVotes }}</span>
+                            <div style="margin-bottom: 12px;">
+                                <span class="total-votes-badge" id="totalVotes">মোট ভোট: {{ $totalVotes }}</span>
+                            </div>
+                            @if($cancelledVotes > 0)
+                                <div style="margin-top: 10px;">
+                                    <span style="display: inline-block; background: #dc3545; color: white; font-size: 0.8rem; padding: 5px 12px; border-radius: 50px;" id="cancelledVotes"><i class="fas fa-ban me-1"></i>বাতিল ভোট: {{ $cancelledVotes }}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -599,6 +606,11 @@
                 });
                 // Update total
                 document.getElementById('totalVotes').textContent = 'মোট ভোট: ' + data.totalVotes;
+                // Update cancelled
+                const cancelledEl = document.getElementById('cancelledVotes');
+                if (cancelledEl && data.cancelledVotes !== undefined) {
+                    cancelledEl.innerHTML = '<i class="fas fa-ban me-1"></i>বাতিল ভোট: ' + data.cancelledVotes;
+                }
                 // Update chart
                 if (chart) {
                     chart.data.datasets[0].data = data.results.map(r => r.count);

@@ -12,7 +12,8 @@ class SurveyController extends Controller
     {
         $survey = Survey::where('is_active', true)->findOrFail($id);
         $results = $survey->results;
-        $totalVotes = $survey->votes()->count();
+        $totalVotes = $survey->votes()->where('is_cancelled', false)->count();
+        $cancelledVotes = $survey->votes()->where('is_cancelled', true)->count();
         $hasVoted = false;
 
         // Check by phone in session
@@ -21,7 +22,7 @@ class SurveyController extends Controller
             $hasVoted = true;
         }
 
-        return view('frontend.survey.show', compact('survey', 'results', 'totalVotes', 'hasVoted'));
+        return view('frontend.survey.show', compact('survey', 'results', 'totalVotes', 'cancelledVotes', 'hasVoted'));
     }
 
     public function vote(Request $request, $id)
@@ -35,7 +36,7 @@ class SurveyController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|regex:/^[0-9]{11}$/',
+            'phone' => ['required', 'string', 'max:20', 'regex:/^01[3-9][0-9]{8}$/'],
             'selected_option' => 'required|string',
             'class_type' => 'required|in:intermediate,honours',
             'department' => 'required|string|max:255',
@@ -90,11 +91,13 @@ class SurveyController extends Controller
     {
         $survey = Survey::where('is_active', true)->findOrFail($id);
         $results = $survey->results;
-        $totalVotes = $survey->votes()->count();
+        $totalVotes = $survey->votes()->where('is_cancelled', false)->count();
+        $cancelledVotes = $survey->votes()->where('is_cancelled', true)->count();
 
         return response()->json([
             'results' => $results,
             'totalVotes' => $totalVotes,
+            'cancelledVotes' => $cancelledVotes,
         ]);
     }
 }

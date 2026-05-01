@@ -44,10 +44,10 @@ class Survey extends Model
 
     public function getResultsAttribute()
     {
-        $total = $this->votes()->count();
+        $total = $this->votes()->where('is_cancelled', false)->count();
         $results = [];
         foreach ($this->options as $option) {
-            $count = $this->votes()->where('selected_option', $option)->count();
+            $count = $this->votes()->where('is_cancelled', false)->where('selected_option', $option)->count();
             $results[] = [
                 'option' => $option,
                 'count' => $count,

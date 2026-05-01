@@ -34,7 +34,7 @@
                 </thead>
                 <tbody>
                     @forelse($votes as $vote)
-                        <tr>
+                        <tr{{ $vote->is_cancelled ? ' class=table-danger' : '' }}>
                             <td>{{ $loop->iteration + ($votes->currentPage() - 1) * $votes->perPage() }}</td>
                             <td>{{ $vote->name }}</td>
                             <td>{{ $vote->phone }}</td>
@@ -50,7 +50,13 @@
                             <td>{{ $vote->department ?? '-' }}</td>
                             <td>{{ $vote->year ?? '-' }}</td>
                             <td>{{ $vote->session ?? '-' }}</td>
-                            <td><span class="badge bg-dark">{{ $vote->selected_option }}</span></td>
+                            <td>
+                                @if($vote->is_cancelled)
+                                    <span class="badge bg-danger">বাতিল ভোট</span>
+                                @else
+                                    <span class="badge bg-dark">{{ $vote->selected_option }}</span>
+                                @endif
+                            </td>
                             <td>{{ $vote->comment ? Str::limit($vote->comment, 30) : '-' }}</td>
                             <td><small>{{ $vote->created_at->format('d/m/y h:i A') }}</small></td>
                         </tr>

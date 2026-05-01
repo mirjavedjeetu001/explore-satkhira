@@ -53,10 +53,10 @@ class SurveyController extends Controller
     {
         $survey = Survey::with('votes')->findOrFail($id);
         $results = $survey->results;
-        $totalVotes = $survey->votes->count();
+        $totalVotes = $survey->votes()->where('is_cancelled', false)->count();
         
         // Class type breakdown
-        $classBreakdown = $survey->votes->groupBy('class_type')->map->count();
+        $classBreakdown = $survey->votes()->where('is_cancelled', false)->get()->groupBy('class_type')->map->count();
         
         return view('admin.surveys.show', compact('survey', 'results', 'totalVotes', 'classBreakdown'));
     }
