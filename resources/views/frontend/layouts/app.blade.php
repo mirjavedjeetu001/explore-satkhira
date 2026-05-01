@@ -1423,6 +1423,73 @@
     </style>
     @endif
 
+    <!-- Floating Satkhirar Am Button -->
+    @php
+        $mangoEnabled = \App\Models\MangoSetting::isEnabled();
+    @endphp
+    @if($mangoEnabled && !request()->routeIs('mango.*'))
+    <a href="{{ route('mango.index') }}" class="mango-float-btn" title="সাতক্ষীরার আম">
+        <span class="mango-float-icon">🥭</span>
+        <span class="mango-float-text">সাতক্ষীরার আম</span>
+    </a>
+    <style>
+        .mango-float-btn {
+            position: fixed;
+            @php
+                $bloodEnabledCheck = \App\Models\BloodSetting::isEnabled();
+                $fuelBottom2 = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
+                $bloodBottom2 = ($fuelEnabled ?? false) ? ($fuelBottom2 + 70) : $fuelBottom2;
+                $mangoBottom = $bloodEnabledCheck ? ($bloodBottom2 + 70) : $bloodBottom2;
+            @endphp
+            bottom: {{ $mangoBottom }}px;
+            right: 30px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(245, 158, 11, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: mangoPulse 2s infinite;
+        }
+        .mango-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.5);
+            color: white;
+        }
+        .mango-float-icon {
+            font-size: 1.5rem;
+        }
+        .mango-float-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes mangoPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(245, 158, 11, 0.6); }
+        }
+        @media (max-width: 576px) {
+            .mango-float-btn {
+                @php
+                    $fuelBottomMobile2 = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
+                    $bloodBottomMobile2 = ($fuelEnabled ?? false) ? ($fuelBottomMobile2 + 60) : $fuelBottomMobile2;
+                    $mangoBottomMobile = $bloodEnabledCheck ? ($bloodBottomMobile2 + 60) : $bloodBottomMobile2;
+                @endphp
+                bottom: {{ $mangoBottomMobile }}px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .mango-float-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
+
     <!-- Floating Explore Blood Button -->
     @php
         $bloodEnabled = \App\Models\BloodSetting::isEnabled();

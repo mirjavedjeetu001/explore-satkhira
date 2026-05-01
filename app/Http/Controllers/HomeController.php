@@ -15,6 +15,8 @@ use App\Models\FuelStation;
 use App\Models\TeamMember;
 use App\Models\BloodDonor;
 use App\Models\BloodSetting;
+use App\Models\MangoSetting;
+use App\Models\MangoStore;
 
 class HomeController extends Controller
 {
@@ -100,6 +102,18 @@ class HomeController extends Controller
             });
         }
 
+        // Mango stores for homepage
+        $mangoEnabled = MangoSetting::isEnabled();
+        $mangoStores = collect();
+        if ($mangoEnabled) {
+            $mangoStores = MangoStore::with(['upazila'])
+                ->withCount('products')
+                ->active()
+                ->latest()
+                ->take(6)
+                ->get();
+        }
+
         // Team Members (only admins for homepage)
         $teamMembers = TeamMember::active()->ordered()->with('user')
             ->whereIn('website_role', ['super_admin', 'admin'])
@@ -139,7 +153,9 @@ class HomeController extends Controller
             'totalListings',
             'totalVisitors',
             'bloodOnHomepage',
-            'topBloodDonors'
+            'topBloodDonors',
+            'mangoEnabled',
+            'mangoStores'
         ));
     }
 }

@@ -57,8 +57,8 @@ class DashboardController extends Controller
             ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "approved") as approved_listings')
             ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "pending") as pending_listings')
             ->selectRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id AND listings.status = "rejected") as rejected_listings')
-            ->having('total_listings', '>', 0)
-            ->orderByDesc('total_listings')
+            ->whereRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id) > 0')
+            ->orderByRaw('(SELECT COUNT(*) FROM listings WHERE listings.user_id = users.id) DESC')
             ->take(10)
             ->get();
 

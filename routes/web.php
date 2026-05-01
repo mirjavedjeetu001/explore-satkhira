@@ -35,6 +35,8 @@ use App\Http\Controllers\SalamiController;
 use App\Http\Controllers\BloodController;
 use App\Http\Controllers\Admin\BloodController as AdminBloodController;
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
+use App\Http\Controllers\MangoController;
+use App\Http\Controllers\Admin\MangoController as AdminMangoController;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap Routes (for SEO)
@@ -153,6 +155,22 @@ Route::prefix('newspapers')->name('newspapers.')->group(function () {
     Route::get('/{newspaper}/edition/{edition}', [NewspaperController::class, 'readEdition'])->name('edition.read');
     Route::post('/{newspaper}/edition', [NewspaperController::class, 'storeEdition'])->name('edition.store')->middleware('auth');
     Route::delete('/{newspaper}/edition/{edition}', [NewspaperController::class, 'deleteEdition'])->name('edition.delete')->middleware('auth');
+});
+
+// Satkhirar Am (Mango Marketplace)
+Route::prefix('satkhirar-am')->name('mango.')->group(function () {
+    Route::get('/', [MangoController::class, 'index'])->name('index');
+    Route::get('/nibo', [MangoController::class, 'registerForm'])->name('register');
+    Route::post('/nibo', [MangoController::class, 'register'])->name('register.store');
+    Route::get('/login', [MangoController::class, 'loginForm'])->name('login');
+    Route::post('/login', [MangoController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [MangoController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [MangoController::class, 'dashboard'])->name('dashboard');
+    Route::put('/store', [MangoController::class, 'updateStore'])->name('store.update');
+    Route::post('/product', [MangoController::class, 'addProduct'])->name('product.store');
+    Route::put('/product/{id}', [MangoController::class, 'updateProduct'])->name('product.update');
+    Route::delete('/product/{id}', [MangoController::class, 'deleteProduct'])->name('product.destroy');
+    Route::get('/{id}', [MangoController::class, 'show'])->name('show');
 });
 
 // Salami Calculator Routes (Eid Feature)
@@ -321,6 +339,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('team/{teamMember}', [\App\Http\Controllers\Admin\TeamMemberController::class, 'destroy'])->name('team.destroy');
     Route::post('team/{teamMember}/toggle-active', [\App\Http\Controllers\Admin\TeamMemberController::class, 'toggleActive'])->name('team.toggle-active');
     
+    // Satkhirar Am (Mango Marketplace) Management
+    Route::get('satkhirar-am', [AdminMangoController::class, 'index'])->name('mango.index');
+    Route::get('satkhirar-am/{id}', [AdminMangoController::class, 'show'])->name('mango.show');
+    Route::post('satkhirar-am/toggle-status', [AdminMangoController::class, 'toggleStatus'])->name('mango.toggle-status');
+    Route::put('satkhirar-am/settings', [AdminMangoController::class, 'updateSettings'])->name('mango.settings');
+    Route::post('satkhirar-am/{id}/toggle', [AdminMangoController::class, 'toggleStoreActive'])->name('mango.toggle-store');
+    Route::delete('satkhirar-am/{id}', [AdminMangoController::class, 'destroy'])->name('mango.destroy');
+
     // Salami Calculator Management
     Route::get('salami', [AdminSalamiController::class, 'index'])->name('salami.index');
     Route::get('salami/users', [AdminSalamiController::class, 'users'])->name('salami.users');

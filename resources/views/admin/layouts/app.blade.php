@@ -380,6 +380,15 @@
             </a>
             
             <div class="nav-title">Features</div>
+            <a href="{{ route('admin.mango.index') }}" class="nav-link {{ request()->routeIs('admin.mango.*') ? 'active' : '' }}">
+                <i class="fas fa-store"></i> <span>🥭 সাতক্ষীরার আম</span>
+                @php
+                    $mangoEnabled = \App\Models\MangoSetting::first()?->is_enabled ?? false;
+                @endphp
+                <span class="badge {{ $mangoEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $mangoEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             <a href="{{ route('admin.salami.index') }}" class="nav-link {{ request()->routeIs('admin.salami.*') ? 'active' : '' }}">
                 <i class="fas fa-calculator"></i> <span>🌙 সালামি ক্যালকুলেটর</span>
                 @php 

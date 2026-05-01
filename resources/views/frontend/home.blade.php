@@ -1503,6 +1503,59 @@
     </style>
     @endif
 
+    <!-- Satkhirar Am (Mango) Section -->
+    @if($mangoEnabled && $mangoStores->count() > 0)
+    <section class="py-5 mango-home-section">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2><i class="fas fa-store me-2 text-warning"></i>🥭 সাতক্ষীরার আম</h2>
+                <p class="text-muted">সাতক্ষীরার সেরা আম সংগ্রহ করুন সরাসরি বাগান থেকে</p>
+                <div class="underline" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+            </div>
+            <div class="row g-3">
+                @foreach($mangoStores as $store)
+                    <div class="col-md-4 col-sm-6">
+                        <a href="{{ route('mango.show', $store->id) }}" class="text-decoration-none">
+                            <div class="card mango-home-card h-100 shadow-sm">
+                                <div class="card-body text-center py-3">
+                                    @if($store->logo)
+                                        <img src="{{ asset('storage/' . $store->logo) }}" alt="{{ $store->store_name }}"
+                                             class="rounded-circle mb-2"
+                                             style="width:60px;height:60px;object-fit:cover;border:2px solid #f59e0b;">
+                                    @else
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                             style="width:60px;height:60px;background:#f59e0b;font-size:1.8rem;">🥭</div>
+                                    @endif
+                                    <h6 class="fw-bold mb-1 text-dark">{{ $store->store_name }}</h6>
+                                    <p class="text-muted small mb-2">{{ $store->owner_name }}</p>
+                                    @if($store->upazila)
+                                        <span class="badge bg-light text-dark border small">
+                                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $store->upazila->name_bn ?? $store->upazila->name }}
+                                        </span>
+                                    @endif
+                                    <div class="mt-2">
+                                        <span class="badge bg-success">{{ $store->products_count }} জাত আম</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ route('mango.index') }}" class="btn btn-warning px-5">
+                    <i class="fas fa-store me-2"></i>সব স্টোর দেখুন
+                </a>
+            </div>
+        </div>
+    </section>
+    <style>
+        .mango-home-section { background: #fffbf0; }
+        .mango-home-card { border: none; border-top: 3px solid #f59e0b; transition: transform 0.2s, box-shadow 0.2s; }
+        .mango-home-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(245,158,11,0.2) !important; }
+    </style>
+    @endif
+
     <!-- Blood Top Donors Section -->
     @if($bloodOnHomepage && $topBloodDonors->count() > 0)
     <section class="py-5 blood-home-section">
