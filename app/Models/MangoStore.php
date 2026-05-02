@@ -44,6 +44,11 @@ class MangoStore extends Model
         return $this->belongsTo(Upazila::class);
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(MangoStoreRating::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

@@ -99,6 +99,12 @@
                                     <p class="text-muted small mb-2">
                                         <i class="fas fa-user me-1"></i>{{ $store->owner_name }}
                                     </p>
+                                    <div class="mb-2">
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-star me-1"></i>{{ number_format($store->ratings_avg_rating ?? 0, 1) }}
+                                            <small>({{ $store->ratings_count }})</small>
+                                        </span>
+                                    </div>
                                     @if($store->upazila)
                                         <span class="badge bg-light text-dark border mb-2">
                                             <i class="fas fa-map-marker-alt me-1 text-danger"></i>

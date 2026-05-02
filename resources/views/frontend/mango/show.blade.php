@@ -7,6 +7,20 @@
 <div class="mango-store-page py-4">
     <div class="container">
 
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-warning alert-dismissible fade show">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
@@ -50,6 +64,20 @@
                         <span class="badge bg-light text-muted border">
                             <i class="fas fa-eye me-1"></i>{{ number_format($store->view_count) }} বার দেখা হয়েছে
                         </span>
+                        <div class="mt-3">
+                            @php
+                                $averageRating = round($store->ratings_avg_rating ?? 0, 1);
+                                $filledStars = (int) round($store->ratings_avg_rating ?? 0);
+                            @endphp
+                            <div class="d-flex align-items-center justify-content-center gap-1 mb-1">
+                                @for($star = 1; $star <= 5; $star++)
+                                    <i class="fas fa-star {{ $star <= $filledStars ? 'text-warning' : 'text-secondary opacity-50' }}"></i>
+                                @endfor
+                            </div>
+                            <small class="text-muted fw-semibold">
+                                {{ number_format($averageRating, 1) }} / 5 ({{ $store->ratings_count }} টি রেটিং)
+                            </small>
+                        </div>
                     </div>
                 </div>
 
@@ -88,6 +116,44 @@
                         </div>
                     </div>
                 @endif
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="fas fa-star me-2"></i>রেটিং দিন
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">শুধু ফোন নম্বর দিলেই রেটিং দিতে পারবেন। একই ফোন নম্বর থেকে একবারই রেটিং নেওয়া হবে।</p>
+                        <form action="{{ route('mango.rate', $store->id) }}" method="POST">
+                            @csrf
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">মোবাইল নম্বর</label>
+                                <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                                       placeholder="01XXXXXXXXX" value="{{ old('phone') }}" required>
+                                @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">রেটিং</label>
+                                <input type="hidden" id="rating-input" name="rating" value="{{ old('rating') }}" required>
+                                <div class="rating-stars-wrap @error('rating') is-invalid @enderror" role="radiogroup" aria-label="rating">
+                                    @for($star = 1; $star <= 5; $star++)
+                                        <button type="button" class="star-btn" data-rating="{{ $star }}" aria-label="{{ $star }} star">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    @endfor
+                                </div>
+                                <small id="rating-help" class="text-muted d-block mt-1">স্টার সিলেক্ট করুন</small>
+                                @error('rating')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <button class="btn btn-warning w-100" type="submit">
+                                <i class="fas fa-paper-plane me-1"></i>রেটিং সাবমিট করুন
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
                 @if($store->description)
                     <div class="card shadow-sm">
@@ -181,5 +247,69 @@
 .product-card { border: none; border-top: 3px solid #22c55e; transition: transform 0.2s; }
 .product-card:hover { transform: translateY(-3px); }
 .opacity-60 { opacity: 0.6; }
+.rating-stars-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.star-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #fcd34d;
+    background: #fff;
+    color: #d1d5db;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.star-btn:hover {
+    transform: translateY(-2px);
+    border-color: #f59e0b;
+}
+.star-btn.active {
+    background: #fffbeb;
+    color: #f59e0b;
+    border-color: #f59e0b;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ratingInput = document.getElementById('rating-input');
+    const ratingHelp = document.getElementById('rating-help');
+    const starButtons = Array.from(document.querySelectorAll('.star-btn'));
+
+    if (!ratingInput || starButtons.length === 0) {
+        return;
+    }
+
+    const messages = {
+        1: '1 star - আরও উন্নতি দরকার',
+        2: '2 star - মোটামুটি',
+        3: '3 star - ভালো',
+        4: '4 star - খুব ভালো',
+        5: '5 star - দারুণ'
+    };
+
+    function paintStars(value) {
+        const selected = Number(value || 0);
+        starButtons.forEach((btn) => {
+            const btnRating = Number(btn.dataset.rating);
+            btn.classList.toggle('active', btnRating <= selected);
+        });
+        ratingHelp.textContent = messages[selected] || 'স্টার সিলেক্ট করুন';
+    }
+
+    starButtons.forEach((btn) => {
+        btn.addEventListener('click', function () {
+            ratingInput.value = this.dataset.rating;
+            paintStars(ratingInput.value);
+        });
+    });
+
+    paintStars(ratingInput.value);
+});
+</script>
 @endsection

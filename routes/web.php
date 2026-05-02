@@ -170,6 +170,7 @@ Route::prefix('satkhirar-am')->name('mango.')->group(function () {
     Route::post('/product', [MangoController::class, 'addProduct'])->name('product.store');
     Route::put('/product/{id}', [MangoController::class, 'updateProduct'])->name('product.update');
     Route::delete('/product/{id}', [MangoController::class, 'deleteProduct'])->name('product.destroy');
+    Route::post('/{id}/rate', [MangoController::class, 'rateStore'])->name('rate');
     Route::get('/{id}', [MangoController::class, 'show'])->name('show');
 });
 

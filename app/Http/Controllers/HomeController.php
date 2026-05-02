@@ -105,12 +105,20 @@ class HomeController extends Controller
         // Mango stores for homepage
         $mangoEnabled = MangoSetting::isEnabled();
         $mangoStores = collect();
+        $mangoStoresTotal = 0;
         if ($mangoEnabled) {
-            $mangoStores = MangoStore::with(['upazila'])
-                ->withCount('products')
-                ->active()
+            $mangoQuery = MangoStore::with(['upazila'])
+                ->withCount(['products', 'ratings'])
+                ->withAvg('ratings', 'rating')
+                ->active();
+
+            $mangoStoresTotal = $mangoQuery->count();
+
+            $mangoStores = $mangoQuery
+                ->orderByDesc('ratings_avg_rating')
+                ->orderByDesc('ratings_count')
                 ->latest()
-                ->take(6)
+                ->take(3)
                 ->get();
         }
 
@@ -155,7 +163,8 @@ class HomeController extends Controller
             'bloodOnHomepage',
             'topBloodDonors',
             'mangoEnabled',
-            'mangoStores'
+            'mangoStores',
+            'mangoStoresTotal'
         ));
     }
 }

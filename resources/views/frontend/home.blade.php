@@ -1509,12 +1509,13 @@
         <div class="container">
             <div class="section-header text-center mb-4" data-aos="fade-up">
                 <h2><i class="fas fa-store me-2 text-warning"></i>🥭 সাতক্ষীরার আম</h2>
-                <p class="text-muted">সাতক্ষীরার সেরা আম সংগ্রহ করুন সরাসরি বাগান থেকে</p>
+                <p class="text-muted">টপ রেটেড ৩টি স্টোর দেখুন, আরও স্টোর দেখতে নিচের বাটন চাপুন</p>
                 <div class="underline" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
             </div>
-            <div class="row g-3">
-                @foreach($mangoStores as $store)
-                    <div class="col-md-4 col-sm-6">
+
+            <div class="row g-3 d-none d-md-flex">
+                @foreach($mangoStores->take(3) as $store)
+                    <div class="col-md-4">
                         <a href="{{ route('mango.show', $store->id) }}" class="text-decoration-none">
                             <div class="card mango-home-card h-100 shadow-sm">
                                 <div class="card-body text-center py-3">
@@ -1533,8 +1534,12 @@
                                             <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $store->upazila->name_bn ?? $store->upazila->name }}
                                         </span>
                                     @endif
-                                    <div class="mt-2">
+                                    <div class="mt-2 d-flex align-items-center justify-content-center gap-2 flex-wrap">
                                         <span class="badge bg-success">{{ $store->products_count }} জাত আম</span>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-star me-1"></i>{{ number_format($store->ratings_avg_rating ?? 0, 1) }}
+                                            <small>({{ $store->ratings_count }})</small>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -1542,9 +1547,55 @@
                     </div>
                 @endforeach
             </div>
+
+            <div id="mangoTopStoresCarousel" class="carousel slide d-md-none" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-inner">
+                    @foreach($mangoStores->take(3) as $index => $store)
+                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                            <a href="{{ route('mango.show', $store->id) }}" class="text-decoration-none d-block px-2">
+                                <div class="card mango-home-card h-100 shadow-sm">
+                                    <div class="card-body text-center py-3">
+                                        @if($store->logo)
+                                            <img src="{{ asset('storage/' . $store->logo) }}" alt="{{ $store->store_name }}"
+                                                 class="rounded-circle mb-2"
+                                                 style="width:60px;height:60px;object-fit:cover;border:2px solid #f59e0b;">
+                                        @else
+                                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                                 style="width:60px;height:60px;background:#f59e0b;font-size:1.8rem;">🥭</div>
+                                        @endif
+                                        <h6 class="fw-bold mb-1 text-dark">{{ $store->store_name }}</h6>
+                                        <p class="text-muted small mb-2">{{ $store->owner_name }}</p>
+                                        @if($store->upazila)
+                                            <span class="badge bg-light text-dark border small">
+                                                <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $store->upazila->name_bn ?? $store->upazila->name }}
+                                            </span>
+                                        @endif
+                                        <div class="mt-2 d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                            <span class="badge bg-success">{{ $store->products_count }} জাত আম</span>
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-star me-1"></i>{{ number_format($store->ratings_avg_rating ?? 0, 1) }}
+                                                <small>({{ $store->ratings_count }})</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#mangoTopStoresCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mangoTopStoresCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
             <div class="text-center mt-4">
                 <a href="{{ route('mango.index') }}" class="btn btn-warning px-5">
-                    <i class="fas fa-store me-2"></i>সব স্টোর দেখুন
+                    <i class="fas fa-store me-2"></i>আরো দেখুন ({{ $mangoStoresTotal }})
                 </a>
             </div>
         </div>
@@ -1553,6 +1604,15 @@
         .mango-home-section { background: #fffbf0; }
         .mango-home-card { border: none; border-top: 3px solid #f59e0b; transition: transform 0.2s, box-shadow 0.2s; }
         .mango-home-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(245,158,11,0.2) !important; }
+        .mango-home-section .carousel-control-prev,
+        .mango-home-section .carousel-control-next {
+            width: 36px;
+            height: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 50%;
+        }
     </style>
     @endif
 
