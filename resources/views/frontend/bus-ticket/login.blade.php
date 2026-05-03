@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'লগইন - বাস টিকেট বেচাকেনা')
+@section('title', 'লগইন - বাস টিকেট রিসেল')
 
 @section('content')
 <div class="py-5">
@@ -10,7 +10,7 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white text-center py-3">
                         <div style="font-size: 3rem;">🚌</div>
-                        <h4 class="mb-0 mt-2">বাস টিকেট বেচাকেনা</h4>
+                        <h4 class="mb-0 mt-2">বাস টিকেট রিসেল</h4>
                         <p class="mb-0 small">সেলার লগইন</p>
                     </div>
                     <div class="card-body p-4">

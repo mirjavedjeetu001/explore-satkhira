@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'বাস টিকেট সেটিংস - Admin')
+@section('title', 'বাস টিকেট রিসেল সেটিংস - Admin')
 
 @section('content')
 <div class="container-fluid">
@@ -8,7 +8,7 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-cog me-2"></i>বাস টিকেট বেচাকেনা সেটিংস</h4>
+                    <h4 class="mb-0"><i class="fas fa-cog me-2"></i>বাস টিকেট রিসেল সেটিংস</h4>
                 </div>
                 <div class="card-body p-4">
                     @if(session('success'))
@@ -24,7 +24,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="mb-1">ফিচার স্ট্যাটাস</h5>
-                                    <p class="text-muted mb-0">বাস টিকেট বেচাকেনা ফিচার চালু বা বন্ধ করুন</p>
+                                    <p class="text-muted mb-0">বাস টিকেট রিসেল ফিচার চালু বা বন্ধ করুন</p>
                                 </div>
                                 <form action="{{ route('admin.bus-ticket.toggle') }}" method="POST">
                                     @csrf

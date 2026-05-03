@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'নতুন টিকেট - বাস টিকেট বেচাকেনা')
+@section('title', 'নতুন টিকেট - বাস টিকেট রিসেল')
 
 @section('content')
 <div class="py-4">

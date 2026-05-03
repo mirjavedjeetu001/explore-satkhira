@@ -1428,9 +1428,9 @@
         $busTicketEnabledLayout = \App\Models\BusTicketSetting::isEnabled();
     @endphp
     @if($busTicketEnabledLayout && !request()->routeIs('bus-ticket.*'))
-    <a href="{{ route('bus-ticket.index') }}" class="bus-ticket-float-btn" title="বাস টিকেট বেচাকেনা">
+    <a href="{{ route('bus-ticket.index') }}" class="bus-ticket-float-btn" title="বাস টিকেট রিসেল">
         <span class="bus-ticket-float-icon">🚌</span>
-        <span class="bus-ticket-float-text">বাস টিকেট</span>
+        <span class="bus-ticket-float-text">টিকেট রিসেল</span>
     </a>
     <style>
         .bus-ticket-float-btn {

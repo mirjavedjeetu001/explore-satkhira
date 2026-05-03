@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
-@section('title', $settings->title ?? 'বাস টিকেট বেচাকেনা')
-@section('meta_description', 'ঈদসহ বিভিন্ন সময়ে বাস টিকেট কিনুন বা বিক্রি করুন। সাতক্ষীরা থেকে ঢাকা ও অন্যান্য রুটের টিকেট পাবেন এখানে।')
+@section('title', $settings->title ?? 'বাস টিকেট রিসেল')
+@section('meta_description', 'বাস টিকেট কিনেছেন কিন্তু যেতে পারছেন না? রিসেল করুন। অথবা কম দামে টিকেট খুঁজুন। সাতক্ষীরা থেকে ঢাকা ও অন্যান্য রুটের রিসেল টিকেট পাবেন এখানে।')
 
 @section('content')
 <div class="bus-ticket-page py-4">
@@ -10,8 +10,8 @@
         <!-- Header -->
         <div class="bus-ticket-header text-center mb-5">
             <div class="bus-icon-big mb-3">🚌</div>
-            <h1 class="fw-bold mb-2">{{ $settings->title ?? 'বাস টিকেট বেচাকেনা' }}</h1>
-            <p class="text-muted lead">{{ $settings->description ?? 'ঈদসহ বিভিন্ন সময়ে অতিরিক্ত বাস টিকেট কিনে থাকলে বা কিনতে চাইলে এখানে বিজ্ঞাপন দিতে পারেন' }}</p>
+            <h1 class="fw-bold mb-2">{{ $settings->title ?? 'বাস টিকেট রিসেল' }}</h1>
+            <p class="text-muted lead">{{ $settings->description ?? 'টিকেট কিনেছেন কিন্তু যেতে পারছেন না? রিসেল করুন। অথবা কম দামে টিকেট কিনুন।' }}</p>
             <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
                 <span class="badge bg-success fs-6 px-3 py-2">
                     <i class="fas fa-ticket-alt me-1"></i> {{ $availableTickets->total() }} টি টিকেট উপলব্ধ

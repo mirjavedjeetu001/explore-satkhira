@@ -1732,8 +1732,8 @@
     <section class="py-5 bus-ticket-home-section">
         <div class="container">
             <div class="section-header text-center mb-4" data-aos="fade-up">
-                <h2><i class="fas fa-bus me-2 text-primary"></i>🚌 বাস টিকেট বেচাকেনা</h2>
-                <p class="text-muted">ঈদসহ বিভিন্ন সময়ে অতিরিক্ত বাস টিকেট কিনে থাকলে বা কিনতে চাইলে এখানে বিজ্ঞাপন দিতে পারেন</p>
+                <h2><i class="fas fa-bus me-2 text-primary"></i>🚌 বাস টিকেট রিসেল</h2>
+                <p class="text-muted">টিকেট কিনেছেন কিন্তু যেতে পারছেন না? রিসেল করুন। অথবা কম দামে টিকেট কিনুন।</p>
                 <div class="underline" style="background: linear-gradient(90deg, #0d6efd, #0a58ca);"></div>
             </div>
 

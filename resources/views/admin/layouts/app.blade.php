@@ -426,7 +426,7 @@
                 </span>
             </a>
             <a href="{{ route('admin.bus-ticket.index') }}" class="nav-link {{ request()->routeIs('admin.bus-ticket.*') ? 'active' : '' }}">
-                <i class="fas fa-bus"></i> <span>🚌 বাস টিকেট</span>
+                <i class="fas fa-bus"></i> <span>🚌 টিকেট রিসেল</span>
                 @php
                     $busTicketEnabled = \App\Models\BusTicketSetting::isEnabled();
                 @endphp

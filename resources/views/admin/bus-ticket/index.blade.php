@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'বাস টিকেট বেচাকেনা - Admin')
+@section('title', 'বাস টিকেট রিসেল - Admin')
 
 @section('content')
 <div class="container-fluid">
