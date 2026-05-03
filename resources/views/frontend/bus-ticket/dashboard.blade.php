@@ -123,10 +123,10 @@
                                                         <a href="{{ route('bus-ticket.edit', $ticket->id) }}" class="btn btn-outline-primary" title="এডিট">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <form action="{{ route('bus-ticket.mark-sold', $ticket->id) }}" method="POST" class="d-inline">
+                                                        <form action="{{ route('bus-ticket.mark-sold', $ticket->id) }}" method="POST" class="d-inline" onsubmit="return confirm('টিকেটটি বিক্রি হয়ে গেছে হিসেবে চিহ্নিত করবেন?')">
                                                             @csrf
-                                                            <button type="submit" class="btn btn-outline-success" title="বিক্রি হয়েছে">
-                                                                <i class="fas fa-check"></i>
+                                                            <button type="submit" class="btn btn-success btn-sm" title="বিক্রি হয়ে গেছে - Sold Out">
+                                                                <i class="fas fa-check-circle me-1"></i>Sold Out
                                                             </button>
                                                         </form>
                                                         <form action="{{ route('bus-ticket.destroy', $ticket->id) }}" method="POST" class="d-inline" onsubmit="return confirm('নিশ্চিত মুছে ফেলতে চান?')">

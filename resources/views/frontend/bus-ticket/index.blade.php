@@ -124,7 +124,7 @@
                                         $waMessage = urlencode("আমি আপনার বিজ্ঞাপন দেখেছি: {$ticket->from_location} থেকে {$ticket->to_location}, {$ticket->journey_date->format('d M, Y')}. টিকেটটি এখনো আছে?");
                                         $trackUrl = route('bus-ticket.interested', $ticket->id);
                                     @endphp
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex gap-2 mb-2">
                                         <a href="tel:{{ $callPhone }}" onclick="fetch('{{ $trackUrl }}').catch(()=>{});" class="btn btn-primary flex-grow-1">
                                             <i class="fas fa-phone me-1"></i>কল করুন
                                         </a>
@@ -133,6 +133,26 @@
                                                 <i class="fab fa-whatsapp me-1"></i>WhatsApp
                                             </a>
                                         @endif
+                                    </div>
+                                    <button class="btn btn-warning w-100" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#inperson-{{ $ticket->id }}"
+                                        aria-expanded="false"
+                                        onclick="fetch('{{ $trackUrl }}').catch(()=>{});">
+                                        <i class="fas fa-handshake me-1"></i>সামনাসামনি কিনতে চাই
+                                    </button>
+                                    <div class="collapse mt-2" id="inperson-{{ $ticket->id }}">
+                                        <div class="alert alert-warning mb-0 py-2 px-3">
+                                            <p class="mb-2 small fw-semibold"><i class="fas fa-info-circle me-1"></i>বিক্রেতার সাথে যোগাযোগ করুন:</p>
+                                            <a href="tel:{{ $callPhone }}" class="btn btn-sm btn-primary w-100 mb-1">
+                                                <i class="fas fa-phone me-1"></i>{{ $callPhone }}
+                                            </a>
+                                            @if($waNumber)
+                                            <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode('সামনাসামনি টিকেট কিনতে চাই। ' . $ticket->from_location . ' → ' . $ticket->to_location . ', ' . $ticket->journey_date->format('d M, Y') . '. কখন ও কোথায় দেখা করা যাবে?') }}" target="_blank" rel="noopener" class="btn btn-sm btn-success w-100">
+                                                <i class="fab fa-whatsapp me-1"></i>WhatsApp করুন
+                                            </a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>

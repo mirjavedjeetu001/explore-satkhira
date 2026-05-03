@@ -73,6 +73,7 @@
                                             {{ $upazila->name_bn ?? $upazila->name }}
                                         </option>
                                     @endforeach
+                                    <option value="" {{ old('upazila_id') === 'other' ? 'selected' : '' }}>অন্যান্য / সাতক্ষীরার বাইরে</option>
                                 </select>
                                 @error('upazila_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
