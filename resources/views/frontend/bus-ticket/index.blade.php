@@ -141,34 +141,39 @@
                                         onclick="fetch('{{ $trackUrl }}').catch(()=>{});">
                                         <i class="fas fa-handshake me-1"></i>সামনাসামনি কিনতে চাই
                                     </button>
+                                    @if(session('inperson_success_' . $ticket->id))
+                                        <div class="alert alert-success mt-2 py-2 px-3 mb-0">
+                                            <i class="fas fa-check-circle me-1"></i>{{ session('inperson_success_' . $ticket->id) }}
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                var el = document.getElementById('inperson-{{ $ticket->id }}');
+                                                if (el) { el.classList.remove('collapse'); }
+                                            });
+                                        </script>
+                                    @endif
                                     <div class="collapse mt-2" id="inperson-{{ $ticket->id }}">
-                                        @if(session('inperson_success_' . $ticket->id))
-                                            <div class="alert alert-success py-2 px-3 mb-0">
-                                                <i class="fas fa-check-circle me-1"></i>{{ session('inperson_success_' . $ticket->id) }}
+                                        <div class="card border-warning">
+                                            <div class="card-body py-3 px-3">
+                                                <p class="small fw-semibold mb-2"><i class="fas fa-info-circle me-1 text-warning"></i>আপনার তথ্য দিন, বিক্রেতা আপনাকে call করবেন:</p>
+                                                <form method="POST" action="{{ route('bus-ticket.inperson-request', $ticket->id) }}">
+                                                    @csrf
+                                                    <div class="mb-2">
+                                                        <input type="text" name="buyer_name" class="form-control form-control-sm @error('buyer_name') is-invalid @enderror"
+                                                            placeholder="আপনার নাম" required value="{{ old('buyer_name') }}">
+                                                        @error('buyer_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input type="tel" name="buyer_phone" class="form-control form-control-sm @error('buyer_phone') is-invalid @enderror"
+                                                            placeholder="আপনার ফোন নম্বর" required value="{{ old('buyer_phone') }}">
+                                                        @error('buyer_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                                    </div>
+                                                    <button type="submit" class="btn btn-warning btn-sm w-100">
+                                                        <i class="fas fa-paper-plane me-1"></i>অনুরোধ পাঠান
+                                                    </button>
+                                                </form>
                                             </div>
-                                        @else
-                                            <div class="card border-warning">
-                                                <div class="card-body py-3 px-3">
-                                                    <p class="small fw-semibold mb-2"><i class="fas fa-info-circle me-1 text-warning"></i>আপনার তথ্য দিন, বিক্রেতা আপনাকে call করবেন:</p>
-                                                    <form method="POST" action="{{ route('bus-ticket.inperson-request', $ticket->id) }}">
-                                                        @csrf
-                                                        <div class="mb-2">
-                                                            <input type="text" name="buyer_name" class="form-control form-control-sm @error('buyer_name') is-invalid @enderror"
-                                                                placeholder="আপনার নাম" required value="{{ old('buyer_name') }}">
-                                                            @error('buyer_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                                        </div>
-                                                        <div class="mb-2">
-                                                            <input type="tel" name="buyer_phone" class="form-control form-control-sm @error('buyer_phone') is-invalid @enderror"
-                                                                placeholder="আপনার ফোন নম্বর" required value="{{ old('buyer_phone') }}">
-                                                            @error('buyer_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                                        </div>
-                                                        <button type="submit" class="btn btn-warning btn-sm w-100">
-                                                            <i class="fas fa-paper-plane me-1"></i>অনুরোধ পাঠান
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
