@@ -134,15 +134,15 @@ class BusTicketController extends Controller
             'upazila_id' => 'nullable|exists:upazilas,id',
             'address' => 'nullable|string|max:255',
             'whatsapp' => 'nullable|string|max:20',
-            // First ticket fields (required at registration)
-            'from_location' => 'required|string|max:100',
-            'to_location' => 'required|string|max:100',
-            'journey_date' => 'required|date|after_or_equal:today',
+            // First ticket fields — only required when add_ticket_now is checked
+            'from_location' => $request->add_ticket_now ? 'required|string|max:100' : 'nullable|string|max:100',
+            'to_location' => $request->add_ticket_now ? 'required|string|max:100' : 'nullable|string|max:100',
+            'journey_date' => $request->add_ticket_now ? 'required|date|after_or_equal:today' : 'nullable|date',
             'bus_name' => 'nullable|string|max:100',
-            'ticket_type' => 'required|in:seat,ac,sleeper,deluxe',
-            'seat_count' => 'required|integer|min:1|max:10',
-            'price_per_ticket' => 'required|numeric|min:0',
-            'contact_number' => 'required|string|min:10|max:20',
+            'ticket_type' => $request->add_ticket_now ? 'required|in:seat,ac,sleeper,deluxe' : 'nullable|in:seat,ac,sleeper,deluxe',
+            'seat_count' => $request->add_ticket_now ? 'required|integer|min:1|max:10' : 'nullable|integer',
+            'price_per_ticket' => $request->add_ticket_now ? 'required|numeric|min:0' : 'nullable|numeric',
+            'contact_number' => $request->add_ticket_now ? 'required|string|min:10|max:20' : 'nullable|string|max:20',
             'whatsapp_number' => 'nullable|string|max:20',
             'description' => 'nullable|string|max:1000',
         ], [
@@ -172,25 +172,28 @@ class BusTicketController extends Controller
             'is_active' => true,
         ]);
 
-        BusTicket::create([
-            'bus_ticket_seller_id' => $seller->id,
-            'from_location' => $request->from_location,
-            'to_location' => $request->to_location,
-            'journey_date' => $request->journey_date,
-            'bus_name' => $request->bus_name,
-            'ticket_type' => $request->ticket_type,
-            'seat_count' => $request->seat_count,
-            'price_per_ticket' => $request->price_per_ticket,
-            'contact_number' => $request->contact_number,
-            'whatsapp_number' => $request->whatsapp_number,
-            'description' => $request->description,
-            'is_sold' => false,
-            'interested_count' => 0,
-        ]);
-
         session(['bus_ticket_seller_id' => $seller->id]);
 
-        return redirect()->route('bus-ticket.dashboard')->with('success', 'সফলভাবে রেজিস্ট্রেশন এবং প্রথম টিকেট পোস্ট হয়েছে!');
+        if ($request->add_ticket_now) {
+            BusTicket::create([
+                'bus_ticket_seller_id' => $seller->id,
+                'from_location' => $request->from_location,
+                'to_location' => $request->to_location,
+                'journey_date' => $request->journey_date,
+                'bus_name' => $request->bus_name,
+                'ticket_type' => $request->ticket_type ?? 'seat',
+                'seat_count' => $request->seat_count,
+                'price_per_ticket' => $request->price_per_ticket,
+                'contact_number' => $request->contact_number,
+                'whatsapp_number' => $request->whatsapp_number,
+                'description' => $request->description,
+                'is_sold' => false,
+                'interested_count' => 0,
+            ]);
+            return redirect()->route('bus-ticket.dashboard')->with('success', 'সফলভাবে রেজিস্ট্রেশন এবং প্রথম টিকেট পোস্ট হয়েছে!');
+        }
+
+        return redirect()->route('bus-ticket.dashboard')->with('success', 'সফলভাবে রেজিস্ট্রেশন হয়েছে! এখন টিকেট যোগ করুন।');
     }
 
     public function loginForm()

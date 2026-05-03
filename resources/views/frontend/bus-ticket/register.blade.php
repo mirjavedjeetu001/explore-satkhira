@@ -90,20 +90,30 @@
                             </div>
 
                             <hr class="my-4">
-                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-ticket-alt me-2"></i>প্রথম টিকেটের তথ্য</h5>
-                            <p class="text-muted small mb-3">রেজিস্ট্রেশনের সাথে সাথে আপনার প্রথম টিকেটের বিজ্ঞাপন পোস্ট হবে। পরবর্তীতে ড্যাশবোর্ড থেকে আরও টিকেট যোগ করতে পারবেন।</p>
 
+                            <!-- Ticket Section Toggle -->
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="addTicketNow" name="add_ticket_now" value="1"
+                                    {{ old('add_ticket_now', '1') == '1' ? 'checked' : '' }}
+                                    onchange="document.getElementById('ticketSection').style.display = this.checked ? '' : 'none'">
+                                <label class="form-check-label fw-semibold" for="addTicketNow">
+                                    <i class="fas fa-ticket-alt me-1 text-success"></i>এখনই প্রথম টিকেট যোগ করব
+                                </label>
+                            </div>
+                            <p class="text-muted small mb-3">চাইলে পরে ড্যাশবোর্ড থেকেও টিকেট যোগ করতে পারবেন।</p>
+
+                            <div id="ticketSection" style="{{ old('add_ticket_now', '1') == '1' ? '' : 'display:none' }}">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-semibold">কোথা থেকে <span class="text-danger">*</span></label>
                                     <input type="text" name="from_location" class="form-control @error('from_location') is-invalid @enderror"
-                                           value="{{ old('from_location') }}" placeholder="যেমন: সাতক্ষীরা" required>
+                                           value="{{ old('from_location') }}" placeholder="যেমন: সাতক্ষীরা">
                                     @error('from_location')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-semibold">কোথায় <span class="text-danger">*</span></label>
                                     <input type="text" name="to_location" class="form-control @error('to_location') is-invalid @enderror"
-                                           value="{{ old('to_location') }}" placeholder="যেমন: ঢাকা" required>
+                                           value="{{ old('to_location') }}" placeholder="যেমন: ঢাকা">
                                     @error('to_location')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
@@ -112,7 +122,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-semibold">ভ্রমণের তারিখ <span class="text-danger">*</span></label>
                                     <input type="date" name="journey_date" class="form-control @error('journey_date') is-invalid @enderror"
-                                           value="{{ old('journey_date') }}" min="{{ date('Y-m-d') }}" required>
+                                           value="{{ old('journey_date') }}" min="{{ date('Y-m-d') }}">
                                     @error('journey_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -126,7 +136,7 @@
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label fw-semibold">টিকেটের ধরন <span class="text-danger">*</span></label>
-                                    <select name="ticket_type" class="form-select @error('ticket_type') is-invalid @enderror" required>
+                                    <select name="ticket_type" class="form-select @error('ticket_type') is-invalid @enderror">
                                         <option value="seat" {{ old('ticket_type') == 'seat' ? 'selected' : '' }}>নন-এসি (সীট)</option>
                                         <option value="ac" {{ old('ticket_type') == 'ac' ? 'selected' : '' }}>এসি বাস</option>
                                         <option value="sleeper" {{ old('ticket_type') == 'sleeper' ? 'selected' : '' }}>স্লিপার</option>
@@ -137,7 +147,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label fw-semibold">সিট সংখ্যা <span class="text-danger">*</span></label>
                                     <input type="number" name="seat_count" class="form-control @error('seat_count') is-invalid @enderror"
-                                           value="{{ old('seat_count', 1) }}" min="1" max="10" required>
+                                           value="{{ old('seat_count', 1) }}" min="1" max="10">
                                     @error('seat_count')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -145,7 +155,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text">৳</span>
                                         <input type="number" name="price_per_ticket" class="form-control @error('price_per_ticket') is-invalid @enderror"
-                                               value="{{ old('price_per_ticket') }}" min="0" required>
+                                               value="{{ old('price_per_ticket') }}" min="0">
                                     </div>
                                     @error('price_per_ticket')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
@@ -155,7 +165,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-semibold">যোগাযোগের নম্বর <span class="text-danger">*</span></label>
                                     <input type="tel" name="contact_number" class="form-control @error('contact_number') is-invalid @enderror"
-                                           value="{{ old('contact_number') }}" placeholder="01XXXXXXXXX" required>
+                                           value="{{ old('contact_number') }}" placeholder="01XXXXXXXXX">
                                     <div class="form-text text-muted">ক্রেতারা এই নম্বরে যোগাযোগ করবে</div>
                                     @error('contact_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
@@ -173,6 +183,7 @@
                                           rows="2" placeholder="অতিরিক্ত তথ্য যেমন: ছাড়ার সময়, কাউন্টারের লোকেশন ইত্যাদি">{{ old('description') }}</textarea>
                                 @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
+                            </div>{{-- end ticketSection --}}
 
                             <hr class="my-4">
                             <h5 class="fw-bold mb-3 text-success"><i class="fas fa-lock me-2"></i>পাসওয়ার্ড সেট করুন</h5>
@@ -199,10 +210,21 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
-                                <i class="fas fa-user-plus me-2"></i>রেজিস্ট্রেশন এবং প্রথম টিকেট পোস্ট করুন
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold" id="submitBtn">
+                                <i class="fas fa-user-plus me-2"></i><span id="submitText">রেজিস্ট্রেশন এবং টিকেট পোস্ট করুন</span>
                             </button>
                         </form>
+                        <script>
+                            (function(){
+                                var cb = document.getElementById('addTicketNow');
+                                var txt = document.getElementById('submitText');
+                                function updateBtn() {
+                                    txt.textContent = cb.checked ? 'রেজিস্ট্রেশন এবং টিকেট পোস্ট করুন' : 'শুধু রেজিস্ট্রেশন করুন';
+                                }
+                                cb.addEventListener('change', updateBtn);
+                                updateBtn();
+                            })();
+                        </script>
 
                         <hr class="my-4">
 
