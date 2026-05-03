@@ -1423,6 +1423,76 @@
     </style>
     @endif
 
+    <!-- Floating Bus Ticket Button -->
+    @php
+        $busTicketEnabledLayout = \App\Models\BusTicketSetting::isEnabled();
+    @endphp
+    @if($busTicketEnabledLayout && !request()->routeIs('bus-ticket.*'))
+    <a href="{{ route('bus-ticket.index') }}" class="bus-ticket-float-btn" title="বাস টিকেট বেচাকেনা">
+        <span class="bus-ticket-float-icon">🚌</span>
+        <span class="bus-ticket-float-text">বাস টিকেট</span>
+    </a>
+    <style>
+        .bus-ticket-float-btn {
+            position: fixed;
+            @php
+                $mangoEnabledCheck = \App\Models\MangoSetting::isEnabled();
+                $bloodEnabledCheckBus = \App\Models\BloodSetting::isEnabled();
+                $fuelBottomBus = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
+                $bloodBottomBus = ($fuelEnabled ?? false) ? ($fuelBottomBus + 70) : $fuelBottomBus;
+                $mangoBottomBus = $bloodEnabledCheckBus ? ($bloodBottomBus + 70) : $bloodBottomBus;
+                $busTicketBottom = $mangoEnabledCheck ? ($mangoBottomBus + 70) : $mangoBottomBus;
+            @endphp
+            bottom: {{ $busTicketBottom }}px;
+            right: 30px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(13, 110, 253, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: busTicketPulse 2s infinite;
+        }
+        .bus-ticket-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(13, 110, 253, 0.5);
+            color: white;
+        }
+        .bus-ticket-float-icon {
+            font-size: 1.5rem;
+        }
+        .bus-ticket-float-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes busTicketPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(13, 110, 253, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(13, 110, 253, 0.6); }
+        }
+        @media (max-width: 576px) {
+            .bus-ticket-float-btn {
+                @php
+                    $fuelBottomMobileBus = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
+                    $bloodBottomMobileBus = ($fuelEnabled ?? false) ? ($fuelBottomMobileBus + 60) : $fuelBottomMobileBus;
+                    $mangoBottomMobileBus = $bloodEnabledCheckBus ? ($bloodBottomMobileBus + 60) : $bloodBottomMobileBus;
+                    $busTicketBottomMobile = $mangoEnabledCheck ? ($mangoBottomMobileBus + 60) : $mangoBottomMobileBus;
+                @endphp
+                bottom: {{ $busTicketBottomMobile }}px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .bus-ticket-float-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
+
     <!-- Floating Satkhirar Am Button -->
     @php
         $mangoEnabled = \App\Models\MangoSetting::isEnabled();

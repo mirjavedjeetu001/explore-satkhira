@@ -1727,6 +1727,43 @@
     </style>
     @endif
 
+    <!-- Bus Ticket Section -->
+    @if($busTicketEnabled)
+    <section class="py-5 bus-ticket-home-section">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2><i class="fas fa-bus me-2 text-primary"></i>🚌 বাস টিকেট বেচাকেনা</h2>
+                <p class="text-muted">ঈদসহ বিভিন্ন সময়ে অতিরিক্ত বাস টিকেট কিনে থাকলে বা কিনতে চাইলে এখানে বিজ্ঞাপন দিতে পারেন</p>
+                <div class="underline" style="background: linear-gradient(90deg, #0d6efd, #0a58ca);"></div>
+            </div>
+
+            <div class="row justify-content-center" data-aos="fade-up">
+                <div class="col-lg-10">
+                    <div class="card border-0 shadow-sm bus-ticket-banner">
+                        <div class="card-body p-4 text-center">
+                            <div style="font-size: 4rem; line-height: 1;">🚌</div>
+                            <h4 class="fw-bold mt-3 mb-2">টিকেট বিক্রি করতে চান? অথবা কিনতে চান?</h4>
+                            <p class="text-muted mb-4">এক ক্লিকেই WhatsApp/ফোনে বিক্রেতার সাথে যোগাযোগ করুন। বিক্রি হয়ে গেলে অটোমেটিক sold out দেখাবে।</p>
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                <a href="{{ route('bus-ticket.index') }}" class="btn btn-primary btn-lg px-4">
+                                    <i class="fas fa-ticket-alt me-2"></i>সব টিকেট দেখুন
+                                </a>
+                                <a href="{{ route('bus-ticket.register') }}" class="btn btn-outline-primary btn-lg px-4">
+                                    <i class="fas fa-plus me-2"></i>টিকেট বিক্রি করুন
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <style>
+        .bus-ticket-home-section { background: linear-gradient(135deg, #f0f7ff 0%, #e0eaff 100%); }
+        .bus-ticket-banner { border-top: 3px solid #0d6efd; }
+    </style>
+    @endif
+
     <!-- Categories Section -->
     <section class="py-5">
         <div class="container">

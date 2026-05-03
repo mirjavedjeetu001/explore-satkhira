@@ -174,6 +174,33 @@ Route::prefix('satkhirar-am')->name('mango.')->group(function () {
     Route::get('/{id}', [MangoController::class, 'show'])->name('show');
 });
 
+// Bus Ticket Buy/Sell Routes
+Route::prefix('bus-ticket')->name('bus-ticket.')->group(function () {
+    // Public pages
+    Route::get('/', [\App\Http\Controllers\BusTicketController::class, 'index'])->name('index');
+    Route::get('/upazila/{upazilaId}', [\App\Http\Controllers\BusTicketController::class, 'filterByUpazila'])->name('upazila');
+    Route::get('/interested/{id}', [\App\Http\Controllers\BusTicketController::class, 'interested'])->name('interested');
+
+    // Auth
+    Route::get('/register', [\App\Http\Controllers\BusTicketController::class, 'registerForm'])->name('register');
+    Route::post('/register', [\App\Http\Controllers\BusTicketController::class, 'register'])->name('register.store');
+    Route::get('/login', [\App\Http\Controllers\BusTicketController::class, 'loginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\BusTicketController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [\App\Http\Controllers\BusTicketController::class, 'logout'])->name('logout');
+
+    // Dashboard (requires auth)
+    Route::get('/dashboard', [\App\Http\Controllers\BusTicketController::class, 'dashboard'])->name('dashboard');
+    Route::get('/create', [\App\Http\Controllers\BusTicketController::class, 'createTicketForm'])->name('create');
+    Route::post('/store', [\App\Http\Controllers\BusTicketController::class, 'storeTicket'])->name('store');
+    Route::get('/{id}/edit', [\App\Http\Controllers\BusTicketController::class, 'editTicket'])->name('edit');
+    Route::put('/{id}', [\App\Http\Controllers\BusTicketController::class, 'updateTicket'])->name('update');
+    Route::delete('/{id}', [\App\Http\Controllers\BusTicketController::class, 'deleteTicket'])->name('destroy');
+    Route::post('/{id}/mark-sold', [\App\Http\Controllers\BusTicketController::class, 'markAsSold'])->name('mark-sold');
+    Route::post('/{id}/mark-available', [\App\Http\Controllers\BusTicketController::class, 'markAsAvailable'])->name('mark-available');
+    Route::put('/profile', [\App\Http\Controllers\BusTicketController::class, 'updateProfile'])->name('update-profile');
+    Route::put('/change-password', [\App\Http\Controllers\BusTicketController::class, 'changePassword'])->name('change-password');
+});
+
 // Salami Calculator Routes (Eid Feature)
 Route::prefix('salami')->name('salami.')->group(function () {
     Route::get('/', [SalamiController::class, 'index'])->name('index');
@@ -412,7 +439,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('{id}/toggle-status', [AdminBloodController::class, 'toggleStatus'])->name('toggle-status');
         Route::post('{id}/reset-reachable', [AdminBloodController::class, 'resetReachable'])->name('reset-reachable');
     });
-    
+
+    // Bus Ticket Management
+    Route::prefix('bus-ticket')->name('bus-ticket.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BusTicketController::class, 'index'])->name('index');
+        Route::get('tickets', [\App\Http\Controllers\Admin\BusTicketController::class, 'tickets'])->name('tickets');
+        Route::delete('tickets/{id}', [\App\Http\Controllers\Admin\BusTicketController::class, 'destroyTicket'])->name('destroy-ticket');
+        Route::get('settings', [\App\Http\Controllers\Admin\BusTicketController::class, 'settings'])->name('settings');
+        Route::put('settings', [\App\Http\Controllers\Admin\BusTicketController::class, 'updateSettings'])->name('settings.update');
+        Route::post('toggle', [\App\Http\Controllers\Admin\BusTicketController::class, 'toggleFeature'])->name('toggle');
+        Route::get('{id}', [\App\Http\Controllers\Admin\BusTicketController::class, 'show'])->name('show');
+        Route::post('{id}/toggle-seller', [\App\Http\Controllers\Admin\BusTicketController::class, 'toggleSellerStatus'])->name('toggle-seller');
+        Route::delete('{id}', [\App\Http\Controllers\Admin\BusTicketController::class, 'destroySeller'])->name('destroy-seller');
+    });
+
     // Push Notifications Management
     Route::prefix('push-notifications')->name('push-notifications.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])->name('index');

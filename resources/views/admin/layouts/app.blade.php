@@ -418,11 +418,20 @@
             </a>
             <a href="{{ route('admin.blood.index') }}" class="nav-link {{ request()->routeIs('admin.blood.*') ? 'active' : '' }}">
                 <i class="fas fa-tint"></i> <span>🩸 এক্সপ্লোর রক্তদাতা</span>
-                @php 
+                @php
                     $bloodEnabled = \App\Models\BloodSetting::isEnabled();
                 @endphp
                 <span class="badge {{ $bloodEnabled ? 'bg-success' : 'bg-secondary' }}">
                     {{ $bloodEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
+            <a href="{{ route('admin.bus-ticket.index') }}" class="nav-link {{ request()->routeIs('admin.bus-ticket.*') ? 'active' : '' }}">
+                <i class="fas fa-bus"></i> <span>🚌 বাস টিকেট</span>
+                @php
+                    $busTicketEnabled = \App\Models\BusTicketSetting::isEnabled();
+                @endphp
+                <span class="badge {{ $busTicketEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $busTicketEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
             <a href="{{ route('admin.push-notifications.index') }}" class="nav-link {{ request()->routeIs('admin.push-notifications.*') ? 'active' : '' }}">

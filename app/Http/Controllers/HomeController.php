@@ -17,6 +17,7 @@ use App\Models\BloodDonor;
 use App\Models\BloodSetting;
 use App\Models\MangoSetting;
 use App\Models\MangoStore;
+use App\Models\BusTicketSetting;
 
 class HomeController extends Controller
 {
@@ -146,6 +147,8 @@ class HomeController extends Controller
                 ->get();
         }
 
+        $busTicketEnabled = BusTicketSetting::isEnabled();
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -164,7 +167,8 @@ class HomeController extends Controller
             'topBloodDonors',
             'mangoEnabled',
             'mangoStores',
-            'mangoStoresTotal'
+            'mangoStoresTotal',
+            'busTicketEnabled'
         ));
     }
 }
