@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BusTicket;
+use App\Models\BusTicketInpersonRequest;
 use App\Models\BusTicketSeller;
 use App\Models\BusTicketSetting;
 use App\Models\Upazila;
@@ -238,6 +239,45 @@ class BusTicketController extends Controller
         return redirect()->route('bus-ticket.index')->with('success', 'লগআউট সম্পন্ন');
     }
 
+    public function inpersonRequest(Request $request, $id)
+    {
+        if ($redirect = $this->requireFeatureEnabled()) return $redirect;
+
+        $ticket = BusTicket::where('is_sold', false)->findOrFail($id);
+
+        $request->merge([
+            'buyer_phone' => $this->normalizePhone($request->buyer_phone),
+        ]);
+
+        $request->validate([
+            'buyer_name'  => 'required|string|max:100',
+            'buyer_phone' => 'required|string|min:10|max:20',
+        ], [
+            'buyer_name.required'  => 'আপনার নাম দিন',
+            'buyer_phone.required' => 'আপনার ফোন নম্বর দিন',
+            'buyer_phone.min'      => 'সঠিক ফোন নম্বর দিন',
+        ]);
+
+        BusTicketInpersonRequest::create([
+            'bus_ticket_id' => $ticket->id,
+            'buyer_name'    => $request->buyer_name,
+            'buyer_phone'   => $request->buyer_phone,
+        ]);
+
+        $ticket->incrementInterested();
+
+        return back()->with('inperson_success_' . $ticket->id, 'আপনার অনুরোধ পাঠানো হয়েছে! বিক্রেতা শীঘ্রই আপনার সাথে যোগাযোগ করবেন।');
+    }
+
+    public function markRequestsRead()
+    {
+        if ($redirect = $this->requireSellerLogin()) return $redirect;
+        $seller = BusTicketSeller::find(session('bus_ticket_seller_id'));
+        $ticketIds = $seller->tickets()->pluck('id');
+        BusTicketInpersonRequest::whereIn('bus_ticket_id', $ticketIds)->update(['is_read' => true]);
+        return response()->json(['success' => true]);
+    }
+
     // ========== SELLER DASHBOARD ==========
 
     public function dashboard()
@@ -249,7 +289,14 @@ class BusTicketController extends Controller
         $availableTickets = $seller->availableTickets()->paginate(10);
         $soldTickets = $seller->soldTickets()->paginate(10);
 
-        return view('frontend.bus-ticket.dashboard', compact('seller', 'availableTickets', 'soldTickets'));
+        $ticketIds = $seller->tickets()->pluck('id');
+        $inpersonRequests = BusTicketInpersonRequest::with('ticket')
+            ->whereIn('bus_ticket_id', $ticketIds)
+            ->latest()
+            ->get();
+        $unreadRequestCount = $inpersonRequests->where('is_read', false)->count();
+
+        return view('frontend.bus-ticket.dashboard', compact('seller', 'availableTickets', 'soldTickets', 'inpersonRequests', 'unreadRequestCount'));
     }
 
     public function createTicketForm()

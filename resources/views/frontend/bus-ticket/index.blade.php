@@ -142,17 +142,33 @@
                                         <i class="fas fa-handshake me-1"></i>সামনাসামনি কিনতে চাই
                                     </button>
                                     <div class="collapse mt-2" id="inperson-{{ $ticket->id }}">
-                                        <div class="alert alert-warning mb-0 py-2 px-3">
-                                            <p class="mb-2 small fw-semibold"><i class="fas fa-info-circle me-1"></i>বিক্রেতার সাথে যোগাযোগ করুন:</p>
-                                            <a href="tel:{{ $callPhone }}" class="btn btn-sm btn-primary w-100 mb-1">
-                                                <i class="fas fa-phone me-1"></i>{{ $callPhone }}
-                                            </a>
-                                            @if($waNumber)
-                                            <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode('সামনাসামনি টিকেট কিনতে চাই। ' . $ticket->from_location . ' → ' . $ticket->to_location . ', ' . $ticket->journey_date->format('d M, Y') . '. কখন ও কোথায় দেখা করা যাবে?') }}" target="_blank" rel="noopener" class="btn btn-sm btn-success w-100">
-                                                <i class="fab fa-whatsapp me-1"></i>WhatsApp করুন
-                                            </a>
-                                            @endif
-                                        </div>
+                                        @if(session('inperson_success_' . $ticket->id))
+                                            <div class="alert alert-success py-2 px-3 mb-0">
+                                                <i class="fas fa-check-circle me-1"></i>{{ session('inperson_success_' . $ticket->id) }}
+                                            </div>
+                                        @else
+                                            <div class="card border-warning">
+                                                <div class="card-body py-3 px-3">
+                                                    <p class="small fw-semibold mb-2"><i class="fas fa-info-circle me-1 text-warning"></i>আপনার তথ্য দিন, বিক্রেতা আপনাকে call করবেন:</p>
+                                                    <form method="POST" action="{{ route('bus-ticket.inperson-request', $ticket->id) }}">
+                                                        @csrf
+                                                        <div class="mb-2">
+                                                            <input type="text" name="buyer_name" class="form-control form-control-sm @error('buyer_name') is-invalid @enderror"
+                                                                placeholder="আপনার নাম" required value="{{ old('buyer_name') }}">
+                                                            @error('buyer_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <input type="tel" name="buyer_phone" class="form-control form-control-sm @error('buyer_phone') is-invalid @enderror"
+                                                                placeholder="আপনার ফোন নম্বর" required value="{{ old('buyer_phone') }}">
+                                                            @error('buyer_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                                        </div>
+                                                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                                                            <i class="fas fa-paper-plane me-1"></i>অনুরোধ পাঠান
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

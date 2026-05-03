@@ -37,6 +37,11 @@ class BusTicket extends Model
         return $this->belongsTo(BusTicketSeller::class, 'bus_ticket_seller_id');
     }
 
+    public function inpersonRequests()
+    {
+        return $this->hasMany(BusTicketInpersonRequest::class, 'bus_ticket_id');
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('is_sold', false);

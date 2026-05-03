@@ -183,6 +183,54 @@
 
             <!-- Profile & Settings -->
             <div class="col-lg-4">
+
+                <!-- In-Person Requests -->
+                @if($inpersonRequests->isNotEmpty())
+                <div class="card shadow-sm mb-4 border-warning">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-handshake me-2"></i>সামনাসামনি কেনার অনুরোধ</h5>
+                        @if($unreadRequestCount > 0)
+                            <span class="badge bg-danger">{{ $unreadRequestCount }} নতুন</span>
+                        @endif
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach($inpersonRequests as $req)
+                            <li class="list-group-item {{ !$req->is_read ? 'bg-warning bg-opacity-10' : '' }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <p class="mb-1 fw-semibold">
+                                            @if(!$req->is_read)
+                                                <span class="badge bg-danger me-1" style="font-size:.6rem;">নতুন</span>
+                                            @endif
+                                            {{ $req->buyer_name }}
+                                        </p>
+                                        <a href="tel:{{ $req->buyer_phone }}" class="btn btn-sm btn-primary py-0 px-2">
+                                            <i class="fas fa-phone me-1"></i>{{ $req->buyer_phone }}
+                                        </a>
+                                        @if($req->ticket)
+                                        <p class="mb-0 mt-1 small text-muted">
+                                            <i class="fas fa-ticket-alt me-1"></i>{{ $req->ticket->from_location }} → {{ $req->ticket->to_location }}
+                                            ({{ $req->ticket->journey_date->format('d M') }})
+                                        </p>
+                                        @endif
+                                    </div>
+                                    <small class="text-muted">{{ $req->created_at->diffForHumans() }}</small>
+                                </div>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @if($unreadRequestCount > 0)
+                    <div class="card-footer bg-white text-center py-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="markRequestsRead()">
+                            <i class="fas fa-check-double me-1"></i>সব পড়া হয়েছে চিহ্নিত করুন
+                        </button>
+                    </div>
+                    @endif
+                </div>
+                @endif
+
                 <!-- Profile Card -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">
@@ -267,4 +315,18 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+function markRequestsRead() {
+    fetch('{{ route('bus-ticket.mark-requests-read') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+    }).then(() => location.reload());
+}
+</script>
+@endpush
 @endsection

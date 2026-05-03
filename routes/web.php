@@ -180,6 +180,8 @@ Route::prefix('bus-ticket')->name('bus-ticket.')->group(function () {
     Route::get('/', [\App\Http\Controllers\BusTicketController::class, 'index'])->name('index');
     Route::get('/upazila/{upazilaId}', [\App\Http\Controllers\BusTicketController::class, 'filterByUpazila'])->name('upazila');
     Route::get('/interested/{id}', [\App\Http\Controllers\BusTicketController::class, 'interested'])->name('interested');
+    Route::post('/{id}/inperson-request', [\App\Http\Controllers\BusTicketController::class, 'inpersonRequest'])->name('inperson-request');
+    Route::post('/mark-requests-read', [\App\Http\Controllers\BusTicketController::class, 'markRequestsRead'])->name('mark-requests-read');
 
     // Auth
     Route::get('/register', [\App\Http\Controllers\BusTicketController::class, 'registerForm'])->name('register');
