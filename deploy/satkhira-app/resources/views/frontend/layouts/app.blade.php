@@ -45,8 +45,8 @@
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/app-logo-96.png') }}?v=20260510">
+    <link rel="apple-touch-icon" href="{{ asset('icons/app-logo-96.png') }}?v=20260510">
     
     @yield('structured_data')
     

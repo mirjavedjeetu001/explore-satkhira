@@ -47,7 +47,7 @@
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-image.png'))">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/app-logo-96.png') }}?v=20260510">
     <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
     <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/icon-512x512.png') }}">
     

@@ -11,7 +11,7 @@
     <title>@yield('title', 'Dashboard') - {{ $adminSiteName }} Admin</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('icons/app-logo-96.png') }}?v=20260510">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

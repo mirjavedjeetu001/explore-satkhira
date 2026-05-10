@@ -1,9 +1,11 @@
-const CACHE_NAME = 'explore-satkhira-v5';
+const CACHE_NAME = 'explore-satkhira-v6';
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE_URLS = [
     '/',
     '/offline.html',
+    '/favicon.ico',
+    '/icons/app-logo-96.png',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
 ];
@@ -90,8 +92,8 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body || '',
-        icon: data.icon || '/icons/icon-192x192.png',
-        badge: data.badge || '/icons/icon-96x96.png',
+        icon: data.icon || '/icons/app-logo-192.png',
+        badge: data.badge || '/icons/app-logo-96.png',
         image: data.image || undefined,
         data: { url: data.url || '/' },
         vibrate: [200, 100, 200],

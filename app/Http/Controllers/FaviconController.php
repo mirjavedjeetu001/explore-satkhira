@@ -75,14 +75,19 @@ SVG;
 
     public function png()
     {
-        // If you want to serve a static PNG fallback
+        // Prefer uploaded favicon from settings when available.
         $faviconPath = SiteSetting::get('site_favicon');
         
         if ($faviconPath && file_exists(storage_path('app/public/' . $faviconPath))) {
             return response()->file(storage_path('app/public/' . $faviconPath));
         }
-        
-        // Return a default PNG or redirect to SVG
+
+        // Fallback to app logo so browser tab icon always matches site branding.
+        $defaultLogoPath = public_path('icons/app-logo-96.png');
+        if (file_exists($defaultLogoPath)) {
+            return response()->file($defaultLogoPath);
+        }
+
         return redirect()->route('favicon.svg');
     }
 }
