@@ -19,6 +19,7 @@ class User extends Authenticatable
         'role_id',
         'upazila_id',
         'phone',
+        'date_of_birth',
         'nid_number',
         'avatar',
         'address',
@@ -47,6 +48,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'date_of_birth' => 'date',
             'password' => 'hashed',
             'is_verified' => 'boolean',
             'wants_mp_questions' => 'boolean',
@@ -132,6 +134,11 @@ class User extends Authenticatable
     public function teamMember()
     {
         return $this->hasOne(TeamMember::class);
+    }
+
+    public function birthdayCard(): HasMany
+    {
+        return $this->hasMany(BirthdayCard::class);
     }
 
     public function approvedBy(): BelongsTo

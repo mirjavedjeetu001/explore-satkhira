@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\BirthdayCard;
 use App\Models\Listing;
 use App\Models\NewspaperEdition;
 use App\Models\Upazila;
@@ -420,6 +421,7 @@ class UserDashboardController extends Controller
             'address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
             'avatar' => 'nullable|image|max:2048',
+            'date_of_birth' => 'nullable|date|before:today',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -427,6 +429,10 @@ class UserDashboardController extends Controller
         }
 
         $user->update($validated);
+
+        if (array_key_exists('date_of_birth', $validated)) {
+            BirthdayCard::syncTodayForEligibleUsers();
+        }
 
         return back()->with('success', 'Profile updated successfully.');
     }

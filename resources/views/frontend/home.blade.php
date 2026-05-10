@@ -107,9 +107,129 @@
         </div>
     </section>
 
+    <!-- Today's Birthdays Section -->
+    @if($todaysBirthdays->count() > 0)
+    <section class="py-5 birthdays-section" style="background: linear-gradient(135deg, #fff7df 0%, #ffe8f0 55%, #e9fff2 100%); border-bottom: 1px solid rgba(0,0,0,0.06);">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2 class="mb-2"><i class="fas fa-birthday-cake me-2 text-danger"></i>আজকের জন্মদিন</h2>
+                <p class="text-muted mb-0">এক্সপ্লোর সাতক্ষীরার পক্ষ থেকে জন্মদিনের শুভেচ্ছা</p>
+                <div class="underline" style="background: linear-gradient(90deg, #f59e0b, #ef4444);"></div>
+            </div>
+
+            <div class="row g-4">
+                @foreach($todaysBirthdays->take(3) as $birthday)
+                    @php
+                        $user = $birthday->user;
+                        $profilePhoto = $user && $user->avatar
+                            ? asset('storage/' . $user->avatar)
+                            : 'https://ui-avatars.com/api/?name=' . urlencode($user?->name ?? 'User') . '&background=16a34a&color=fff&size=160';
+
+                        $roleLabel = 'সম্মানিত সদস্য';
+                        if ($user?->id === 4) {
+                            $roleLabel = 'প্রতিষ্ঠাতা';
+                        } elseif ($user?->isSuperAdmin()) {
+                            $roleLabel = 'সুপার অ্যাডমিন';
+                        } elseif ($user?->isAdmin()) {
+                            $roleLabel = 'অ্যাডমিন';
+                        } elseif ($user?->isModerator()) {
+                            $roleLabel = 'মডারেটর';
+                        } elseif ($user?->is_upazila_moderator) {
+                            $roleLabel = 'উপজেলা মডারেটর';
+                        }
+
+                    @endphp
+
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <div class="card birthday-home-card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ asset('icons/app-logo-96.png') }}" alt="Explore Satkhira" class="birthday-es-logo">
+                                        <div>
+                                            <small class="d-block text-muted lh-1">এক্সপ্লোর সাতক্ষীরা</small>
+                                            <small class="fw-semibold text-success">Official Birthday Wish</small>
+                                        </div>
+                                    </div>
+                                    <span class="badge rounded-pill text-bg-danger"><i class="fas fa-gift me-1"></i>শুভেচ্ছা</span>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <img src="{{ $profilePhoto }}" alt="{{ $user?->name }}" class="birthday-user-photo mb-2">
+                                    <h5 class="mb-1 fw-bold">{{ $user?->name }}</h5>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap mb-1">
+                                        <span class="badge text-bg-light border">{{ $roleLabel }}</span>
+                                    </div>
+                                    @if($user->teamMember && $user->teamMember->designation_display)
+                                        <p class="text-dark fw-semibold mb-0" style="font-size: 0.85rem;">{{ $user->teamMember->designation_display }}</p>
+                                    @endif
+                                </div>
+
+                                <div class="birthday-wish-box">
+                                    <p class="mb-0">
+                                        {{ $birthday->bengali_message ?? 'আপনার এই বিশেষ দিনে এক্সপ্লোর সাতক্ষীরার পক্ষ থেকে রইলো আন্তরিক শুভেচ্ছা, সুস্বাস্থ্য ও সফলতার প্রার্থনা।' }}
+                                    </p>
+                                </div>
+
+                                <div class="d-grid gap-2 mt-3">
+                                    <a href="{{ route('birthday-cards.show', $birthday->id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>কার্ড ও শুভেচ্ছা দেখুন
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="text-center mt-4" data-aos="fade-up">
+                <a href="{{ route('birthday-cards.todays') }}" class="btn btn-warning px-4 py-2 fw-semibold">
+                    <i class="fas fa-heart me-2"></i>সব শুভেচ্ছা দেখুন
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .birthday-home-card {
+            background: linear-gradient(180deg, #ffffff 0%, #fffdfa 100%);
+            border-top: 3px solid #f59e0b !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .birthday-home-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10) !important;
+        }
+        .birthday-es-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(22, 163, 74, 0.25);
+        }
+        .birthday-user-photo {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
+        }
+        .birthday-wish-box {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            padding: 12px;
+            color: #374151;
+            min-height: 96px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+    </style>
+    @endif
+
     <!-- Search Box -->
     <div class="container">
-        <div class="search-box" data-aos="fade-up">
+        <div class="search-box" data-aos="fade-up" @if($todaysBirthdays->count() > 0) style="margin-top: 15px;" @endif>
             <form action="{{ route('listings.index') }}" method="GET">
                 <div class="row g-3">
                     <div class="col-md-4">

@@ -18,6 +18,7 @@ use App\Models\BloodSetting;
 use App\Models\MangoSetting;
 use App\Models\MangoStore;
 use App\Models\BusTicketSetting;
+use App\Models\BirthdayCard;
 
 class HomeController extends Controller
 {
@@ -149,6 +150,17 @@ class HomeController extends Controller
 
         $busTicketEnabled = BusTicketSetting::isEnabled();
 
+        // Keep birthday cards in sync even if scheduler has not run yet.
+        BirthdayCard::syncTodayForEligibleUsers();
+
+        $todaysBirthdays = BirthdayCard::query()
+            ->forToday()
+            ->forEligibleUsers()
+            ->with(['user.teamMember', 'comments'])
+            ->get()
+            ->unique('user_id')
+            ->values();
+
         return view('frontend.home', compact(
             'sliders',
             'categories',
@@ -168,7 +180,8 @@ class HomeController extends Controller
             'mangoEnabled',
             'mangoStores',
             'mangoStoresTotal',
-            'busTicketEnabled'
+            'busTicketEnabled',
+            'todaysBirthdays'
         ));
     }
 }

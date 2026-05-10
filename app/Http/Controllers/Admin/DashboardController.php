@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BirthdayCard;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Contact;
@@ -62,13 +63,24 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        // Today's Birthday Cards
+        BirthdayCard::syncTodayForEligibleUsers();
+        $todaysBirthdays = BirthdayCard::query()
+            ->forToday()
+            ->forEligibleUsers()
+            ->with(['user.teamMember', 'comments'])
+            ->get()
+            ->unique('user_id')
+            ->values();
+
         return view('admin.dashboard', compact(
             'stats',
             'recentListings',
             'recentUsers',
             'pendingQuestions',
             'recentContacts',
-            'userLeaderboard'
+            'userLeaderboard',
+            'todaysBirthdays'
         ));
     }
 }

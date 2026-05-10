@@ -372,4 +372,43 @@
         </div>
     </div>
 </div>
+
+<!-- Today's Birthday Cards Section -->
+@if(count($todaysBirthdays ?? []) > 0)
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="admin-table">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-birthday-cake me-2" style="color: #ff6b9d;"></i>Today's Birthday Cards ({{ count($todaysBirthdays) }})</h5>
+                <a href="{{ route('admin.birthdays.index') }}" class="btn btn-sm btn-outline-danger">Manage All</a>
+            </div>
+            <div class="row g-3 p-3">
+                @foreach($todaysBirthdays as $birthday)
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="card-body text-white">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="card-title mb-1">{{ $birthday->user->name }}</h6>
+                                        <small class="text-white-50">{{ $birthday->user->email }}</small>
+                                    </div>
+                                    <span class="badge bg-white text-danger">🎉</span>
+                                </div>
+                                <p class="card-text small mb-2">
+                                    <i class="fas fa-quote-left me-2"></i>{{ Str::limit($birthday->bengali_message ?? $birthday->english_message, 50) }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-50">
+                                    <small><i class="fas fa-comments me-1"></i>{{ $birthday->comments->count() }} wishes</small>
+                                    <a href="{{ route('birthday-cards.show', $birthday) }}" class="btn btn-sm btn-light" target="_blank">View Card</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection

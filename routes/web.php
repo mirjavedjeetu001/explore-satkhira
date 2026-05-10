@@ -15,6 +15,7 @@ use App\Http\Controllers\ModeratorFuelController;
 use App\Http\Controllers\ModeratorBloodController;
 use App\Http\Controllers\NewspaperController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\BirthdayCardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ListingImageController as AdminListingImageController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\SalamiController as AdminSalamiController;
+use App\Http\Controllers\Admin\BirthdayController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SalamiController;
 use App\Http\Controllers\BloodController;
@@ -478,12 +480,28 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('{id}/votes/pdf', [AdminSurveyController::class, 'votesPdf'])->name('votes.pdf');
         Route::get('{id}/votes/excel', [AdminSurveyController::class, 'votesExcel'])->name('votes.excel');
     });
+
+    // Birthday Management
+    Route::prefix('birthdays')->name('birthdays.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BirthdayController::class, 'index'])->name('index');
+        Route::get('todays', [\App\Http\Controllers\Admin\BirthdayController::class, 'todaysBirthdays'])->name('todays');
+        Route::get('{user}/edit', [\App\Http\Controllers\Admin\BirthdayController::class, 'edit'])->name('edit');
+        Route::put('{user}', [\App\Http\Controllers\Admin\BirthdayController::class, 'update'])->name('update');
+    });
 });
 
 // Push Subscription API (public, no auth needed)
 Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
 Route::post('/push/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
 Route::get('/push/vapid-key', [\App\Http\Controllers\PushSubscriptionController::class, 'vapidPublicKey'])->name('push.vapid-key');
+
+// Birthday Cards (Public)
+Route::prefix('birthday-cards')->name('birthday-cards.')->group(function () {
+    Route::get('todays', [BirthdayCardController::class, 'todaysBirthdays'])->name('todays');
+    Route::get('{id}', [BirthdayCardController::class, 'show'])->name('show');
+    Route::post('{id}/comment', [BirthdayCardController::class, 'storeComment'])->name('comment');
+    Route::post('{id}/download', [BirthdayCardController::class, 'downloadCard'])->name('download');
+});
 
 // Fuel Station Push Subscription (per-pump notification)
 Route::post('/fuel/subscribe', [\App\Http\Controllers\FuelController::class, 'subscribePump'])->name('fuel.subscribe');

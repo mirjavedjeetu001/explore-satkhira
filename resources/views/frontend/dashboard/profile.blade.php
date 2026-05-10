@@ -138,6 +138,18 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">
+                                    <i class="fas fa-birthday-cake text-danger me-1"></i>জন্মতারিখ
+                                </label>
+                                <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" 
+                                       id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', $user->date_of_birth?->format('Y-m-d')) }}">
+                                <small class="text-muted">আপনার জন্মদিনে হোমপেজে একটি বিশেষ কার্ড প্রদর্শন করা হবে</small>
+                                @error('date_of_birth')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                             
                             <div class="mb-4">
                                 <label for="avatar" class="form-label">প্রোফাইল ছবি</label>
