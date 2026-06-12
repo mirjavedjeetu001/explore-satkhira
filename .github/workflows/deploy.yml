@@ -26,9 +26,10 @@ jobs:
             git fetch origin
             git checkout prod
             git reset --hard origin/prod
-            # Clear all caches manually (shared hosting CLI lacks dom extension)
-            rm -rf storage/framework/views/*
-            rm -rf storage/framework/cache/data/*
-            rm -f bootstrap/cache/*.php
-            rm -rf storage/framework/sessions/*
+            PHP=/opt/cpanel/ea-php83/root/usr/bin/php
+            $PHP artisan migrate --force 2>/dev/null || true
+            $PHP artisan view:clear
+            $PHP artisan cache:clear
+            $PHP artisan config:clear
+            $PHP artisan route:clear
             echo "Deployment complete at $(date)"
