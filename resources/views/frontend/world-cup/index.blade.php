@@ -379,7 +379,7 @@
     let lastUpdate = Date.now();
 
     function updateLiveScores() {
-        fetch('{{ route("world-cup.api-games") }}')
+        fetch('{{ route("world-cup.api.games") }}')
             .then(r => r.json())
             .then(data => {
                 if (!data.games) return;
