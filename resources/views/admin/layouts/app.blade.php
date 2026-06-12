@@ -434,6 +434,15 @@
                     {{ $busTicketEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.world-cup.settings') }}" class="nav-link {{ request()->routeIs('admin.world-cup.*') ? 'active' : '' }}">
+                <i class="fas fa-futbol"></i> <span>⚽ World Cup 2026</span>
+                @php
+                    $wcEnabled = \App\Models\WorldCupSetting::isEnabled();
+                @endphp
+                <span class="badge {{ $wcEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $wcEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             <a href="{{ route('admin.push-notifications.index') }}" class="nav-link {{ request()->routeIs('admin.push-notifications.*') ? 'active' : '' }}">
                 <i class="fas fa-bell"></i> <span>📲 পুশ নোটিফিকেশন</span>
                 @php $pushCount = \App\Models\PushSubscription::where('is_active', true)->count(); @endphp

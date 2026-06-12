@@ -1153,7 +1153,7 @@
                             $wcEnd = '2026-07-25';
                             $today = date('Y-m-d');
                         @endphp
-                        @if($today >= $wcStart && $today <= $wcEnd)
+                        @if($today >= $wcStart && $today <= $wcEnd && \App\Models\WorldCupSetting::isEnabled())
                             <li class="mb-2"><a href="{{ route('world-cup.index') }}"><i class="fas fa-futbol me-2"></i>World Cup 2026</a></li>
                         @endif
                     </ul>
@@ -1507,8 +1507,9 @@
         $wcEndLayout = '2026-07-25';
         $wcTodayLayout = date('Y-m-d');
         $wcActiveLayout = ($wcTodayLayout >= $wcStartLayout && $wcTodayLayout <= $wcEndLayout);
+        $wcShowFloat = $wcActiveLayout && \App\Models\WorldCupSetting::showFloatingButton();
     @endphp
-    @if($wcActiveLayout && !request()->routeIs('world-cup.*'))
+    @if($wcShowFloat && !request()->routeIs('world-cup.*'))
     <a href="{{ route('world-cup.index') }}" class="wc-float-btn" title="FIFA World Cup 2026">
         <span class="wc-float-icon">⚽</span>
         <span class="wc-float-text">World Cup 2026</span>
@@ -1517,11 +1518,14 @@
         .wc-float-btn {
             position: fixed;
             @php
-                $wcFuelBottom = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
-                $wcBloodBottom = ($fuelEnabled ?? false) ? ($wcFuelBottom + 70) : $wcFuelBottom;
-                $wcMangoBottom = ($bloodEnabledCheckBus ?? \App\Models\BloodSetting::isEnabled()) ? ($wcBloodBottom + 70) : $wcBloodBottom;
-                $wcBusBottom = ($busTicketEnabledLayout ?? \App\Models\BusTicketSetting::isEnabled()) ? ($wcMangoBottom + 70) : $wcMangoBottom;
-                $wcFloatBottom = $wcBusBottom + 70;
+                // Recalculate stack fresh to avoid undefined var issues
+                $salamiH = ($salamiEnabled ?? false) ? 70 : 0;
+                $eidH    = ($eidCardEnabled ?? false) ? 70 : 0;
+                $fuelH   = ($fuelEnabled ?? false) ? 70 : 0;
+                $bloodH  = \App\Models\BloodSetting::isEnabled() ? 70 : 0;
+                $mangoH  = \App\Models\MangoSetting::isEnabled() ? 70 : 0;
+                $busH    = \App\Models\BusTicketSetting::isEnabled() ? 70 : 0;
+                $wcFloatBottom = 30 + $salamiH + $eidH + $fuelH + $bloodH + $mangoH + $busH;
             @endphp
             bottom: {{ $wcFloatBottom }}px;
             right: 30px;
@@ -1557,11 +1561,13 @@
         @media (max-width: 576px) {
             .wc-float-btn {
                 @php
-                    $wcFuelMobile = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
-                    $wcBloodMobile = ($fuelEnabled ?? false) ? ($wcFuelMobile + 60) : $wcFuelMobile;
-                    $wcMangoMobile = ($bloodEnabledCheckBus ?? \App\Models\BloodSetting::isEnabled()) ? ($wcBloodMobile + 60) : $wcBloodMobile;
-                    $wcBusMobile = ($busTicketEnabledLayout ?? \App\Models\BusTicketSetting::isEnabled()) ? ($wcMangoMobile + 60) : $wcMangoMobile;
-                    $wcFloatMobile = $wcBusMobile + 60;
+                    $wcSalamiM = ($salamiEnabled ?? false) ? 60 : 0;
+                    $wcEidM    = ($eidCardEnabled ?? false) ? 60 : 0;
+                    $wcFuelM   = ($fuelEnabled ?? false) ? 60 : 0;
+                    $wcBloodM  = \App\Models\BloodSetting::isEnabled() ? 60 : 0;
+                    $wcMangoM  = \App\Models\MangoSetting::isEnabled() ? 60 : 0;
+                    $wcBusM    = \App\Models\BusTicketSetting::isEnabled() ? 60 : 0;
+                    $wcFloatMobile = 20 + $wcSalamiM + $wcEidM + $wcFuelM + $wcBloodM + $wcMangoM + $wcBusM;
                 @endphp
                 bottom: {{ $wcFloatMobile }}px;
                 right: 20px;

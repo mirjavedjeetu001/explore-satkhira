@@ -467,6 +467,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('{id}', [\App\Http\Controllers\Admin\BusTicketController::class, 'destroySeller'])->name('destroy-seller');
     });
 
+    // World Cup 2026 Management
+    Route::prefix('world-cup')->name('world-cup.')->group(function () {
+        Route::get('settings', [\App\Http\Controllers\Admin\WorldCupController::class, 'settings'])->name('settings');
+        Route::put('settings', [\App\Http\Controllers\Admin\WorldCupController::class, 'updateSettings'])->name('settings.update');
+        Route::post('toggle', [\App\Http\Controllers\Admin\WorldCupController::class, 'toggleFeature'])->name('toggle');
+    });
+
     // Push Notifications Management
     Route::prefix('push-notifications')->name('push-notifications.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])->name('index');

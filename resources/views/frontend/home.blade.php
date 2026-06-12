@@ -1889,7 +1889,7 @@
         $wcStart = '2026-06-01';
         $wcEnd = '2026-07-25';
         $today = date('Y-m-d');
-        $isWorldCupActive = ($today >= $wcStart && $today <= $wcEnd);
+        $isWorldCupActive = ($today >= $wcStart && $today <= $wcEnd) && \App\Models\WorldCupSetting::showOnHomepage();
     @endphp
     @if($isWorldCupActive)
     <section class="py-5 wc-home-section">
