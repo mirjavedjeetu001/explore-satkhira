@@ -38,6 +38,7 @@ use App\Http\Controllers\BloodController;
 use App\Http\Controllers\Admin\BloodController as AdminBloodController;
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\MangoController;
+use App\Http\Controllers\WorldCupController;
 use App\Http\Controllers\Admin\MangoController as AdminMangoController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,15 @@ Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('l
 
 // Frontend Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// FIFA World Cup 2026
+Route::prefix('world-cup')->name('world-cup.')->group(function () {
+    Route::get('/', [WorldCupController::class, 'index'])->name('index');
+    Route::get('/api/games', [WorldCupController::class, 'apiGames'])->name('api.games');
+    Route::get('/api/teams', [WorldCupController::class, 'apiTeams'])->name('api.teams');
+    Route::get('/api/groups', [WorldCupController::class, 'apiGroups'])->name('api.groups');
+    Route::get('/api/stadiums', [WorldCupController::class, 'apiStadiums'])->name('api.stadiums');
+});
 
 // Upazilas
 Route::get('/upazilas', [UpazilaController::class, 'index'])->name('upazilas.index');

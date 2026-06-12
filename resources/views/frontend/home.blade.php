@@ -1884,6 +1884,197 @@
     </style>
     @endif
 
+    <!-- FIFA World Cup 2026 Section -->
+    @php
+        $wcStart = '2026-06-01';
+        $wcEnd = '2026-07-25';
+        $today = date('Y-m-d');
+        $isWorldCupActive = ($today >= $wcStart && $today <= $wcEnd);
+    @endphp
+    @if($isWorldCupActive)
+    <section class="py-5 wc-home-section">
+        <div class="container">
+            <div class="section-header text-center mb-4" data-aos="fade-up">
+                <h2><i class="fas fa-futbol me-2 text-success"></i>⚽ FIFA World Cup 2026</h2>
+                <p class="text-muted">United States · Mexico · Canada | আজকের ম্যাচ ও লাইভ স্কোর</p>
+                <div class="underline" style="background: linear-gradient(90deg, #0f5132, #198754);"></div>
+            </div>
+
+            <div id="wcHomeWidget" class="row g-3 justify-content-center">
+                <div class="col-12 text-center py-3">
+                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                    <span class="text-muted ms-2">ম্যাচ লোড হচ্ছে...</span>
+                </div>
+            </div>
+
+            <div id="wcRecentWidget" class="row g-3 justify-content-center mt-2"></div>
+
+            <div class="text-center mt-4">
+                <a href="{{ route('world-cup.index') }}" class="btn btn-success btn-lg px-5">
+                    <i class="fas fa-futbol me-2"></i>সব ম্যাচ, গ্রুপ ও সূচি দেখুন
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    (function() {
+        const widget = document.getElementById('wcHomeWidget');
+        const recentWidget = document.getElementById('wcRecentWidget');
+        const apiUrl = '{{ route('world-cup.api.games') }}';
+
+        function fmtTime(str) {
+            if (!str) return '---';
+            const dt = new Date(str);
+            return dt.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+        function fmtDate(str) {
+            if (!str) return '---';
+            const dt = new Date(str);
+            return dt.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
+        }
+
+        function renderCard(game, type) {
+            const isLive = type === 'live';
+            const isRecent = type === 'recent';
+            const borderClass = isLive ? 'border-danger' : (isRecent ? 'border-secondary' : 'border-success');
+            const badgeClass = isLive ? 'bg-danger' : (isRecent ? 'bg-secondary' : 'bg-success');
+            const statusText = game.status_label || '---';
+            const dateStr = fmtDate(game.bd_time);
+            const timeStr = fmtTime(game.bd_time);
+            const scoreHtml = (game.finished === 'TRUE' || (game.time_elapsed && game.time_elapsed !== 'notstarted'))
+                ? `<span class="fs-3 fw-bold text-dark">${game.home_score ?? 0} - ${game.away_score ?? 0}</span>`
+                : `<span class="fs-3 fw-bold text-muted">VS</span>`;
+            const liveIndicator = isLive ? `<span class="badge bg-danger animate-pulse ms-2">${game.time_elapsed}'</span>` : '';
+            const homeFlag = game.home_team_flag ? `<img src="${game.home_team_flag}" alt="" class="wc-home-flag">` : '';
+            const awayFlag = game.away_team_flag ? `<img src="${game.away_team_flag}" alt="" class="wc-home-flag">` : '';
+
+            return `
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-start border-4 ${borderClass} shadow-sm h-100 wc-match-card">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge ${badgeClass}">${statusText}</span>
+                                <small class="text-muted">${dateStr} · ${timeStr}</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center my-2">
+                                <div class="text-center flex-fill" style="min-width:0;">
+                                    <div class="fw-bold text-truncate">${game.home_team_name_en || 'TBD'}</div>
+                                    ${homeFlag}
+                                </div>
+                                <div class="px-2 text-center">
+                                    ${scoreHtml}
+                                    ${liveIndicator}
+                                </div>
+                                <div class="text-center flex-fill" style="min-width:0;">
+                                    <div class="fw-bold text-truncate">${game.away_team_name_en || 'TBD'}</div>
+                                    ${awayFlag}
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <small class="text-muted">গ্রুপ ${game.group || '---'}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadWidget() {
+            fetch(apiUrl)
+                .then(r => r.json())
+                .then(data => {
+                    const games = data.games || [];
+                    const todayStr = new Date().toISOString().slice(0,10);
+
+                    // Today's non-finished matches
+                    const todayGames = games.filter(g => {
+                        if (!g.bd_time) return false;
+                        const isToday = g.bd_time.startsWith(todayStr);
+                        const finished = g.finished === 'TRUE';
+                        const elapsed = g.time_elapsed || 'notstarted';
+                        const isFinished = finished || elapsed === 'FT' || elapsed === 'finished';
+                        return isToday && !isFinished;
+                    });
+
+                    const live = games.filter(g => {
+                        const finished = g.finished === 'TRUE';
+                        const elapsed = g.time_elapsed || 'notstarted';
+                        return !finished && elapsed !== 'FT' && elapsed !== 'finished' && elapsed !== 'notstarted';
+                    });
+
+                    const upcoming = games.filter(g => {
+                        const finished = g.finished === 'TRUE';
+                        const elapsed = g.time_elapsed || 'notstarted';
+                        return !finished && elapsed === 'notstarted';
+                    });
+
+                    const recent = games.filter(g => {
+                        const finished = g.finished === 'TRUE';
+                        const elapsed = g.time_elapsed || '';
+                        return finished || elapsed === 'FT' || elapsed === 'finished';
+                    }).slice(-3);
+
+                    // Main widget: today's / live / upcoming
+                    let html = '';
+                    if (todayGames.length > 0) {
+                        todayGames.slice(0, 3).forEach(g => {
+                            const isLive = !g.finished && g.time_elapsed && g.time_elapsed !== 'notstarted' && g.time_elapsed !== 'FT' && g.time_elapsed !== 'finished';
+                            html += renderCard(g, isLive ? 'live' : 'upcoming');
+                        });
+                    }
+                    if (html === '' && live.length > 0) {
+                        live.slice(0, 3).forEach(g => html += renderCard(g, 'live'));
+                    }
+                    if (html === '' && upcoming.length > 0) {
+                        upcoming.slice(0, 3).forEach(g => html += renderCard(g, 'upcoming'));
+                    }
+                    if (html === '') {
+                        html = `<div class="col-12 text-center text-muted py-3">এখন কোনো ম্যাচ নেই</div>`;
+                    }
+                    widget.innerHTML = html;
+
+                    // Recent matches widget
+                    let recentHtml = '';
+                    if (recent.length > 0) {
+                        recentHtml = `<div class="col-12 text-center mt-3"><h5 class="text-muted"><i class="fas fa-history me-2"></i>শেষ হওয়া ম্যাচ</h5></div>`;
+                        recent.forEach(g => recentHtml += renderCard(g, 'recent'));
+                    }
+                    recentWidget.innerHTML = recentHtml;
+                })
+                .catch(() => {
+                    widget.innerHTML = `<div class="col-12 text-center text-muted py-3">তথ্য লোড করা যায়নি</div>`;
+                });
+        }
+
+        loadWidget();
+        setInterval(loadWidget, 60000);
+    })();
+    </script>
+
+    <style>
+    .wc-home-section { background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%); }
+    .wc-match-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 12px;
+    }
+    .wc-match-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+    }
+    .wc-home-flag {
+        width: 32px; height: 22px; object-fit: cover; border-radius: 3px;
+        margin-top: 4px;
+    }
+    .animate-pulse { animation: pulse-badge 1.5s infinite; }
+    @keyframes pulse-badge {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    </style>
+    @endif
+
     <!-- Categories Section -->
     <section class="py-5">
         <div class="container">

@@ -1148,6 +1148,14 @@
                         <li class="mb-2"><a href="{{ route('upazilas.index') }}"><i class="fas fa-chevron-right me-2"></i>{{ __('messages.upazilas') }}</a></li>
                         <li class="mb-2"><a href="{{ route('categories.index') }}"><i class="fas fa-chevron-right me-2"></i>{{ __('messages.categories') }}</a></li>
                         <li class="mb-2"><a href="{{ route('mp.index') }}"><i class="fas fa-chevron-right me-2"></i>{{ __('messages.mp') }}</a></li>
+                        @php
+                            $wcStart = '2026-06-01';
+                            $wcEnd = '2026-07-25';
+                            $today = date('Y-m-d');
+                        @endphp
+                        @if($today >= $wcStart && $today <= $wcEnd)
+                            <li class="mb-2"><a href="{{ route('world-cup.index') }}"><i class="fas fa-futbol me-2"></i>World Cup 2026</a></li>
+                        @endif
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4 mb-4">
@@ -1487,6 +1495,79 @@
                 padding: 12px 18px;
             }
             .bus-ticket-float-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    @endif
+
+    <!-- Floating World Cup 2026 Button -->
+    @php
+        $wcStartLayout = '2026-06-01';
+        $wcEndLayout = '2026-07-25';
+        $wcTodayLayout = date('Y-m-d');
+        $wcActiveLayout = ($wcTodayLayout >= $wcStartLayout && $wcTodayLayout <= $wcEndLayout);
+    @endphp
+    @if($wcActiveLayout && !request()->routeIs('world-cup.*'))
+    <a href="{{ route('world-cup.index') }}" class="wc-float-btn" title="FIFA World Cup 2026">
+        <span class="wc-float-icon">⚽</span>
+        <span class="wc-float-text">World Cup 2026</span>
+    </a>
+    <style>
+        .wc-float-btn {
+            position: fixed;
+            @php
+                $wcFuelBottom = ($salamiEnabled ?? false) ? 170 : (($eidCardEnabled ?? false) ? 100 : 30);
+                $wcBloodBottom = ($fuelEnabled ?? false) ? ($wcFuelBottom + 70) : $wcFuelBottom;
+                $wcMangoBottom = ($bloodEnabledCheckBus ?? \App\Models\BloodSetting::isEnabled()) ? ($wcBloodBottom + 70) : $wcBloodBottom;
+                $wcBusBottom = ($busTicketEnabledLayout ?? \App\Models\BusTicketSetting::isEnabled()) ? ($wcMangoBottom + 70) : $wcMangoBottom;
+                $wcFloatBottom = $wcBusBottom + 70;
+            @endphp
+            bottom: {{ $wcFloatBottom }}px;
+            right: 30px;
+            background: linear-gradient(135deg, #0f5132 0%, #198754 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 25px rgba(25, 135, 84, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: wcPulse 2s infinite;
+        }
+        .wc-float-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(25, 135, 84, 0.5);
+            color: white;
+        }
+        .wc-float-icon {
+            font-size: 1.5rem;
+        }
+        .wc-float-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        @keyframes wcPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(25, 135, 84, 0.4); }
+            50% { box-shadow: 0 5px 35px rgba(25, 135, 84, 0.6); }
+        }
+        @media (max-width: 576px) {
+            .wc-float-btn {
+                @php
+                    $wcFuelMobile = ($salamiEnabled ?? false) ? 160 : (($eidCardEnabled ?? false) ? 90 : 20);
+                    $wcBloodMobile = ($fuelEnabled ?? false) ? ($wcFuelMobile + 60) : $wcFuelMobile;
+                    $wcMangoMobile = ($bloodEnabledCheckBus ?? \App\Models\BloodSetting::isEnabled()) ? ($wcBloodMobile + 60) : $wcBloodMobile;
+                    $wcBusMobile = ($busTicketEnabledLayout ?? \App\Models\BusTicketSetting::isEnabled()) ? ($wcMangoMobile + 60) : $wcMangoMobile;
+                    $wcFloatMobile = $wcBusMobile + 60;
+                @endphp
+                bottom: {{ $wcFloatMobile }}px;
+                right: 20px;
+                padding: 12px 18px;
+            }
+            .wc-float-text {
                 font-size: 0.85rem;
             }
         }
