@@ -209,32 +209,48 @@ class WorldCupController extends Controller
     private function fetchGames(): array
     {
         return Cache::remember('wc_games', self::CACHE_TTL, function () {
-            $response = Http::timeout(10)->get(self::API_BASE . '/get/games');
-            return $response->json('games', []);
+            try {
+                $response = Http::timeout(10)->get(self::API_BASE . '/get/games');
+                return $response->json('games', []);
+            } catch (\Exception $e) {
+                return [];
+            }
         });
     }
 
     private function fetchTeams(): array
     {
         return Cache::remember('wc_teams', 300, function () {
-            $response = Http::timeout(10)->get(self::API_BASE . '/get/teams');
-            return $response->json('teams', []);
+            try {
+                $response = Http::timeout(10)->get(self::API_BASE . '/get/teams');
+                return $response->json('teams', []);
+            } catch (\Exception $e) {
+                return [];
+            }
         });
     }
 
     private function fetchGroups(): array
     {
         return Cache::remember('wc_groups', 300, function () {
-            $response = Http::timeout(10)->get(self::API_BASE . '/get/groups');
-            return $response->json('groups', []);
+            try {
+                $response = Http::timeout(10)->get(self::API_BASE . '/get/groups');
+                return $response->json('groups', []);
+            } catch (\Exception $e) {
+                return [];
+            }
         });
     }
 
     private function fetchStadiums(): array
     {
         return Cache::remember('wc_stadiums', 300, function () {
-            $response = Http::timeout(10)->get(self::API_BASE . '/get/stadiums');
-            return $response->json('stadiums', []);
+            try {
+                $response = Http::timeout(10)->get(self::API_BASE . '/get/stadiums');
+                return $response->json('stadiums', []);
+            } catch (\Exception $e) {
+                return [];
+            }
         });
     }
 
