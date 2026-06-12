@@ -9,7 +9,7 @@ $cardClass = $type === 'live' ? 'match-card-live' : ($type === 'upcoming' ? 'mat
 $badgeClass = $type === 'live' ? 'bg-danger' : ($type === 'upcoming' ? 'bg-success' : 'bg-secondary');
 @endphp
 
-<div class="col-lg-4 col-md-6">
+<div class="col-lg-4 col-md-6" data-game-id="{{ $game['id'] ?? '' }}">
     <div class="card shadow-sm border-0 {{ $cardClass }} h-100 wc-card">
         <div class="card-body p-3 p-md-4">
             <div class="d-flex justify-content-between align-items-center mb-2 mb-md-3">

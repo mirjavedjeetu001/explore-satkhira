@@ -371,3 +371,112 @@
     }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+(function() {
+    const POLL_INTERVAL = 30000; // 30 seconds
+    let lastUpdate = Date.now();
+
+    function updateLiveScores() {
+        fetch('{{ route("world-cup.api-games") }}')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.games) return;
+                let anyUpdated = false;
+                data.games.forEach(game => {
+                    const card = document.querySelector('[data-game-id="' + game.id + '"]');
+                    if (!card) return;
+
+                    const finished = (game.finished || '') === 'TRUE';
+                    const elapsed = game.time_elapsed || 'notstarted';
+                    const isLive = !finished && elapsed !== 'FT' && elapsed !== 'finished' && elapsed !== 'notstarted';
+
+                    // Update status badge
+                    const badge = card.querySelector('.badge');
+                    if (badge) {
+                        let label = game.status_label || '---';
+                        let newClass = 'bg-secondary';
+                        if (isLive) newClass = 'bg-danger';
+                        else if (finished || elapsed === 'FT' || elapsed === 'finished') newClass = 'bg-secondary';
+                        else if (elapsed === 'notstarted') newClass = 'bg-success';
+
+                        if (badge.textContent.trim() !== label) {
+                            badge.textContent = label;
+                            anyUpdated = true;
+                        }
+                        badge.className = 'badge ' + newClass;
+                    }
+
+                    // Update score
+                    const scoreDiv = card.querySelector('.score-big');
+                    if (scoreDiv && (finished || elapsed !== 'notstarted')) {
+                        const newScore = (game.home_score || 0) + ' - ' + (game.away_score || 0);
+                        if (scoreDiv.textContent.trim() !== newScore && scoreDiv.textContent.trim() !== 'VS') {
+                            scoreDiv.textContent = newScore;
+                            scoreDiv.classList.remove('text-muted');
+                            scoreDiv.style.color = '#0f5132';
+                            anyUpdated = true;
+                            // Flash animation on score change
+                            scoreDiv.style.transition = 'transform 0.3s, color 0.3s';
+                            scoreDiv.style.transform = 'scale(1.3)';
+                            setTimeout(() => scoreDiv.style.transform = 'scale(1)', 300);
+                        }
+                    }
+
+                    // Update elapsed time
+                    const elapsedSmall = card.querySelector('small.text-danger.fw-bold.d-block.mt-1');
+                    if (isLive) {
+                        if (elapsedSmall) {
+                            if (elapsedSmall.textContent.trim() !== elapsed + "'") {
+                                elapsedSmall.textContent = elapsed + "'";
+                                anyUpdated = true;
+                            }
+                        } else {
+                            // Insert elapsed time after score
+                            if (scoreDiv && scoreDiv.nextElementSibling) {
+                                const newSmall = document.createElement('small');
+                                newSmall.className = 'text-danger fw-bold d-block mt-1';
+                                newSmall.textContent = elapsed + "'";
+                                scoreDiv.parentNode.appendChild(newSmall);
+                                anyUpdated = true;
+                            }
+                        }
+                    } else if (elapsedSmall) {
+                        elapsedSmall.remove();
+                    }
+                });
+
+                if (anyUpdated) {
+                    lastUpdate = Date.now();
+                    showToast('লাইভ স্কোর আপডেট হয়েছে ⚽');
+                }
+            })
+            .catch(() => {});
+    }
+
+    function showToast(msg) {
+        let toast = document.getElementById('wc-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'wc-toast';
+            toast.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;background:#0f5132;color:#fff;padding:12px 20px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-weight:600;transform:translateX(120%);transition:transform 0.4s ease;pointer-events:none;';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.transform = 'translateX(0)';
+        setTimeout(() => { toast.style.transform = 'translateX(120%)'; }, 3000);
+    }
+
+    // Poll every 30s
+    setInterval(updateLiveScores, POLL_INTERVAL);
+
+    // Also update on page visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && Date.now() - lastUpdate > POLL_INTERVAL) {
+            updateLiveScores();
+        }
+    });
+})();
+</script>
+@endpush
