@@ -1907,6 +1907,8 @@
                 </div>
             </div>
 
+            <div id="wcUpcomingWidget" class="row g-3 justify-content-center mt-2"></div>
+
             <div id="wcRecentWidget" class="row g-3 justify-content-center mt-2"></div>
 
             <div class="text-center mt-4">
@@ -1920,6 +1922,7 @@
     <script>
     (function() {
         const widget = document.getElementById('wcHomeWidget');
+        const upcomingWidget = document.getElementById('wcUpcomingWidget');
         const recentWidget = document.getElementById('wcRecentWidget');
         const apiUrl = '{{ route('world-cup.api.games') }}';
 
@@ -2033,6 +2036,20 @@
                         html = `<div class="col-12 text-center text-muted py-3">এখন কোনো ম্যাচ নেই</div>`;
                     }
                     widget.innerHTML = html;
+
+                    // Upcoming "next matches" widget (always shown) - only games with known teams, sorted by time
+                    const upcomingSorted = upcoming
+                        .filter(g => g.bd_time && g.home_team_name_en && g.away_team_name_en)
+                        .sort((a, b) => (a.bd_time || '').localeCompare(b.bd_time || ''));
+                    // Exclude any already shown in today's widget
+                    const shownIds = new Set(todayGames.slice(0, 3).map(g => g.id));
+                    const nextGames = upcomingSorted.filter(g => !shownIds.has(g.id)).slice(0, 3);
+                    let upcomingHtml = '';
+                    if (nextGames.length > 0) {
+                        upcomingHtml = `<div class="col-12 text-center mt-3"><h5 class="text-success fw-bold"><i class="fas fa-calendar-alt me-2"></i>পরবর্তী ম্যাচ</h5></div>`;
+                        nextGames.forEach(g => upcomingHtml += renderCard(g, 'upcoming'));
+                    }
+                    upcomingWidget.innerHTML = upcomingHtml;
 
                     // Recent matches widget
                     let recentHtml = '';
