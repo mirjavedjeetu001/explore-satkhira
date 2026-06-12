@@ -9,6 +9,31 @@ class WorldCupController extends Controller
 {
     private const API_BASE = 'https://worldcup26.ir';
     private const CACHE_TTL = 60; // 1 minute for live scores
+    private const API_TIMEOUT = 25; // API can be slow (~16s)
+
+    /**
+     * Fetch + cache an endpoint with a persistent "last known good" fallback.
+     * If the live fetch fails or returns empty, we serve the last good copy
+     * so the page never goes blank.
+     */
+    private function fetchWithFallback(string $cacheKey, string $endpoint, string $jsonKey, int $ttl): array
+    {
+        return Cache::remember($cacheKey, $ttl, function () use ($endpoint, $jsonKey, $cacheKey) {
+            try {
+                $response = Http::timeout(self::API_TIMEOUT)->get(self::API_BASE . $endpoint);
+                $data = $response->json($jsonKey, []);
+                if (!empty($data)) {
+                    // Save persistent backup (forever)
+                    Cache::forever($cacheKey . '_backup', $data);
+                    return $data;
+                }
+            } catch (\Exception $e) {
+                // fall through to backup
+            }
+            // Serve last known good copy if available
+            return Cache::get($cacheKey . '_backup', []);
+        });
+    }
 
     /**
      * Timezone offsets for stadium regions during June (DST).
@@ -208,50 +233,22 @@ class WorldCupController extends Controller
 
     private function fetchGames(): array
     {
-        return Cache::remember('wc_games', self::CACHE_TTL, function () {
-            try {
-                $response = Http::timeout(10)->get(self::API_BASE . '/get/games');
-                return $response->json('games', []);
-            } catch (\Exception $e) {
-                return [];
-            }
-        });
+        return $this->fetchWithFallback('wc_games', '/get/games', 'games', self::CACHE_TTL);
     }
 
     private function fetchTeams(): array
     {
-        return Cache::remember('wc_teams', 300, function () {
-            try {
-                $response = Http::timeout(10)->get(self::API_BASE . '/get/teams');
-                return $response->json('teams', []);
-            } catch (\Exception $e) {
-                return [];
-            }
-        });
+        return $this->fetchWithFallback('wc_teams', '/get/teams', 'teams', 300);
     }
 
     private function fetchGroups(): array
     {
-        return Cache::remember('wc_groups', 300, function () {
-            try {
-                $response = Http::timeout(10)->get(self::API_BASE . '/get/groups');
-                return $response->json('groups', []);
-            } catch (\Exception $e) {
-                return [];
-            }
-        });
+        return $this->fetchWithFallback('wc_groups', '/get/groups', 'groups', 300);
     }
 
     private function fetchStadiums(): array
     {
-        return Cache::remember('wc_stadiums', 300, function () {
-            try {
-                $response = Http::timeout(10)->get(self::API_BASE . '/get/stadiums');
-                return $response->json('stadiums', []);
-            } catch (\Exception $e) {
-                return [];
-            }
-        });
+        return $this->fetchWithFallback('wc_stadiums', '/get/stadiums', 'stadiums', 300);
     }
 
     private function toBangladeshTime(array $game): ?\DateTimeImmutable
