@@ -1,0 +1,38 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: prod
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/satkhira-app
+            git fetch origin
+            git checkout prod
+            git reset --hard origin/prod
+            php artisan down --render="maintenance" --refresh=15 || true
+            composer install --no-dev --optimize-autoloader --no-interaction
+            php artisan migrate --force --no-interaction
+            php artisan optimize
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:clear
+            php artisan cache:clear
+            php artisan up
+            echo "Deployment complete at $(date)"
