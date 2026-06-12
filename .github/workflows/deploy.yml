@@ -26,13 +26,9 @@ jobs:
             git fetch origin
             git checkout prod
             git reset --hard origin/prod
-            php artisan down --render="maintenance" --refresh=15 || true
-            composer install --no-dev --optimize-autoloader --no-interaction
-            php artisan migrate --force --no-interaction
-            php artisan optimize
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:clear
-            php artisan cache:clear
-            php artisan up
+            # Clear all caches manually (shared hosting CLI lacks dom extension)
+            rm -rf storage/framework/views/*
+            rm -rf storage/framework/cache/data/*
+            rm -f bootstrap/cache/*.php
+            rm -rf storage/framework/sessions/*
             echo "Deployment complete at $(date)"
