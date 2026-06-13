@@ -1988,7 +1988,8 @@
                 .then(r => r.json())
                 .then(data => {
                     const games = data.games || [];
-                    const todayStr = new Date().toISOString().slice(0,10);
+                    // Bangladesh date (UTC+6) so it matches bd_time strings
+                    const todayStr = new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0,10);
 
                     // Today's non-finished matches
                     const todayGames = games.filter(g => {
@@ -2018,35 +2019,35 @@
                         return finished || elapsed === 'FT' || elapsed === 'finished';
                     }).slice(-3);
 
-                    // Main widget: today's / live / upcoming
+                    // Main widget: all of today's / live matches
                     let html = '';
                     if (todayGames.length > 0) {
-                        todayGames.slice(0, 3).forEach(g => {
+                        todayGames.forEach(g => {
                             const isLive = !g.finished && g.time_elapsed && g.time_elapsed !== 'notstarted' && g.time_elapsed !== 'FT' && g.time_elapsed !== 'finished';
                             html += renderCard(g, isLive ? 'live' : 'upcoming');
                         });
                     }
                     if (html === '' && live.length > 0) {
-                        live.slice(0, 3).forEach(g => html += renderCard(g, 'live'));
-                    }
-                    if (html === '' && upcoming.length > 0) {
-                        upcoming.slice(0, 3).forEach(g => html += renderCard(g, 'upcoming'));
+                        live.forEach(g => html += renderCard(g, 'live'));
                     }
                     if (html === '') {
-                        html = `<div class="col-12 text-center text-muted py-3">এখন কোনো ম্যাচ নেই</div>`;
+                        html = `<div class="col-12 text-center text-muted py-3">আজ কোনো ম্যাচ নেই</div>`;
                     }
                     widget.innerHTML = html;
 
-                    // Upcoming "next matches" widget (always shown) - only games with known teams, sorted by time
+                    // Upcoming widget: show ALL matches of the next match-day (day-wise)
                     const upcomingSorted = upcoming
                         .filter(g => g.bd_time && g.home_team_name_en && g.away_team_name_en)
                         .sort((a, b) => (a.bd_time || '').localeCompare(b.bd_time || ''));
-                    // Exclude any already shown in today's widget
-                    const shownIds = new Set(todayGames.slice(0, 3).map(g => g.id));
-                    const nextGames = upcomingSorted.filter(g => !shownIds.has(g.id)).slice(0, 3);
+                    // Exclude games already shown as today's
+                    const shownIds = new Set(todayGames.map(g => g.id));
+                    const remaining = upcomingSorted.filter(g => !shownIds.has(g.id));
                     let upcomingHtml = '';
-                    if (nextGames.length > 0) {
-                        upcomingHtml = `<div class="col-12 text-center mt-3"><h5 class="text-success fw-bold"><i class="fas fa-calendar-alt me-2"></i>পরবর্তী ম্যাচ</h5></div>`;
+                    if (remaining.length > 0) {
+                        const nextDay = remaining[0].bd_time.slice(0, 10);
+                        const nextGames = remaining.filter(g => g.bd_time.slice(0, 10) === nextDay);
+                        const dayLabel = fmtDate(remaining[0].bd_time);
+                        upcomingHtml = `<div class="col-12 text-center mt-3"><h5 class="text-success fw-bold"><i class="fas fa-calendar-alt me-2"></i>পরবর্তী ম্যাচ · ${dayLabel}</h5></div>`;
                         nextGames.forEach(g => upcomingHtml += renderCard(g, 'upcoming'));
                     }
                     upcomingWidget.innerHTML = upcomingHtml;

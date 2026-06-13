@@ -33,6 +33,18 @@
     $liveGames = array_values($liveGames);
     $upcomingGames = array_values($upcomingGames);
     $recentGames = array_slice(array_values($recentGames), -6);
+
+    // Group upcoming matches by Bangladesh date, then take the earliest day's full set
+    $upcomingByDay = [];
+    foreach ($upcomingGames as $g) {
+        $bdDt = $g['bd_time'] ?? null;
+        if (!$bdDt) continue;
+        $upcomingByDay[$bdDt->format('Y-m-d')][] = $g;
+    }
+    ksort($upcomingByDay);
+    $nextDayKey = array_key_first($upcomingByDay);
+    $nextDayGames = $nextDayKey ? $upcomingByDay[$nextDayKey] : [];
+    $nextDayLabel = $nextDayKey ? \Carbon\Carbon::parse($nextDayKey)->format('d M') : '';
 @endphp
 
 @section('content')
@@ -68,18 +80,18 @@
                         <i class="fas fa-circle me-1" style="font-size:0.5rem; vertical-align:middle;"></i>লাইভ ম্যাচ
                     </span>
                 </div>
-                @foreach(array_slice($liveGames, 0, 3) as $game)
+                @foreach($liveGames as $game)
                     @include('frontend.world-cup._match_card', ['game' => $game, 'type' => 'live'])
                 @endforeach
             </div>
-        @elseif(count($upcomingGames) > 0)
+        @elseif(count($nextDayGames) > 0)
             <div class="row g-3 mb-2">
                 <div class="col-12 text-center">
                     <span class="badge bg-success fs-6 px-3 py-2 mb-2">
-                        <i class="fas fa-calendar-alt me-1"></i>আসন্ন ম্যাচ
+                        <i class="fas fa-calendar-alt me-1"></i>আসন্ন ম্যাচ{{ $nextDayLabel ? ' · ' . $nextDayLabel : '' }}
                     </span>
                 </div>
-                @foreach(array_slice($upcomingGames, 0, 3) as $game)
+                @foreach($nextDayGames as $game)
                     @include('frontend.world-cup._match_card', ['game' => $game, 'type' => 'upcoming'])
                 @endforeach
             </div>
