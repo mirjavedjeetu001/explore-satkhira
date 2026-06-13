@@ -66,10 +66,13 @@ class WorldCupController extends Controller
 
     public function index()
     {
-        // Track page visits
+        // Track page visits (persisted in DB via WorldCupSetting, cached for 30,000s)
         $visitKey = 'wc_page_visits';
-        $visitCount = Cache::get($visitKey, 0) + 1;
-        Cache::put($visitKey, $visitCount, now()->addDays(30));
+        $visitCount = Cache::remember($visitKey, 30000, function () {
+            return (int) \App\Models\WorldCupSetting::get('visit_count', 0);
+        }) + 1;
+        \App\Models\WorldCupSetting::set('visit_count', $visitCount);
+        Cache::put($visitKey, $visitCount, 30000);
 
         $games = $this->fetchGames();
         $teams = $this->fetchTeams();
