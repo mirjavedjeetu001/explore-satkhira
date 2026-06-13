@@ -424,7 +424,7 @@
                     const scoreDiv = card.querySelector('.score-big');
                     if (scoreDiv && (finished || elapsed !== 'notstarted')) {
                         const newScore = (game.home_score || 0) + ' - ' + (game.away_score || 0);
-                        if (scoreDiv.textContent.trim() !== newScore && scoreDiv.textContent.trim() !== 'VS') {
+                        if (scoreDiv.textContent.trim() !== newScore) {
                             scoreDiv.textContent = newScore;
                             scoreDiv.classList.remove('text-muted');
                             scoreDiv.style.color = '#0f5132';
