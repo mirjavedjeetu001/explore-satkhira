@@ -2019,31 +2019,39 @@
                         return finished || elapsed === 'FT' || elapsed === 'finished';
                     }).slice(-3);
 
-                    // Main widget: all of today's / live matches
+                    // Sorted upcoming matches with known teams (next match-day computed from here)
+                    const upcomingSorted = upcoming
+                        .filter(g => g.bd_time && g.home_team_name_en && g.away_team_name_en)
+                        .sort((a, b) => (a.bd_time || '').localeCompare(b.bd_time || ''));
+
+                    // Main widget: today's matches, else live, else the next match-day's matches
                     let html = '';
+                    let mainShownIds = new Set();
                     if (todayGames.length > 0) {
                         todayGames.forEach(g => {
                             const isLive = !g.finished && g.time_elapsed && g.time_elapsed !== 'notstarted' && g.time_elapsed !== 'FT' && g.time_elapsed !== 'finished';
                             html += renderCard(g, isLive ? 'live' : 'upcoming');
+                            mainShownIds.add(g.id);
                         });
-                    }
-                    if (html === '' && live.length > 0) {
-                        live.forEach(g => html += renderCard(g, 'live'));
+                    } else if (live.length > 0) {
+                        live.forEach(g => { html += renderCard(g, 'live'); mainShownIds.add(g.id); });
+                    } else if (upcomingSorted.length > 0) {
+                        // No matches today and none live: show the next match-day's matches directly
+                        const nextDay = upcomingSorted[0].bd_time.slice(0, 10);
+                        const nextGames = upcomingSorted.filter(g => g.bd_time.slice(0, 10) === nextDay);
+                        const dayLabel = fmtDate(upcomingSorted[0].bd_time);
+                        html += `<div class="col-12 text-center mb-1"><span class="badge bg-success px-3 py-2"><i class="fas fa-calendar-alt me-1"></i>আসন্ন ম্যাচ · ${dayLabel}</span></div>`;
+                        nextGames.forEach(g => { html += renderCard(g, 'upcoming'); mainShownIds.add(g.id); });
                     }
                     if (html === '') {
-                        html = `<div class="col-12 text-center text-muted py-3">আজ কোনো ম্যাচ নেই</div>`;
+                        html = `<div class="col-12 text-center text-muted py-3"><i class="fas fa-trophy me-2"></i>সব ম্যাচ দেখতে নিচের বাটনে ক্লিক করুন</div>`;
                     }
                     widget.innerHTML = html;
 
-                    // Upcoming widget: show ALL matches of the next match-day (day-wise)
-                    const upcomingSorted = upcoming
-                        .filter(g => g.bd_time && g.home_team_name_en && g.away_team_name_en)
-                        .sort((a, b) => (a.bd_time || '').localeCompare(b.bd_time || ''));
-                    // Exclude games already shown as today's
-                    const shownIds = new Set(todayGames.map(g => g.id));
-                    const remaining = upcomingSorted.filter(g => !shownIds.has(g.id));
+                    // Upcoming widget: show next match-day below ONLY when main showed today's/live matches
                     let upcomingHtml = '';
-                    if (remaining.length > 0) {
+                    const remaining = upcomingSorted.filter(g => !mainShownIds.has(g.id));
+                    if ((todayGames.length > 0 || live.length > 0) && remaining.length > 0) {
                         const nextDay = remaining[0].bd_time.slice(0, 10);
                         const nextGames = remaining.filter(g => g.bd_time.slice(0, 10) === nextDay);
                         const dayLabel = fmtDate(remaining[0].bd_time);
