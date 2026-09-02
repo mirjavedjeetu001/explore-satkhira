@@ -155,10 +155,10 @@
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
     .celebration-card-photo { position: absolute; z-index: 3; top: 5.5%; left: 50%; width: 34%; height: 34%; transform: translateX(-50%); object-fit: contain; object-position: center center; background: rgba(255, 255, 255, .72); border: clamp(5px, .75vw, 9px) solid #dc6b73; border-radius: 50%; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .24); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
+    .celebration-template-person { position: absolute; z-index: 3; left: 5%; right: 5%; bottom: 2.5%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .celebration-person-name,
     .celebration-template-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 2.8vw, 2.15rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
-    .celebration-template-person-designation { display: block; max-width: 90%; min-width: 0; overflow: hidden; padding: .06em .62em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: clip; }
+    .celebration-template-person-designation { display: block; max-width: 94%; min-width: 0; overflow: hidden; padding: .06em .55em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.15; letter-spacing: -.015em; white-space: nowrap; text-overflow: clip; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -173,7 +173,7 @@
     .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 3.2vw, 2.4rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .celebration-person-name.celebration-person-long,
     .celebration-template-person-name.celebration-person-long { font-size: clamp(.95rem, 2.45vw, 1.95rem); }
-    .celebration-person-designation { display: block; max-width: 90%; min-width: 0; overflow: hidden; padding: .06em .62em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: clip; }
+    .celebration-person-designation { display: block; max-width: 94%; min-width: 0; overflow: hidden; padding: .06em .55em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.15; letter-spacing: -.015em; white-space: nowrap; text-overflow: clip; }
     .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareButton = document.getElementById('shareCardBtn');
     let busy = false;
 
-    function fitTextToBadge(element, minimumScale = .56) {
+    function fitTextToBadge(element, minimumScale = .56, minimumPixels = 10) {
         if (!element || element.style.display === 'none') return;
 
         element.style.fontSize = '';
@@ -221,20 +221,32 @@ document.addEventListener('DOMContentLoaded', function () {
         element.style.overflowWrap = 'normal';
         element.style.textOverflow = 'clip';
         element.style.lineHeight = '';
+        element.style.overflow = '';
+        element.style.maxWidth = '';
+        element.style.width = '';
+        element.style.boxSizing = '';
+        element.style.transform = '';
+        element.style.transformOrigin = '';
 
         let fontSize = parseFloat(getComputedStyle(element).fontSize);
-        const minimumFontSize = Math.max(12, fontSize * minimumScale);
+        const minimumFontSize = Math.max(minimumPixels, fontSize * minimumScale);
 
         while (element.scrollWidth > element.clientWidth + 1 && fontSize > minimumFontSize) {
             fontSize = Math.max(minimumFontSize, fontSize - .5);
             element.style.fontSize = `${fontSize}px`;
         }
 
-        // Extremely long Bangla/English text remains visible instead of being clipped.
+        // Keep the badge on one line so it never pushes the name into the baked-in headline.
         if (element.scrollWidth > element.clientWidth + 1) {
-            element.style.whiteSpace = 'normal';
-            element.style.overflowWrap = 'anywhere';
-            element.style.lineHeight = '1.08';
+            const availableWidth = element.clientWidth;
+            const fullWidth = element.scrollWidth;
+
+            element.style.boxSizing = 'border-box';
+            element.style.maxWidth = 'none';
+            element.style.width = `${fullWidth}px`;
+            element.style.overflow = 'visible';
+            element.style.transform = `scaleX(${Math.min(1, availableWidth / fullWidth)})`;
+            element.style.transformOrigin = 'center center';
         }
     }
 
@@ -248,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const designationElement = card.querySelector('.celebration-person-designation');
         designationElement.textContent = designation;
         designationElement.style.display = designation ? '' : 'none';
-        fitTextToBadge(designationElement, .52);
+        fitTextToBadge(designationElement, .32, 8);
         const enabled = Boolean(name);
         [pngButton, jpgButton, shareButton].forEach(button => button.disabled = !enabled || busy);
     }
@@ -383,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     [nameInput, designationInput].forEach(input => input.addEventListener('input', setCardText));
     photoInput.addEventListener('change', setCardPhoto);
+    window.addEventListener('resize', () => requestAnimationFrame(setCardText));
     pngButton.addEventListener('click', () => downloadCard('png'));
     jpgButton.addEventListener('click', () => downloadCard('jpg'));
     shareButton.addEventListener('click', shareCard);
