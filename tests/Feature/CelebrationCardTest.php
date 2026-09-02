@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\CelebrationCardRecipient;
+use App\Models\CelebrationCardGeneration;
 use App\Models\CelebrationCardSetting;
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -56,43 +54,42 @@ class CelebrationCardTest extends TestCase
         $response->assertSee('celebration-template-person-name');
     }
 
-    public function test_saved_recipient_card_page_renders(): void
-    {
-        CelebrationCardSetting::getSettings();
-        $recipient = CelebrationCardRecipient::create([
-            'name' => 'Mir Javed Jeetu',
-            'designation' => 'Developer',
-            'photo_path' => 'celebration-card/recipients/demo.png',
-        ]);
-
-        $response = $this->get(route('celebration-card.recipient', $recipient));
-
-        $response->assertOk();
-        $response->assertSee('Mir Javed Jeetu');
-        $response->assertSee('Developer');
-        $response->assertSee('celebration-card-photo');
-        $response->assertSee(asset('storage/celebration-card/recipients/demo.png'), false);
-    }
-
-    public function test_admin_can_save_a_recipient_with_a_photo(): void
+    public function test_visitor_download_is_saved_in_history(): void
     {
         Storage::fake('public');
-        $role = Role::create(['name' => 'Admin', 'slug' => 'admin']);
-        $admin = User::factory()->create([
-            'role_id' => $role->id,
-            'status' => 'active',
+        CelebrationCardSetting::getSettings();
+        $photo = UploadedFile::fake()->image('visitor.png');
+
+        $response = $this->post(route('celebration-card.generations.store'), [
+            'name' => 'Mir Javed Jeetu',
+            'designation' => 'Developer',
+            'download_format' => 'png',
+            'photo' => $photo,
         ]);
 
-        $response = $this->actingAs($admin)->post(route('admin.celebration-card.recipients.store'), [
-            'recipient_name' => 'Mir Javed Jeetu',
-            'recipient_designation' => 'Developer',
-            'recipient_photo' => UploadedFile::fake()->image('recipient.jpg'),
+        $response->assertOk()->assertJson(['success' => true]);
+        $generation = CelebrationCardGeneration::firstOrFail();
+        $this->assertSame('Mir Javed Jeetu', $generation->name);
+        $this->assertSame('Developer', $generation->designation);
+        $this->assertSame('png', $generation->download_format);
+        Storage::disk('public')->assertExists($generation->photo_path);
+    }
+
+    public function test_same_visitor_can_download_more_than_once(): void
+    {
+        CelebrationCardSetting::getSettings();
+
+        $this->post(route('celebration-card.generations.store'), [
+            'name' => 'Same Visitor',
+            'designation' => 'Developer',
+            'download_format' => 'png',
+        ])->assertOk();
+        $this->post(route('celebration-card.generations.store'), [
+            'name' => 'Same Visitor',
+            'designation' => 'Developer',
+            'download_format' => 'jpg',
         ]);
 
-        $response->assertRedirect();
-        $recipient = CelebrationCardRecipient::firstOrFail();
-        $this->assertSame('Mir Javed Jeetu', $recipient->name);
-        $this->assertSame('Developer', $recipient->designation);
-        Storage::disk('public')->assertExists($recipient->photo_path);
+        $this->assertSame(2, CelebrationCardGeneration::where('name', 'Same Visitor')->count());
     }
 }

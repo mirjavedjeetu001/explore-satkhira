@@ -1,10 +1,9 @@
 @extends('frontend.layouts.app')
 
 @php
-    $recipient = $recipient ?? null;
-    $initialName = $recipient?->name ?? '';
-    $initialDesignation = $recipient?->designation ?? '';
-    $initialPhoto = $recipient?->photo_path ? asset('storage/' . $recipient->photo_path) : null;
+    $initialName = '';
+    $initialDesignation = '';
+    $initialPhoto = null;
 @endphp
 
 @section('title', $settings->title)
@@ -61,7 +60,7 @@
                         <div class="mb-4">
                             <label for="celebrationPhoto" class="form-label fw-semibold">Visitor photo</label>
                             <input id="celebrationPhoto" type="file" class="form-control form-control-lg" accept="image/jpeg,image/png">
-                            <div class="form-text">JPG/PNG, maximum 2MB. The photo is used only in this browser and is not uploaded to the server.</div>
+                            <div class="form-text">JPG/PNG, maximum 2MB. Download করলে photo-সহ তথ্য admin panel-এর history-তে save হবে।</div>
                         </div>
                     </form>
                 </div>
@@ -85,7 +84,7 @@
                             <i class="fas fa-share-nodes me-2"></i>সরাসরি শেয়ার করুন
                         </button>
                     </div>
-                    <p class="text-muted small mt-3 mb-0"><i class="fas fa-shield-heart me-1"></i>আপনার লেখা তথ্য এই পেজে সাময়িকভাবে ব্যবহৃত হয়, সংরক্ষণ করা হয় না।</p>
+                    <p class="text-muted small mt-3 mb-0"><i class="fas fa-shield-heart me-1"></i>PNG/JPG download করলে নাম, পদবি ও upload করা photo admin panel-এর download history-তে save হবে।</p>
                 </div>
             </div>
 
@@ -150,11 +149,11 @@
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
     .celebration-card-photo { position: absolute; z-index: 3; top: 7%; left: 50%; width: 28%; aspect-ratio: 1; transform: translateX(-50%); object-fit: cover; border: clamp(3px, .55vw, 7px) solid #fff; border-radius: 50%; box-shadow: 0 .45rem 1.25rem rgba(51, 34, 20, .2); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 2.2%; display: flex; flex-direction: column; align-items: center; gap: .35rem; text-align: center; }
+    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 2.5%; display: flex; flex-direction: column; align-items: center; gap: .15rem; text-align: center; }
     .celebration-person-name,
-    .celebration-template-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
+    .celebration-template-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .celebration-person-designation,
-    .celebration-template-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
+    .celebration-template-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -166,8 +165,8 @@
     .celebration-rule { width: 38%; height: 5px; margin: 4% 0 2%; border-radius: 99px; background: #c99f46; position: relative; }
     .celebration-rule span { position: absolute; width: 22%; height: 100%; left: 39%; border-radius: inherit; background: #8c2f39; }
     .celebration-person { margin-top: 1%; min-height: 19%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .celebration-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
-    .celebration-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
+    .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
+    .celebration-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
     .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
@@ -192,18 +191,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const jpgButton = document.getElementById('downloadJpgBtn');
     const shareButton = document.getElementById('shareCardBtn');
     let busy = false;
-
-    const initialName = @js($initialName);
-    const initialDesignation = @js($initialDesignation);
-    const initialPhoto = @js($initialPhoto);
-    nameInput.placeholder = 'Mir Javed Jeetu';
-    designationInput.placeholder = 'Developer';
-    if (initialName) nameInput.value = initialName;
-    if (initialDesignation) designationInput.value = initialDesignation;
-    if (initialPhoto) {
-        photoElement.src = initialPhoto;
-        photoElement.style.display = 'block';
-    }
 
     function setCardText() {
         const name = nameInput.value.trim();
@@ -260,6 +247,25 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${safeName || 'shubhechha-card'}-explore-satkhira.${extension}`;
     }
 
+    async function logGeneration(format) {
+        const payload = new FormData();
+        payload.append('name', nameInput.value.trim());
+        payload.append('designation', designationInput.value.trim());
+        payload.append('download_format', format);
+        if (photoInput.files[0]) payload.append('photo', photoInput.files[0]);
+
+        const response = await fetch(@js(route('celebration-card.generations.store')), {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: payload
+        });
+
+        if (!response.ok) throw new Error('Unable to save download history');
+    }
+
     async function downloadCard(type) {
         if (!nameInput.value.trim() || busy) return;
         busy = true;
@@ -270,6 +276,11 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const canvas = await renderCard();
             const mime = type === 'jpg' ? 'image/jpeg' : 'image/png';
+            try {
+                await logGeneration(type);
+            } catch (historyError) {
+                console.warn('Download history could not be saved.', historyError);
+            }
             const link = document.createElement('a');
             link.download = filename(type);
             link.href = canvas.toDataURL(mime, .95);

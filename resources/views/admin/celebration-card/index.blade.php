@@ -33,69 +33,33 @@
     </div>
 
     <div class="row g-4 mb-4 align-items-start">
-        <div class="col-xl-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3">
-                    <h2 class="h5 mb-0"><i class="fas fa-user-plus me-2 text-primary"></i>Save a recipient card</h2>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted small">Add the person who should receive a greeting card. Their name, designation and photo will stay saved in the admin panel.</p>
-                    <form action="{{ route('admin.celebration-card.recipients.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="recipient_name" class="form-label fw-semibold">Recipient name</label>
-                            <input id="recipient_name" name="recipient_name" type="text" value="{{ old('recipient_name') }}" class="form-control @error('recipient_name') is-invalid @enderror" maxlength="100" placeholder="Mir Javed Jeetu" required>
-                            @error('recipient_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="recipient_designation" class="form-label fw-semibold">Designation</label>
-                            <input id="recipient_designation" name="recipient_designation" type="text" value="{{ old('recipient_designation') }}" class="form-control @error('recipient_designation') is-invalid @enderror" maxlength="100" placeholder="Developer">
-                            @error('recipient_designation')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="recipient_photo" class="form-label fw-semibold">Recipient photo</label>
-                            <input id="recipient_photo" name="recipient_photo" type="file" accept="image/jpeg,image/png" class="form-control @error('recipient_photo') is-invalid @enderror" required>
-                            <div class="form-text">JPG or PNG, maximum 5MB.</div>
-                            @error('recipient_photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save recipient</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-7">
-            <div class="card border-0 shadow-sm h-100">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h2 class="h5 mb-0"><i class="fas fa-address-card me-2 text-success"></i>Saved recipient cards</h2>
-                    <span class="badge text-bg-light">{{ $recipients->count() }} saved</span>
+                    <div>
+                        <h2 class="h5 mb-1"><i class="fas fa-clock-rotate-left me-2 text-success"></i>Visitor download history</h2>
+                        <p class="text-muted small mb-0">Visitor PNG/JPG download করলে নাম, পদবি ও upload করা photo এখানে save হবে। একই visitor বারবার download করলে আলাদা record হবে।</p>
+                    </div>
+                    <span class="badge text-bg-light">{{ $generations->count() }} downloads</span>
                 </div>
                 <div class="card-body">
-                    @forelse($recipients as $recipient)
-                        <div class="recipient-row d-flex align-items-center gap-3 {{ !$loop->last ? 'border-bottom pb-3 mb-3' : '' }}">
-                            @if($recipient->photo_path)
-                                <img src="{{ asset('storage/' . $recipient->photo_path) }}" alt="{{ $recipient->name }}" class="recipient-thumb">
+                    @forelse($generations as $generation)
+                        <div class="visitor-download-row d-flex align-items-center gap-3 {{ !$loop->last ? 'border-bottom pb-3 mb-3' : '' }}">
+                            @if($generation->photo_path)
+                                <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="{{ $generation->name }}" class="recipient-thumb">
                             @else
                                 <div class="recipient-thumb recipient-thumb-placeholder"><i class="fas fa-user"></i></div>
                             @endif
                             <div class="flex-grow-1 min-w-0">
-                                <div class="fw-bold text-dark text-truncate">{{ $recipient->name }}</div>
-                                <div class="small text-muted text-truncate">{{ $recipient->designation ?: 'No designation' }}</div>
-                                <div class="small text-muted">Saved {{ $recipient->created_at->format('d M Y') }}</div>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-end gap-2">
-                                <a href="{{ route('celebration-card.recipient', $recipient) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i>View</a>
-                                <form action="{{ route('admin.celebration-card.recipients.destroy', $recipient) }}" method="POST" onsubmit="return confirm('Delete this saved recipient card?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i>Delete</button>
-                                </form>
+                                <div class="fw-bold text-dark text-truncate">{{ $generation->name }}</div>
+                                <div class="small text-muted text-truncate">{{ $generation->designation ?: 'No designation' }}</div>
+                                <div class="small text-muted">{{ strtoupper($generation->download_format) }} · {{ $generation->created_at->format('d M Y, h:i A') }}</div>
                             </div>
                         </div>
                     @empty
                         <div class="text-center text-muted py-4">
-                            <i class="fas fa-users-slash fs-2 mb-2"></i>
-                            <p class="mb-0">No recipient cards saved yet.</p>
+                            <i class="fas fa-download fs-2 mb-2"></i>
+                            <p class="mb-0">কোনো visitor download এখনো হয়নি।</p>
                         </div>
                     @endforelse
                 </div>
@@ -167,7 +131,7 @@
                         <li>Visitor নাম ও পদবি লিখলে live preview তৈরি হবে।</li>
                         <li>PNG বা JPG হিসেবে 1080×1080 card download করা যাবে।</li>
                         <li>Mobile-এ native share দিয়ে image সরাসরি social app-এ পাঠানো যাবে।</li>
-                        <li>Visitor-এর দেওয়া তথ্য server-side সংরক্ষণ করা হবে না।</li>
+                        <li>PNG/JPG download করলে visitor-এর নাম, পদবি ও photo history-তে সংরক্ষণ হবে।</li>
                     </ul>
                 </div>
             </div>
@@ -200,11 +164,11 @@
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
     .preview-wrap .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .preview-wrap .celebration-template-person { position: absolute; left: 8%; right: 8%; bottom: 2.2%; display: flex; flex-direction: column; align-items: center; gap: .35rem; text-align: center; }
+    .preview-wrap .celebration-template-person { position: absolute; left: 8%; right: 8%; bottom: 2.5%; display: flex; flex-direction: column; align-items: center; gap: .15rem; text-align: center; }
     .preview-wrap .celebration-template-person-name,
-    .preview-wrap .celebration-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
+    .preview-wrap .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-template-person-designation,
-    .preview-wrap .celebration-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
+    .preview-wrap .celebration-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
     .preview-wrap .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .preview-wrap .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .preview-wrap .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -216,8 +180,8 @@
     .preview-wrap .celebration-rule { width: 38%; height: 5px; margin: 4% 0 2%; border-radius: 99px; background: #c99f46; position: relative; }
     .preview-wrap .celebration-rule span { position: absolute; width: 22%; height: 100%; left: 39%; border-radius: inherit; background: #8c2f39; }
     .preview-wrap .celebration-person { margin-top: 1%; min-height: 19%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .preview-wrap .celebration-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
-    .preview-wrap .celebration-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
+    .preview-wrap .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
+    .preview-wrap .celebration-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
     .preview-wrap .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
 </style>
 @endsection
