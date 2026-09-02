@@ -18,7 +18,17 @@
         $defaultKeywords = app()->getLocale() === 'bn'
             ? 'সাতক্ষীরা, এক্সপ্লোর সাতক্ষীরা, সাতক্ষীরা জেলা, হোম টিউটর সাতক্ষীরা, টু-লেট সাতক্ষীরা, রেস্টুরেন্ট সাতক্ষীরা, হাসপাতাল সাতক্ষীরা, স্কুল সাতক্ষীরা, কলেজ সাতক্ষীরা, ডাক্তার সাতক্ষীরা, ফার্মেসি সাতক্ষীরা, ব্যাংক সাতক্ষীরা, সরকারি অফিস সাতক্ষীরা, পর্যটন স্পট সাতক্ষীরা, শপিং সেন্টার সাতক্ষীরা, সাতক্ষীরা সদর, কালীগঞ্জ, শ্যামনগর, আশাশুনি, দেবহাটা, কলারোয়া, তালা'
             : 'Satkhira, Explore Satkhira, Satkhira District, Home Tutor Satkhira, To-Let Satkhira, Restaurant Satkhira, Hospital Satkhira, School Satkhira, College Satkhira, Doctor Satkhira, Pharmacy Satkhira, Bank Satkhira, Government Office Satkhira, Tourist Spots Satkhira, Shopping Center Satkhira, Satkhira Sadar, Kaliganj, Shyamnagar, Assasuni, Debhata, Kalaroa, Tala, Bangladesh';
+
+        $adsensePublisherId = trim((string) config('services.adsense.publisher_id'));
+        $adsenseClientId = $adsensePublisherId !== ''
+            ? (str_starts_with($adsensePublisherId, 'ca-') ? $adsensePublisherId : 'ca-' . $adsensePublisherId)
+            : null;
     @endphp
+
+    @if ($adsenseClientId)
+        <meta name="google-adsense-account" content="{{ $adsenseClientId }}">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
+    @endif
     
     <title>@hasSection('title')@yield('title') - {{ $localeSiteName }}@else{{ $localeSiteName }}@endif</title>
     
