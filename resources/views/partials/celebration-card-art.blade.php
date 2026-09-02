@@ -4,8 +4,11 @@
     $cardDesignation = $cardDesignation ?? 'আপনার পদবি';
 @endphp
 
+@php($cardPhoto = $cardPhoto ?? null)
+
     <div id="{{ $cardId }}" class="celebration-card-art" role="img" aria-label="{{ $settings->headline }}">
     <div class="celebration-card-surface">
+        <img src="{{ $cardPhoto ?? '' }}" alt="" class="celebration-card-photo" style="{{ $cardPhoto ? '' : 'display: none;' }}" crossorigin="anonymous">
         @if($settings->template_image_path)
             <img src="{{ asset('storage/' . $settings->template_image_path) }}" alt="" class="celebration-card-template-image" crossorigin="anonymous">
             <div class="celebration-template-person">

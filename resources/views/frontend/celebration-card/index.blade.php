@@ -51,6 +51,11 @@
                             <i class="fas fa-lightbulb me-2"></i>
                             <span>নাম ও পদবি লেখার সঙ্গে সঙ্গে ডান পাশে কার্ডের preview বদলে যাবে।</span>
                         </div>
+                        <div class="mb-4">
+                            <label for="celebrationPhoto" class="form-label fw-semibold">Visitor photo</label>
+                            <input id="celebrationPhoto" type="file" class="form-control form-control-lg" accept="image/jpeg,image/png">
+                            <div class="form-text">JPG/PNG, maximum 2MB. The photo is used only in this browser and is not uploaded to the server.</div>
+                        </div>
                     </form>
                 </div>
 
@@ -135,8 +140,9 @@
     .celebration-preview-stage { padding: clamp(.5rem, 2vw, 1.5rem); border-radius: 1rem; background: radial-gradient(circle at top, #fffdf7 0%, #f0f2f5 72%); }
     .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: 0 auto; color: #341712; }
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
+    .celebration-card-photo { position: absolute; z-index: 3; top: 7%; left: 50%; width: 28%; aspect-ratio: 1; transform: translateX(-50%); object-fit: cover; border: clamp(3px, .55vw, 7px) solid #fff; border-radius: 50%; box-shadow: 0 .45rem 1.25rem rgba(51, 34, 20, .2); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .celebration-template-person { position: absolute; left: 8%; right: 8%; bottom: 6%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 3%; display: flex; flex-direction: column; align-items: center; text-align: center; }
     .celebration-template-person-name { color: #4b1213; font-size: clamp(1.35rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; }
     .celebration-template-person-designation { color: #281a15; font-size: clamp(.9rem, 2.8vw, 1.75rem); font-weight: 600; margin-top: .6rem; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -170,6 +176,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const card = document.getElementById('celebrationCard');
     const nameInput = document.getElementById('celebrationName');
     const designationInput = document.getElementById('celebrationDesignation');
+    const photoInput = document.getElementById('celebrationPhoto');
+    const photoElement = card.querySelector('.celebration-card-photo');
     const pngButton = document.getElementById('downloadPngBtn');
     const jpgButton = document.getElementById('downloadJpgBtn');
     const shareButton = document.getElementById('shareCardBtn');
@@ -184,6 +192,30 @@ document.addEventListener('DOMContentLoaded', function () {
         designationElement.style.display = designation ? '' : 'none';
         const enabled = Boolean(name);
         [pngButton, jpgButton, shareButton].forEach(button => button.disabled = !enabled || busy);
+    }
+
+    function setCardPhoto(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            photoElement.removeAttribute('src');
+            photoElement.style.display = 'none';
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+            alert('Please choose a JPG or PNG image smaller than 2MB.');
+            event.target.value = '';
+            photoElement.removeAttribute('src');
+            photoElement.style.display = 'none';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            photoElement.src = reader.result;
+            photoElement.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     }
 
     async function renderCard() {
@@ -256,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     [nameInput, designationInput].forEach(input => input.addEventListener('input', setCardText));
+    photoInput.addEventListener('change', setCardPhoto);
     pngButton.addEventListener('click', () => downloadCard('png'));
     jpgButton.addEventListener('click', () => downloadCard('jpg'));
     shareButton.addEventListener('click', shareCard);
