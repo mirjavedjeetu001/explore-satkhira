@@ -204,7 +204,7 @@
     .preview-wrap { background: #f3f5f7; padding: clamp(1rem, 3vw, 2.25rem); }
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
-    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 0; left: 0; width: 100%; height: 49%; object-fit: cover; object-position: center 20%; clip-path: ellipse(80% 100% at 50% 0); filter: drop-shadow(0 .45rem .7rem rgba(51, 34, 20, .2)); }
+    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 0; left: 0; width: 100%; height: 40%; object-fit: cover; object-position: center 20%; clip-path: ellipse(80% 100% at 50% 0); filter: drop-shadow(0 .45rem .7rem rgba(51, 34, 20, .2)); }
     .preview-wrap .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .preview-wrap .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .preview-wrap .celebration-template-person-name,
