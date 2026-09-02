@@ -135,6 +135,10 @@
     .celebration-preview-stage { padding: clamp(.5rem, 2vw, 1.5rem); border-radius: 1rem; background: radial-gradient(circle at top, #fffdf7 0%, #f0f2f5 72%); }
     .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: 0 auto; color: #341712; }
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
+    .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .celebration-template-person { position: absolute; left: 8%; right: 8%; bottom: 6%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .celebration-template-person-name { color: #4b1213; font-size: clamp(1.35rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; }
+    .celebration-template-person-designation { color: #281a15; font-size: clamp(.9rem, 2.8vw, 1.75rem); font-weight: 600; margin-top: .6rem; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }

@@ -4,8 +4,15 @@
     $cardDesignation = $cardDesignation ?? 'আপনার পদবি';
 @endphp
 
-<div id="{{ $cardId }}" class="celebration-card-art" role="img" aria-label="{{ $settings->headline }}">
+    <div id="{{ $cardId }}" class="celebration-card-art" role="img" aria-label="{{ $settings->headline }}">
     <div class="celebration-card-surface">
+        @if($settings->template_image_path)
+            <img src="{{ asset('storage/' . $settings->template_image_path) }}" alt="" class="celebration-card-template-image" crossorigin="anonymous">
+            <div class="celebration-template-person">
+                <div class="celebration-person-name celebration-template-person-name">{{ $cardName }}</div>
+                <div class="celebration-person-designation celebration-template-person-designation">{{ $cardDesignation }}</div>
+            </div>
+        @else
         <svg class="celebration-card-ribbons" viewBox="0 0 1080 1080" preserveAspectRatio="none" aria-hidden="true">
             <path d="M-80 20 C210 120 285 220 460 300 C640 382 825 378 1160 215 L1160 0 L-80 0 Z" fill="#eee6da" />
             <path d="M-100 410 C220 650 720 690 1180 405" fill="none" stroke="#ffffff" stroke-width="110" opacity=".96" />
@@ -41,5 +48,6 @@
                 <div class="celebration-footer">{{ $settings->footer_text }}</div>
             @endif
         </div>
+        @endif
     </div>
 </div>

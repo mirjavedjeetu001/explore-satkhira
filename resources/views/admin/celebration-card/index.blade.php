@@ -39,7 +39,7 @@
                     <h2 class="h5 mb-0"><i class="fas fa-sliders me-2 text-primary"></i>Feature settings</h2>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.celebration-card.update-settings') }}" method="POST">
+                    <form action="{{ route('admin.celebration-card.update-settings') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -52,6 +52,15 @@
                             <label for="description" class="form-label fw-semibold">Page description</label>
                             <textarea id="description" name="description" rows="3" class="form-control @error('description') is-invalid @enderror" maxlength="1000">{{ old('description', $settings->description) }}</textarea>
                             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="template_image" class="form-label fw-semibold">Exact template image</label>
+                            <input id="template_image" name="template_image" type="file" accept="image/png,image/jpeg" class="form-control @error('template_image') is-invalid @enderror">
+                            <div class="form-text">তোমার দেওয়া blank template PNG/JPG এখানে upload করো। Upload করলে card-এ ওই ছবিটাই থাকবে, শুধু visitor-এর নাম ও পদবি বসবে।</div>
+                            @error('template_image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @if($settings->template_image_path)
+                                <div class="small text-success mt-2"><i class="fas fa-circle-check me-1"></i>Exact template uploaded</div>
+                            @endif
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -116,6 +125,10 @@
     .preview-wrap { background: #f3f5f7; padding: clamp(1rem, 3vw, 2.25rem); }
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
+    .preview-wrap .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .preview-wrap .celebration-template-person { position: absolute; left: 8%; right: 8%; bottom: 6%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .preview-wrap .celebration-template-person-name { color: #4b1213; font-size: clamp(1.35rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; }
+    .preview-wrap .celebration-template-person-designation { color: #281a15; font-size: clamp(.9rem, 2.8vw, 1.75rem); font-weight: 600; margin-top: .6rem; }
     .preview-wrap .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .preview-wrap .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .preview-wrap .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }

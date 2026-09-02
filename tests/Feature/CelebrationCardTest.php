@@ -33,4 +33,19 @@ class CelebrationCardTest extends TestCase
         $response->assertSee('শুভেচ্ছা কার্ড ফিচারটি এখন বন্ধ আছে');
         $response->assertDontSee('downloadPngBtn');
     }
+
+    public function test_uploaded_template_image_is_used_as_the_card_background(): void
+    {
+        $settings = CelebrationCardSetting::getSettings();
+        $settings->update([
+            'template_image_path' => 'celebration-card/templates/original-template.png',
+        ]);
+
+        $response = $this->get('/celebration-card');
+
+        $response->assertOk();
+        $response->assertSee('celebration-card-template-image');
+        $response->assertSee('storage/celebration-card/templates/original-template.png', false);
+        $response->assertSee('celebration-template-person-name');
+    }
 }

@@ -16,6 +16,7 @@ class CelebrationCardSetting extends Model
         'brand_tagline',
         'headline',
         'footer_text',
+        'template_image_path',
     ];
 
     protected $casts = [
