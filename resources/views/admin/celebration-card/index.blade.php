@@ -204,9 +204,9 @@
     .preview-wrap { background: #f3f5f7; padding: clamp(1rem, 3vw, 2.25rem); }
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
-    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 7%; left: 50%; width: 68%; height: 30%; transform: translateX(-50%); object-fit: cover; object-position: center 20%; border: clamp(4px, .65vw, 8px) solid #fff; border-radius: 1.25rem; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .22); }
+    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 6%; left: 50%; width: 32%; aspect-ratio: 1; transform: translateX(-50%); object-fit: cover; object-position: center 22%; border: clamp(4px, .65vw, 8px) solid #fff; border-radius: 50%; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .22); }
     .preview-wrap .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .preview-wrap .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 9%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
+    .preview-wrap .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .preview-wrap .celebration-template-person-name,
     .preview-wrap .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 3.2vw, 2.4rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-template-person-designation,
