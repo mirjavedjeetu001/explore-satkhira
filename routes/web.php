@@ -16,6 +16,7 @@ use App\Http\Controllers\ModeratorBloodController;
 use App\Http\Controllers\NewspaperController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\BirthdayCardController;
+use App\Http\Controllers\CelebrationCardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UpazilaController as AdminUpazilaController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\MangoController;
 use App\Http\Controllers\WorldCupController;
 use App\Http\Controllers\Admin\MangoController as AdminMangoController;
+use App\Http\Controllers\Admin\CelebrationCardController as AdminCelebrationCardController;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap Routes (for SEO)
@@ -235,6 +237,9 @@ Route::prefix('eid-card')->name('eid-card.')->group(function () {
     Route::post('/reset', [\App\Http\Controllers\EidCardController::class, 'resetSession'])->name('reset');
 });
 
+// Celebration Card Maker Routes
+Route::get('/celebration-card', [CelebrationCardController::class, 'index'])->name('celebration-card.index');
+
 // Fuel Availability Tracker Routes
 Route::prefix('fuel')->name('fuel.')->group(function () {
     Route::get('/', [\App\Http\Controllers\FuelController::class, 'index'])->name('index');
@@ -409,6 +414,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('eid-card/user/{phone}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroyUser'])->name('eid-card.destroy-user');
     Route::delete('eid-card/{id}', [\App\Http\Controllers\Admin\EidCardController::class, 'destroy'])->name('eid-card.destroy');
     Route::post('eid-card/clear-all', [\App\Http\Controllers\Admin\EidCardController::class, 'clearAll'])->name('eid-card.clear-all');
+
+    // Celebration Card Maker Management
+    Route::get('celebration-card', [AdminCelebrationCardController::class, 'index'])->name('celebration-card.index');
+    Route::post('celebration-card/toggle-status', [AdminCelebrationCardController::class, 'toggleStatus'])->name('celebration-card.toggle-status');
+    Route::put('celebration-card/settings', [AdminCelebrationCardController::class, 'updateSettings'])->name('celebration-card.update-settings');
     
     // Fuel Availability Tracker Management
     Route::prefix('fuel')->name('fuel.')->group(function () {

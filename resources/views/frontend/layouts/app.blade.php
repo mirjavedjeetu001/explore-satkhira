@@ -158,6 +158,24 @@
         .dropdown-mega .dropdown-menu-mega .dropdown-item:hover {
             background-color: rgba(40, 167, 69, 0.1);
         }
+
+        .feature-menu {
+            min-width: 250px;
+            padding: 8px;
+            border: 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-menu .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: .92rem;
+        }
+
+        .feature-menu .dropdown-item:hover {
+            background: #f6f8fa;
+        }
         
         @media (max-width: 768px) {
             .dropdown-mega .dropdown-menu-mega {
@@ -1025,6 +1043,47 @@
                             </div>
                         </ul>
                     </li>
+                    @php
+                        $featureMenu = [
+                            'celebration' => \App\Models\CelebrationCardSetting::isEnabled(),
+                            'blood' => \App\Models\BloodSetting::isEnabled(),
+                            'fuel' => \App\Models\FuelSetting::isEnabled(),
+                            'bus' => \App\Models\BusTicketSetting::isEnabled(),
+                            'mango' => \App\Models\MangoSetting::isEnabled(),
+                            'salami' => \App\Models\SalamiSetting::first()?->is_enabled ?? false,
+                            'eid' => \App\Models\EidCardSetting::first()?->is_enabled ?? false,
+                        ];
+                    @endphp
+                    @if(count(array_filter($featureMenu)) > 0)
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-wand-magic-sparkles me-1"></i> ফিচারসমূহ
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end feature-menu">
+                                @if($featureMenu['celebration'])
+                                    <li><a class="dropdown-item" href="{{ route('celebration-card.index') }}"><i class="fas fa-wand-magic-sparkles text-warning me-2"></i>শুভেচ্ছা কার্ড</a></li>
+                                @endif
+                                @if($featureMenu['blood'])
+                                    <li><a class="dropdown-item" href="{{ route('blood.index') }}"><i class="fas fa-tint text-danger me-2"></i>এক্সপ্লোর রক্তদাতা</a></li>
+                                @endif
+                                @if($featureMenu['fuel'])
+                                    <li><a class="dropdown-item" href="{{ route('fuel.index') }}"><i class="fas fa-gas-pump text-warning me-2"></i>জ্বালানি তেল আপডেট</a></li>
+                                @endif
+                                @if($featureMenu['bus'])
+                                    <li><a class="dropdown-item" href="{{ route('bus-ticket.index') }}"><i class="fas fa-bus text-primary me-2"></i>বাস টিকেট রিসেল</a></li>
+                                @endif
+                                @if($featureMenu['mango'])
+                                    <li><a class="dropdown-item" href="{{ route('mango.index') }}"><i class="fas fa-store text-warning me-2"></i>সাতক্ষীরার আম</a></li>
+                                @endif
+                                @if($featureMenu['salami'])
+                                    <li><a class="dropdown-item" href="{{ route('salami.index') }}"><i class="fas fa-calculator text-success me-2"></i>সালামি হিসাব</a></li>
+                                @endif
+                                @if($featureMenu['eid'])
+                                    <li><a class="dropdown-item" href="{{ route('eid-card.index') }}"><i class="fas fa-id-card text-info me-2"></i>ঈদ কার্ড</a></li>
+                                @endif
+                            </ul>
+                        </li>
+                    @endif
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('mp.*') ? 'active' : '' }}" href="{{ route('mp.index') }}">
                             <i class="fas fa-user-tie me-1"></i> {{ __('messages.mp') }}
@@ -1763,6 +1822,65 @@
             .eid-card-text {
                 font-size: 0.85rem;
             }
+        }
+    </style>
+    @endif
+
+    <!-- Floating Celebration Card Button -->
+    @php
+        $celebrationCardEnabled = \App\Models\CelebrationCardSetting::isEnabled();
+        $celebrationFloatFlags = [
+            ($salamiEnabled ?? false),
+            ($eidCardEnabled ?? false),
+            ($fuelEnabled ?? false),
+            \App\Models\BloodSetting::isEnabled(),
+            \App\Models\MangoSetting::isEnabled(),
+            ($busTicketEnabledLayout ?? false),
+            ($activeSurvey ?? false),
+            ($wcActiveLayout ?? false),
+        ];
+        $celebrationCardBottom = 30 + (count(array_filter($celebrationFloatFlags)) * 70);
+    @endphp
+    @if($celebrationCardEnabled && !request()->routeIs('celebration-card.*'))
+    <a href="{{ route('celebration-card.index') }}" class="celebration-card-float-btn" style="bottom: {{ $celebrationCardBottom }}px" title="শুভেচ্ছা কার্ড মেকার">
+        <span class="celebration-card-float-icon">🎉</span>
+        <span class="celebration-card-float-text">শুভেচ্ছা কার্ড</span>
+    </a>
+    <style>
+        .celebration-card-float-btn {
+            position: fixed;
+            right: 30px;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #8c2f39 0%, #c9973e 100%);
+            box-shadow: 0 5px 25px rgba(140, 47, 57, .35);
+            z-index: 1000;
+            transition: all .3s ease;
+            animation: celebrationCardPulse 2s infinite;
+        }
+        .celebration-card-float-btn:hover {
+            color: #fff;
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 30px rgba(140, 47, 57, .5);
+        }
+        .celebration-card-float-icon { font-size: 1.5rem; }
+        .celebration-card-float-text { font-weight: 600; font-size: .95rem; }
+        @keyframes celebrationCardPulse {
+            0%, 100% { box-shadow: 0 5px 25px rgba(140, 47, 57, .35); }
+            50% { box-shadow: 0 5px 35px rgba(201, 151, 62, .55); }
+        }
+        @media (max-width: 576px) {
+            .celebration-card-float-btn {
+                right: 20px;
+                bottom: {{ 20 + (count(array_filter($celebrationFloatFlags)) * 60) }}px !important;
+                padding: 12px 18px;
+            }
+            .celebration-card-float-text { font-size: .85rem; }
         }
     </style>
     @endif
