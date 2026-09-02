@@ -60,7 +60,7 @@
                         <div class="mb-4">
                             <label for="celebrationPhoto" class="form-label fw-semibold">Visitor photo</label>
                             <input id="celebrationPhoto" type="file" class="form-control form-control-lg" accept="image/jpeg,image/png">
-                            <div class="form-text">JPG/PNG, maximum 2MB. Download করলে final card, নাম ও পদবি admin panel-এর history-তে save হবে।</div>
+                            <div class="form-text">যেকোনো সাইজের JPG বা PNG ছবি দিন—ছবিটি সুন্দরভাবে auto-fit হয়ে card-এর curve-এর মধ্যে বসবে।</div>
                         </div>
                     </form>
                 </div>
@@ -230,9 +230,21 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.readAsDataURL(file);
     }
 
+    async function waitForImage(image) {
+        if (!image || !image.src || image.style.display === 'none') return;
+        if (!image.complete) {
+            await new Promise(resolve => {
+                image.addEventListener('load', resolve, { once: true });
+                image.addEventListener('error', resolve, { once: true });
+            });
+        }
+        if (image.naturalWidth && image.decode) await image.decode().catch(() => {});
+    }
+
     async function renderCard() {
         if (!window.html2canvas) throw new Error('Card renderer is not ready');
         await document.fonts?.ready;
+        await Promise.all(Array.from(card.querySelectorAll('img')).map(waitForImage));
         const cardWidth = card.getBoundingClientRect().width;
         return window.html2canvas(card, {
             // Keep the downloaded image social-media friendly at exactly 1080x1080.
