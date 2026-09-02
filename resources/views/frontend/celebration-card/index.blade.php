@@ -114,7 +114,10 @@
 </div>
 
 <style>
-    .celebration-card-page { background: #f7f8fa; min-height: 70vh; }
+    .celebration-card-page { background: #f7f8fa; min-height: 70vh; overflow-x: hidden; }
+    .celebration-card-page .container,
+    .celebration-panel,
+    .celebration-preview-panel { min-width: 0; }
     .celebration-card-hero {
         color: #fff;
         background:
@@ -137,6 +140,9 @@
         border: 0; border-radius: 1.25rem; background: #fff; padding: 1.35rem;
         box-shadow: 0 .5rem 1.5rem rgba(36, 27, 25, .08);
     }
+    .celebration-preview-panel > .d-flex { gap: .75rem; flex-wrap: wrap; }
+    .celebration-preview-panel > .d-flex > div { min-width: 0; }
+    .celebration-preview-panel h2 { overflow-wrap: anywhere; }
     .celebration-panel-heading { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.35rem; }
     .celebration-step {
         display: inline-flex; align-items: center; justify-content: center; flex: 0 0 2.25rem; height: 2.25rem;
@@ -172,9 +178,23 @@
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
         .celebration-card-hero .container { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
-        .celebration-hero-badge { margin-top: .5rem; }
+        .celebration-card-hero h1 { font-size: clamp(1.7rem, 8vw, 2.35rem); }
+        .celebration-card-hero .lead { font-size: 1rem; line-height: 1.55; }
+        .celebration-hero-badge { margin-top: .5rem; max-width: 100%; }
         .celebration-panel, .celebration-preview-panel { padding: 1rem; border-radius: 1rem; }
+        .celebration-preview-panel > .d-flex { align-items: flex-start !important; margin-bottom: .75rem !important; }
+        .celebration-preview-panel > .d-flex .badge { margin-left: auto; font-size: .68rem; white-space: nowrap; }
+        .celebration-preview-panel h2 { font-size: 1.1rem; }
+        .celebration-panel .form-control-lg { font-size: 1rem; min-height: 3rem; }
+        .celebration-panel .btn-lg { min-height: 3rem; font-size: 1rem; touch-action: manipulation; }
+        .celebration-tip { font-size: .82rem; }
+        .celebration-preview-stage { padding: .4rem; }
         .celebration-card-surface { border-radius: .5rem; }
+    }
+    @media (max-width: 359.98px) {
+        .celebration-card-page > .container { padding-left: .75rem; padding-right: .75rem; }
+        .celebration-panel, .celebration-preview-panel { padding: .8rem; }
+        .celebration-preview-panel > .d-flex .badge { font-size: .62rem; }
     }
 </style>
 @endsection

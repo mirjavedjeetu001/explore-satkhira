@@ -173,7 +173,7 @@
 </div>
 
 <style>
-    .celebration-history-card { overflow: hidden; border: 1px solid #eadfcf !important; background: #fffdf8; }
+    .celebration-history-card { overflow: hidden; border: 1px solid #eadfcf !important; background: #fffdf8; min-width: 0; }
     .celebration-history-header { color: #7f2330; background: linear-gradient(135deg, #fffaf0 0%, #f3e7d2 100%); border-bottom: 1px solid #d6b45f; }
     .celebration-history-header p { color: #7a6a5a; }
     .celebration-history-count { color: #fff8e8; background: #7f2330; }
@@ -201,6 +201,8 @@
     .recipient-thumb { width: 58px; height: 58px; flex: 0 0 58px; object-fit: cover; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 .25rem .75rem rgba(51, 34, 20, .16); }
     .recipient-thumb-placeholder { display: inline-flex; align-items: center; justify-content: center; color: #b10f19; background: #fff8df; font-size: 1.25rem; }
     .min-w-0 { min-width: 0; }
+    .preview-wrap, .preview-wrap .card-body { min-width: 0; }
+    .preview-wrap .card-header { gap: .75rem; flex-wrap: wrap; }
     .preview-wrap { background: #f3f5f7; padding: clamp(1rem, 3vw, 2.25rem); }
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
@@ -233,6 +235,12 @@
         .visitor-download-row { align-items: flex-start !important; }
         .history-card-thumb { width: 72px; height: 72px; }
         .history-photo-thumb { width: 34px; height: 34px; }
+        .celebration-history-card .card-body { padding: .75rem; }
+        .visitor-download-row { gap: .65rem !important; padding: .65rem; }
+        .history-download-details { width: 100%; }
+        .history-download-details .btn { min-height: 2.5rem; }
+        .preview-wrap { padding: .65rem; }
+        .preview-wrap .celebration-card-art { width: 100%; }
     }
 </style>
 @endsection
