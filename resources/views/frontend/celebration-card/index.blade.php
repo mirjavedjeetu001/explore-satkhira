@@ -147,7 +147,7 @@
     .celebration-preview-stage { padding: clamp(.5rem, 2vw, 1.5rem); border-radius: 1rem; background: radial-gradient(circle at top, #fffdf7 0%, #f0f2f5 72%); }
     .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: 0 auto; color: #341712; }
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
-    .celebration-card-photo { position: absolute; z-index: 3; top: 0; left: 0; width: 100%; height: 40%; object-fit: cover; object-position: center 20%; clip-path: ellipse(80% 100% at 50% 0); filter: drop-shadow(0 .45rem .7rem rgba(51, 34, 20, .2)); }
+    .celebration-card-photo { position: absolute; z-index: 3; top: 0; left: 0; width: 100%; height: 40%; object-fit: contain; object-position: center center; clip-path: ellipse(80% 100% at 50% 0); filter: drop-shadow(0 .45rem .7rem rgba(51, 34, 20, .2)); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .celebration-person-name,
