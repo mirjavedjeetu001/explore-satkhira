@@ -174,12 +174,6 @@
                                 @endif
                                 @if($member->phone || $member->email)
                                     <div class="team-contact mb-2">
-                                        @if($member->phone)
-                                            <div class="contact-item">
-                                                <i class="fas fa-phone-alt text-success"></i>
-                                                <a href="tel:{{ $member->phone }}" class="text-dark">{{ $member->phone }}</a>
-                                            </div>
-                                        @endif
                                         @if($member->email)
                                             <div class="contact-item">
                                                 <i class="fas fa-envelope text-success"></i>

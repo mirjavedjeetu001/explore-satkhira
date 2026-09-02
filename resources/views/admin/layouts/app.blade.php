@@ -410,7 +410,7 @@
             <a href="{{ route('admin.celebration-card.index') }}" class="nav-link {{ request()->routeIs('admin.celebration-card.*') ? 'active' : '' }}">
                 <i class="fas fa-wand-magic-sparkles"></i> <span>🎉 শুভেচ্ছা কার্ড</span>
                 @php
-                    $celebrationCardEnabled = \App\Models\CelebrationCardSetting::first()?->is_enabled ?? false;
+                    $celebrationCardEnabled = \App\Models\CelebrationCardSetting::isEnabled();
                 @endphp
                 <span class="badge {{ $celebrationCardEnabled ? 'bg-success' : 'bg-secondary' }}">
                     {{ $celebrationCardEnabled ? 'ON' : 'OFF' }}

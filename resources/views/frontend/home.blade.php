@@ -1486,7 +1486,7 @@
                                     <div class="text-center text-muted py-2">
                                         <i class="fas fa-lock fa-2x mb-1"></i>
                                         <p class="mb-0 fw-bold text-danger small">অ্যাডমিন বন্ধ রেখেছে</p>
-                                        <p class="mb-0 small">যোগাযোগ: 01811480222</p>
+                                        <p class="mb-0 small">যোগাযোগ করতে কন্টাক্ট পেজ ব্যবহার করুন</p>
                                     </div>
                                 @else
                                     {{-- Image thumbnail --}}
@@ -2275,11 +2275,6 @@
                                     <p class="text-muted small mt-2 mb-0">{{ $member->designation_display }}</p>
                                 @endif
                                 <div class="team-social mt-3">
-                                    @if($member->phone)
-                                        <a href="tel:{{ $member->phone }}" class="team-social-btn" style="--btn-color: #25D366;" title="{{ $member->phone }}">
-                                            <i class="fas fa-phone-alt"></i>
-                                        </a>
-                                    @endif
                                     @if($member->email)
                                         <a href="mailto:{{ $member->email }}" class="team-social-btn" style="--btn-color: #EA4335;" title="{{ $member->email }}">
                                             <i class="fas fa-envelope"></i>

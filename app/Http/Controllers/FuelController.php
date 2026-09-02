@@ -90,7 +90,7 @@ class FuelController extends Controller
             $station = FuelStation::with('upazila')->findOrFail($stationId);
             if ($station->is_locked) {
                 return redirect()->route('fuel.station', $station->id)
-                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে যোগাযোগ করুন: 01811480222');
+                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে কন্টাক্ট পেজ ব্যবহার করুন।');
             }
             $latestReport = FuelReport::where('fuel_station_id', $stationId)
                 ->orderByDesc('created_at')
@@ -173,7 +173,7 @@ class FuelController extends Controller
             $checkStation = FuelStation::find($fuelStationId);
             if ($checkStation && $checkStation->is_locked) {
                 return redirect()->route('fuel.station', $fuelStationId)
-                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে যোগাযোগ করুন: 01811480222');
+                    ->with('error', 'এই পাম্পটি অ্যাডমিন বন্ধ রেখেছে। আপডেট দিতে কন্টাক্ট পেজ ব্যবহার করুন।');
             }
         }
         

@@ -975,8 +975,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <i class="fas fa-phone-alt me-2"></i> {{ \App\Models\SiteSetting::get('contact_phone', '+880 1700-000000') }}
-                    <span class="mx-3">|</span>
                     <i class="fas fa-envelope me-2"></i> {{ \App\Models\SiteSetting::get('contact_email', 'info@satkhira.com') }}
                 </div>
                 <div class="col-md-6 text-end">
@@ -1119,11 +1117,6 @@
                         <hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
                     </li>
                     <li class="nav-item d-lg-none">
-                        <span class="nav-link text-white-50" style="font-size: 0.85rem;">
-                            <i class="fas fa-phone-alt me-2"></i>{{ \App\Models\SiteSetting::get('contact_phone', '+880 1700-000000') }}
-                        </span>
-                    </li>
-                    <li class="nav-item d-lg-none">
                         <div class="nav-link">
                             <a href="{{ route('language.switch', 'bn') }}" class="me-2 {{ app()->getLocale() == 'bn' ? 'text-warning fw-bold' : 'text-white' }}" style="text-decoration: none;">বাংলা</a>
                             <span class="text-white-50">|</span>
@@ -1233,11 +1226,8 @@
                     <h5>{{ __('messages.contact') }}</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ \App\Models\SiteSetting::get('contact_address', 'Satkhira, Bangladesh') }}</li>
-                        <li class="mb-2"><i class="fas fa-phone me-2"></i>{{ \App\Models\SiteSetting::get('contact_phone') }}</li>
                         <li class="mb-2"><i class="fas fa-envelope me-2"></i>{{ \App\Models\SiteSetting::get('contact_email') }}</li>
-                        @if(\App\Models\SiteSetting::get('whatsapp'))
-                            <li class="mb-2"><i class="fab fa-whatsapp me-2"></i>{{ \App\Models\SiteSetting::get('whatsapp') }}</li>
-                        @endif
+                        <li class="mb-2"><a href="{{ route('contact') }}"><i class="fas fa-paper-plane me-2"></i>যোগাযোগ করুন</a></li>
                     </ul>
                 </div>
             </div>
