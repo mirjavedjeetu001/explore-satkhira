@@ -204,13 +204,13 @@
     .preview-wrap { background: #f3f5f7; padding: clamp(1rem, 3vw, 2.25rem); }
     .preview-wrap .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: auto; color: #341712; }
     .preview-wrap .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
-    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 5.5%; left: 50%; width: 34%; height: 34%; transform: translateX(-50%); object-fit: contain; object-position: center center; background: rgba(255, 255, 255, .72); border: clamp(5px, .75vw, 9px) solid #b10f14; border-radius: 50%; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .24); }
+    .preview-wrap .celebration-card-photo { position: absolute; z-index: 3; top: 5.5%; left: 50%; width: 34%; height: 34%; transform: translateX(-50%); object-fit: contain; object-position: center center; background: rgba(255, 255, 255, .72); border: clamp(5px, .75vw, 9px) solid #dc6b73; border-radius: 50%; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .24); }
     .preview-wrap .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .preview-wrap .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .preview-wrap .celebration-template-person-name,
     .preview-wrap .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 3.2vw, 2.4rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-template-person-designation,
-    .preview-wrap .celebration-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+    .preview-wrap .celebration-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .preview-wrap .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .preview-wrap .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -225,7 +225,7 @@
     .preview-wrap .celebration-person-name.celebration-person-long,
     .preview-wrap .celebration-template-person-name.celebration-person-long,
     .celebration-person-name.celebration-person-long { font-size: clamp(.95rem, 2.45vw, 1.95rem); }
-    .preview-wrap .celebration-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+    .preview-wrap .celebration-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     @media (max-width: 575.98px) {
         .celebration-history-header { align-items: flex-start !important; gap: .75rem; }
