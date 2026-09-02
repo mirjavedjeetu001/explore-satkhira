@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('birthday_card_comments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('birthday_card_id')->constrained('birthday_cards')->onDelete('cascade');
-            $table->string('visitor_name');
-            $table->string('visitor_phone')->unique();
-            $table->text('wish_message');
-            $table->timestamps();
-            $table->unique(['birthday_card_id', 'visitor_phone']);
-        });
+        if (! Schema::hasTable('birthday_card_comments')) {
+            Schema::create('birthday_card_comments', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('birthday_card_id')->constrained('birthday_cards')->onDelete('cascade');
+                $table->string('visitor_name');
+                $table->string('visitor_phone')->unique();
+                $table->text('wish_message');
+                $table->timestamps();
+                $table->unique(['birthday_card_id', 'visitor_phone']);
+            });
+        }
     }
 
     /**

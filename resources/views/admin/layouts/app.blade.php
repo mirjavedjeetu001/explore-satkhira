@@ -407,6 +407,15 @@
                     {{ $eidCardEnabled ? 'ON' : 'OFF' }}
                 </span>
             </a>
+            <a href="{{ route('admin.celebration-card.index') }}" class="nav-link {{ request()->routeIs('admin.celebration-card.*') ? 'active' : '' }}">
+                <i class="fas fa-wand-magic-sparkles"></i> <span>🎉 শুভেচ্ছা কার্ড</span>
+                @php
+                    $celebrationCardEnabled = \App\Models\CelebrationCardSetting::isEnabled();
+                @endphp
+                <span class="badge {{ $celebrationCardEnabled ? 'bg-success' : 'bg-secondary' }}">
+                    {{ $celebrationCardEnabled ? 'ON' : 'OFF' }}
+                </span>
+            </a>
             <a href="{{ route('admin.fuel.reports') }}" class="nav-link {{ request()->routeIs('admin.fuel.*') ? 'active' : '' }}">
                 <i class="fas fa-gas-pump"></i> <span>⛽ জ্বালানি তেল</span>
                 @php 

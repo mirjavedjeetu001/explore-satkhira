@@ -111,7 +111,7 @@
                                 <div class="text-center text-muted py-3">
                                     <i class="fas fa-lock fa-2x mb-2"></i>
                                     <p class="mb-1 fw-bold text-danger">অ্যাডমিন বন্ধ রেখেছে</p>
-                                    <p class="mb-0 small">যোগাযোগ করুন: 01811480222</p>
+                                    <p class="mb-0 small">যোগাযোগ করতে কন্টাক্ট পেজ ব্যবহার করুন</p>
                                 </div>
                             @elseif($report)
                                 {{-- Image thumbnail --}}

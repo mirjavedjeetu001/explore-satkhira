@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('birthday_cards', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->date('birthday_date');
-            $table->string('card_image')->nullable();
-            $table->text('bengali_message')->nullable();
-            $table->text('english_message')->nullable();
-            $table->timestamps();
-            $table->unique(['user_id', 'birthday_date']);
-        });
+        if (! Schema::hasTable('birthday_cards')) {
+            Schema::create('birthday_cards', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->date('birthday_date');
+                $table->string('card_image')->nullable();
+                $table->text('bengali_message')->nullable();
+                $table->text('english_message')->nullable();
+                $table->timestamps();
+                $table->unique(['user_id', 'birthday_date']);
+            });
+        }
     }
 
     /**

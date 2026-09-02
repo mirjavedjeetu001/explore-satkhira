@@ -28,7 +28,7 @@
                             $settings = \App\Models\SiteSetting::pluck('value', 'key')->toArray();
                         @endphp
                         
-                        <div class="mb-4">
+                        <div class="mb-4" data-nosnippet>
                             <div class="d-flex">
                                 <div class="flex-shrink-0">
                                     <div class="bg-success bg-opacity-10 rounded-circle p-3">
@@ -221,12 +221,6 @@
                             @endif
                             @if($member->phone || $member->email)
                                 <div class="small">
-                                    @if($member->phone)
-                                        <div class="mb-1">
-                                            <i class="fas fa-phone-alt text-success me-1"></i>
-                                            <a href="tel:{{ $member->phone }}" class="text-decoration-none text-dark">{{ $member->phone }}</a>
-                                        </div>
-                                    @endif
                                     @if($member->email)
                                         <div>
                                             <i class="fas fa-envelope text-success me-1"></i>
@@ -281,12 +275,6 @@
                             <span class="badge mb-2" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
                                 <i class="fas fa-map-marker-alt me-1"></i>{{ $moderator->upazila->name_bn ?? $moderator->upazila->name ?? 'N/A' }}
                             </span>
-                            @if($moderator->phone)
-                                <div class="small mt-2">
-                                    <i class="fas fa-phone-alt text-warning me-1"></i>
-                                    <a href="tel:{{ $moderator->phone }}" class="text-decoration-none text-dark">{{ $moderator->phone }}</a>
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -335,12 +323,6 @@
                                     @foreach($moderator->approvedCategories->take(2) as $cat)
                                         <span class="badge bg-info me-1">{{ $cat->name_bn ?? $cat->name }}</span>
                                     @endforeach
-                                </div>
-                            @endif
-                            @if($moderator->phone)
-                                <div class="small mt-2">
-                                    <i class="fas fa-phone-alt text-info me-1"></i>
-                                    <a href="tel:{{ $moderator->phone }}" class="text-decoration-none text-dark">{{ $moderator->phone }}</a>
                                 </div>
                             @endif
                         </div>

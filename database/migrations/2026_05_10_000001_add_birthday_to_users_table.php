@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->date('date_of_birth')->nullable()->after('phone');
-        });
+        if (! Schema::hasColumn('users', 'date_of_birth')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->date('date_of_birth')->nullable()->after('phone');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('date_of_birth');
-        });
+        if (Schema::hasColumn('users', 'date_of_birth')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('date_of_birth');
+            });
+        }
     }
 };
