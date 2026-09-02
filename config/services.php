@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'adsense' => [
+        // Publisher IDs are public. The environment variable can override this per deployment.
+        'publisher_id' => env('ADSENSE_PUBLISHER_ID', 'pub-7858837670683286'),
+    ],
+
     'vapid' => [
         'public_key' => env('VAPID_PUBLIC_KEY'),
         'private_key' => env('VAPID_PRIVATE_KEY'),
