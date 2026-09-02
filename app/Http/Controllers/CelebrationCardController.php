@@ -31,10 +31,14 @@ class CelebrationCardController extends Controller
             'designation' => ['nullable', 'string', 'max:100'],
             'download_format' => ['required', 'in:png,jpg'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'card_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:8192'],
         ]);
 
         $photoPath = $request->file('photo')
             ? $request->file('photo')->store('celebration-card/visitor-photos', 'public')
+            : null;
+        $cardImagePath = $request->file('card_image')
+            ? $request->file('card_image')->store('celebration-card/downloads', 'public')
             : null;
 
         CelebrationCardGeneration::create([
@@ -42,6 +46,7 @@ class CelebrationCardController extends Controller
             'designation' => $validated['designation'] ?? null,
             'download_format' => $validated['download_format'],
             'photo_path' => $photoPath,
+            'card_image_path' => $cardImagePath,
         ]);
 
         return response()->json(['success' => true]);

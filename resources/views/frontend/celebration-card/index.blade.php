@@ -247,12 +247,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${safeName || 'shubhechha-card'}-explore-satkhira.${extension}`;
     }
 
-    async function logGeneration(format) {
+    async function logGeneration(format, canvas) {
         const payload = new FormData();
         payload.append('name', nameInput.value.trim());
         payload.append('designation', designationInput.value.trim());
         payload.append('download_format', format);
         if (photoInput.files[0]) payload.append('photo', photoInput.files[0]);
+        const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, format === 'jpg' ? 'image/jpeg' : 'image/png', .95));
+        if (cardBlob) payload.append('card_image', cardBlob, `celebration-card.${format}`);
 
         const response = await fetch(@js(route('celebration-card.generations.store')), {
             method: 'POST',
@@ -277,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const canvas = await renderCard();
             const mime = type === 'jpg' ? 'image/jpeg' : 'image/png';
             try {
-                await logGeneration(type);
+                await logGeneration(type, canvas);
             } catch (historyError) {
                 console.warn('Download history could not be saved.', historyError);
             }

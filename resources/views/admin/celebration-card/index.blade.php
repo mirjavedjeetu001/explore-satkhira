@@ -34,26 +34,48 @@
 
     <div class="row g-4 mb-4 align-items-start">
         <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card border-0 shadow-sm celebration-history-card">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center celebration-history-header">
                     <div>
-                        <h2 class="h5 mb-1"><i class="fas fa-clock-rotate-left me-2 text-success"></i>Visitor download history</h2>
-                        <p class="text-muted small mb-0">Visitor PNG/JPG download করলে নাম, পদবি ও upload করা photo এখানে save হবে। একই visitor বারবার download করলে আলাদা record হবে।</p>
+                        <h2 class="h5 mb-1"><i class="fas fa-clock-rotate-left me-2"></i>Visitor download history</h2>
+                        <p class="small mb-0">Visitor-এর downloaded card, নাম, পদবি ও upload করা photo এখানে দেখা এবং save করা যাবে। একই visitor বারবার download করলে আলাদা record হবে।</p>
                     </div>
-                    <span class="badge text-bg-light">{{ $generations->count() }} downloads</span>
+                    <span class="badge celebration-history-count">{{ $generations->count() }} downloads</span>
                 </div>
                 <div class="card-body">
                     @forelse($generations as $generation)
                         <div class="visitor-download-row d-flex align-items-center gap-3 {{ !$loop->last ? 'border-bottom pb-3 mb-3' : '' }}">
-                            @if($generation->photo_path)
-                                <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="{{ $generation->name }}" class="recipient-thumb">
-                            @else
-                                <div class="recipient-thumb recipient-thumb-placeholder"><i class="fas fa-user"></i></div>
-                            @endif
-                            <div class="flex-grow-1 min-w-0">
-                                <div class="fw-bold text-dark text-truncate">{{ $generation->name }}</div>
-                                <div class="small text-muted text-truncate">{{ $generation->designation ?: 'No designation' }}</div>
-                                <div class="small text-muted">{{ strtoupper($generation->download_format) }} · {{ $generation->created_at->format('d M Y, h:i A') }}</div>
+                            <div class="history-visuals">
+                                @if($generation->card_image_path)
+                                    <a href="{{ asset('storage/' . $generation->card_image_path) }}" target="_blank" rel="noopener" title="View downloaded card">
+                                        <img src="{{ asset('storage/' . $generation->card_image_path) }}" alt="Downloaded card for {{ $generation->name }}" class="history-card-thumb">
+                                    </a>
+                                @elseif($generation->photo_path)
+                                    <a href="{{ asset('storage/' . $generation->photo_path) }}" target="_blank" rel="noopener" title="View visitor photo">
+                                        <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="{{ $generation->name }}" class="history-card-thumb history-photo-fallback">
+                                    </a>
+                                @else
+                                    <div class="history-card-thumb history-card-placeholder"><i class="fas fa-image"></i></div>
+                                @endif
+                                @if($generation->card_image_path && $generation->photo_path)
+                                    <a href="{{ asset('storage/' . $generation->photo_path) }}" target="_blank" rel="noopener" title="View visitor photo">
+                                        <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="Visitor photo of {{ $generation->name }}" class="history-photo-thumb">
+                                    </a>
+                                @endif
+                            </div>
+                            <div class="flex-grow-1 min-w-0 history-download-details">
+                                <div class="fw-bold text-truncate history-name">{{ $generation->name }}</div>
+                                <div class="small text-truncate history-designation">{{ $generation->designation ?: 'No designation' }}</div>
+                                <div class="small history-meta"><span class="history-format">{{ strtoupper($generation->download_format) }}</span> <span>· {{ $generation->created_at->format('d M Y, h:i A') }}</span></div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    @if($generation->card_image_path)
+                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" target="_blank" rel="noopener" class="btn btn-sm history-view-button"><i class="fas fa-eye me-1"></i>View card</a>
+                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" download class="btn btn-sm history-save-button"><i class="fas fa-download me-1"></i>Save card</a>
+                                    @endif
+                                    @if($generation->photo_path)
+                                        <a href="{{ asset('storage/' . $generation->photo_path) }}" download class="btn btn-sm history-photo-button"><i class="fas fa-image me-1"></i>Save photo</a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -157,6 +179,30 @@
 </div>
 
 <style>
+    .celebration-history-card { overflow: hidden; border: 1px solid #eadfcf !important; background: #fffdf8; }
+    .celebration-history-header { color: #7f2330; background: linear-gradient(135deg, #fffaf0 0%, #f3e7d2 100%); border-bottom: 1px solid #d6b45f; }
+    .celebration-history-header p { color: #7a6a5a; }
+    .celebration-history-count { color: #fff8e8; background: #7f2330; }
+    .celebration-history-card .card-body { padding: 1rem; background: #fffdf8; }
+    .visitor-download-row { padding: .75rem; border: 1px solid #eee2d1; border-radius: 1rem; background: linear-gradient(135deg, #fffdf8 0%, #fff8eb 100%); transition: box-shadow .2s ease, transform .2s ease; }
+    .visitor-download-row:hover { transform: translateY(-1px); box-shadow: 0 .45rem 1rem rgba(127, 35, 48, .1); }
+    .visitor-download-row.border-bottom { border-bottom: 1px solid #eee2d1 !important; }
+    .history-visuals { display: flex; align-items: center; gap: .45rem; flex: 0 0 auto; }
+    .history-card-thumb { display: block; width: 88px; height: 88px; object-fit: cover; border: 3px solid #fff; border-radius: .8rem; box-shadow: 0 .3rem .8rem rgba(80, 20, 15, .16); }
+    .history-card-thumb:hover { border-color: #d6b45f; }
+    .history-photo-thumb { display: block; width: 42px; height: 42px; object-fit: cover; border: 2px solid #d6b45f; border-radius: 50%; box-shadow: 0 .2rem .5rem rgba(80, 20, 15, .14); }
+    .history-card-placeholder { display: inline-flex; align-items: center; justify-content: center; color: #b68a2d; background: #fff8df; font-size: 1.4rem; }
+    .history-photo-fallback { border-radius: 50%; }
+    .history-name { color: #7f2330; font-size: 1.02rem; }
+    .history-designation { color: #a36c17; }
+    .history-meta { color: #887665; }
+    .history-format { display: inline-block; padding: .1rem .42rem; border-radius: 999px; color: #fff8e8; background: #a36c17; font-size: .68rem; font-weight: 700; letter-spacing: .04em; }
+    .history-view-button { color: #7f2330; border-color: #b68a2d; background: #fffaf0; }
+    .history-view-button:hover { color: #fff; background: #7f2330; border-color: #7f2330; }
+    .history-save-button { color: #fff8e8; border-color: #7f2330; background: #7f2330; }
+    .history-save-button:hover { color: #fff; background: #5f1824; border-color: #5f1824; }
+    .history-photo-button { color: #a36c17; border-color: #d6b45f; background: #fffdf8; }
+    .history-photo-button:hover { color: #fff; background: #a36c17; border-color: #a36c17; }
     .recipient-thumb { width: 58px; height: 58px; flex: 0 0 58px; object-fit: cover; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 .25rem .75rem rgba(51, 34, 20, .16); }
     .recipient-thumb-placeholder { display: inline-flex; align-items: center; justify-content: center; color: #b10f19; background: #fff8df; font-size: 1.25rem; }
     .min-w-0 { min-width: 0; }
@@ -183,5 +229,12 @@
     .preview-wrap .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .preview-wrap .celebration-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
     .preview-wrap .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
+    @media (max-width: 575.98px) {
+        .celebration-history-header { align-items: flex-start !important; gap: .75rem; }
+        .celebration-history-header p { line-height: 1.35; }
+        .visitor-download-row { align-items: flex-start !important; }
+        .history-card-thumb { width: 72px; height: 72px; }
+        .history-photo-thumb { width: 34px; height: 34px; }
+    }
 </style>
 @endsection

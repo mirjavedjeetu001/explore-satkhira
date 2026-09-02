@@ -10,6 +10,7 @@ class CelebrationCardGeneration extends Model
         'name',
         'designation',
         'photo_path',
+        'card_image_path',
         'download_format',
     ];
 }
