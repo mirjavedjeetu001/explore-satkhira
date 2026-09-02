@@ -38,7 +38,7 @@
                 <div class="card-header py-3 d-flex justify-content-between align-items-center celebration-history-header">
                     <div>
                         <h2 class="h5 mb-1"><i class="fas fa-clock-rotate-left me-2"></i>Visitor download history</h2>
-                        <p class="small mb-0">Visitor-এর downloaded card, নাম, পদবি ও upload করা photo এখানে দেখা এবং save করা যাবে। একই visitor বারবার download করলে আলাদা record হবে।</p>
+                        <p class="small mb-0">Visitor যে final 1080×1080 card download করেছে, সেটি এখানে HD-তে দেখা ও save করা যাবে। একই visitor বারবার download করলে আলাদা record হবে।</p>
                     </div>
                     <span class="badge celebration-history-count">{{ $generations->count() }} downloads</span>
                 </div>
@@ -48,32 +48,26 @@
                             <div class="history-visuals">
                                 @if($generation->card_image_path)
                                     <a href="{{ asset('storage/' . $generation->card_image_path) }}" target="_blank" rel="noopener" title="View downloaded card">
-                                        <img src="{{ asset('storage/' . $generation->card_image_path) }}" alt="Downloaded card for {{ $generation->name }}" class="history-card-thumb">
+                                        <img src="{{ asset('storage/' . $generation->card_image_path) }}" alt="Downloaded HD card for {{ $generation->name }}" class="history-card-thumb">
                                     </a>
                                 @elseif($generation->photo_path)
                                     <a href="{{ asset('storage/' . $generation->photo_path) }}" target="_blank" rel="noopener" title="View visitor photo">
-                                        <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="{{ $generation->name }}" class="history-card-thumb history-photo-fallback">
+                                        <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="Visitor source photo for {{ $generation->name }}" class="history-card-thumb history-photo-fallback">
                                     </a>
                                 @else
                                     <div class="history-card-thumb history-card-placeholder"><i class="fas fa-image"></i></div>
-                                @endif
-                                @if($generation->card_image_path && $generation->photo_path)
-                                    <a href="{{ asset('storage/' . $generation->photo_path) }}" target="_blank" rel="noopener" title="View visitor photo">
-                                        <img src="{{ asset('storage/' . $generation->photo_path) }}" alt="Visitor photo of {{ $generation->name }}" class="history-photo-thumb">
-                                    </a>
                                 @endif
                             </div>
                             <div class="flex-grow-1 min-w-0 history-download-details">
                                 <div class="fw-bold text-truncate history-name">{{ $generation->name }}</div>
                                 <div class="small text-truncate history-designation">{{ $generation->designation ?: 'No designation' }}</div>
-                                <div class="small history-meta"><span class="history-format">{{ strtoupper($generation->download_format) }}</span> <span>· {{ $generation->created_at->format('d M Y, h:i A') }}</span></div>
+                                <div class="small history-meta"><span class="history-format">{{ strtoupper($generation->download_format) }}</span> <span>· 1080×1080 HD · {{ $generation->created_at->format('d M Y, h:i A') }}</span></div>
                                 <div class="d-flex flex-wrap gap-2 mt-2">
                                     @if($generation->card_image_path)
-                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" target="_blank" rel="noopener" class="btn btn-sm history-view-button"><i class="fas fa-eye me-1"></i>View card</a>
-                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" download class="btn btn-sm history-save-button"><i class="fas fa-download me-1"></i>Save card</a>
-                                    @endif
-                                    @if($generation->photo_path)
-                                        <a href="{{ asset('storage/' . $generation->photo_path) }}" download class="btn btn-sm history-photo-button"><i class="fas fa-image me-1"></i>Save photo</a>
+                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" target="_blank" rel="noopener" class="btn btn-sm history-view-button"><i class="fas fa-eye me-1"></i>View HD card</a>
+                                        <a href="{{ asset('storage/' . $generation->card_image_path) }}" download class="btn btn-sm history-save-button"><i class="fas fa-download me-1"></i>Save HD card</a>
+                                    @else
+                                        <span class="small history-missing-card"><i class="fas fa-circle-info me-1"></i>Old record: download again to save HD card</span>
                                     @endif
                                 </div>
                             </div>
@@ -197,6 +191,7 @@
     .history-designation { color: #a36c17; }
     .history-meta { color: #887665; }
     .history-format { display: inline-block; padding: .1rem .42rem; border-radius: 999px; color: #fff8e8; background: #a36c17; font-size: .68rem; font-weight: 700; letter-spacing: .04em; }
+    .history-missing-card { color: #9b8066; }
     .history-view-button { color: #7f2330; border-color: #b68a2d; background: #fffaf0; }
     .history-view-button:hover { color: #fff; background: #7f2330; border-color: #7f2330; }
     .history-save-button { color: #fff8e8; border-color: #7f2330; background: #7f2330; }

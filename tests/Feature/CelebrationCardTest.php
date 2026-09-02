@@ -82,23 +82,26 @@ class CelebrationCardTest extends TestCase
 
     public function test_same_visitor_can_download_more_than_once(): void
     {
+        Storage::fake('public');
         CelebrationCardSetting::getSettings();
 
         $this->post(route('celebration-card.generations.store'), [
             'name' => 'Same Visitor',
             'designation' => 'Developer',
             'download_format' => 'png',
+            'card_image' => UploadedFile::fake()->image('first-card.png'),
         ])->assertOk();
         $this->post(route('celebration-card.generations.store'), [
             'name' => 'Same Visitor',
             'designation' => 'Developer',
             'download_format' => 'jpg',
+            'card_image' => UploadedFile::fake()->image('second-card.jpg'),
         ]);
 
         $this->assertSame(2, CelebrationCardGeneration::where('name', 'Same Visitor')->count());
     }
 
-    public function test_admin_can_view_downloaded_card_and_photo_history(): void
+    public function test_admin_can_view_downloaded_card_history(): void
     {
         $role = Role::create(['name' => 'Admin', 'slug' => 'admin']);
         $admin = User::factory()->create([
@@ -108,7 +111,6 @@ class CelebrationCardTest extends TestCase
         CelebrationCardGeneration::create([
             'name' => 'History Visitor',
             'designation' => 'Developer',
-            'photo_path' => 'celebration-card/visitor-photos/history.png',
             'card_image_path' => 'celebration-card/downloads/history.png',
             'download_format' => 'png',
         ]);
@@ -117,10 +119,8 @@ class CelebrationCardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('History Visitor');
-        $response->assertSee('View card');
-        $response->assertSee('Save card');
-        $response->assertSee('Save photo');
+        $response->assertSee('View HD card');
+        $response->assertSee('Save HD card');
         $response->assertSee(asset('storage/celebration-card/downloads/history.png'), false);
-        $response->assertSee(asset('storage/celebration-card/visitor-photos/history.png'), false);
     }
 }

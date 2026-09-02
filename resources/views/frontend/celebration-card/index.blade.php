@@ -60,7 +60,7 @@
                         <div class="mb-4">
                             <label for="celebrationPhoto" class="form-label fw-semibold">Visitor photo</label>
                             <input id="celebrationPhoto" type="file" class="form-control form-control-lg" accept="image/jpeg,image/png">
-                            <div class="form-text">JPG/PNG, maximum 2MB. Download করলে photo-সহ তথ্য admin panel-এর history-তে save হবে।</div>
+                            <div class="form-text">JPG/PNG, maximum 2MB. Download করলে final card, নাম ও পদবি admin panel-এর history-তে save হবে।</div>
                         </div>
                     </form>
                 </div>
@@ -254,7 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
         payload.append('download_format', format);
         if (photoInput.files[0]) payload.append('photo', photoInput.files[0]);
         const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, format === 'jpg' ? 'image/jpeg' : 'image/png', .95));
-        if (cardBlob) payload.append('card_image', cardBlob, `celebration-card.${format}`);
+        if (!cardBlob) throw new Error('Unable to create the downloaded card image');
+        payload.append('card_image', cardBlob, `celebration-card.${format}`);
 
         const response = await fetch(@js(route('celebration-card.generations.store')), {
             method: 'POST',
@@ -278,17 +279,13 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const canvas = await renderCard();
             const mime = type === 'jpg' ? 'image/jpeg' : 'image/png';
-            try {
-                await logGeneration(type, canvas);
-            } catch (historyError) {
-                console.warn('Download history could not be saved.', historyError);
-            }
+            await logGeneration(type, canvas);
             const link = document.createElement('a');
             link.download = filename(type);
             link.href = canvas.toDataURL(mime, .95);
             link.click();
         } catch (error) {
-            alert('কার্ড তৈরি করা যাচ্ছে না। আবার চেষ্টা করুন।');
+            alert('কার্ড তৈরি বা history-তে save করা যাচ্ছে না। আবার চেষ্টা করুন।');
         } finally {
             busy = false;
             button.innerHTML = original;

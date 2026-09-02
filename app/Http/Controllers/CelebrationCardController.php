@@ -31,7 +31,7 @@ class CelebrationCardController extends Controller
             'designation' => ['nullable', 'string', 'max:100'],
             'download_format' => ['required', 'in:png,jpg'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'card_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:8192'],
+            'card_image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:8192'],
         ]);
 
         $photoPath = $request->file('photo')
