@@ -239,6 +239,7 @@ Route::prefix('eid-card')->name('eid-card.')->group(function () {
 
 // Celebration Card Maker Routes
 Route::get('/celebration-card', [CelebrationCardController::class, 'index'])->name('celebration-card.index');
+Route::get('/celebration-card/recipient/{recipient}', [CelebrationCardController::class, 'showRecipient'])->name('celebration-card.recipient');
 
 // Fuel Availability Tracker Routes
 Route::prefix('fuel')->name('fuel.')->group(function () {
@@ -419,6 +420,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('celebration-card', [AdminCelebrationCardController::class, 'index'])->name('celebration-card.index');
     Route::post('celebration-card/toggle-status', [AdminCelebrationCardController::class, 'toggleStatus'])->name('celebration-card.toggle-status');
     Route::put('celebration-card/settings', [AdminCelebrationCardController::class, 'updateSettings'])->name('celebration-card.update-settings');
+    Route::post('celebration-card/recipients', [AdminCelebrationCardController::class, 'storeRecipient'])->name('celebration-card.recipients.store');
+    Route::delete('celebration-card/recipients/{recipient}', [AdminCelebrationCardController::class, 'destroyRecipient'])->name('celebration-card.recipients.destroy');
     
     // Fuel Availability Tracker Management
     Route::prefix('fuel')->name('fuel.')->group(function () {

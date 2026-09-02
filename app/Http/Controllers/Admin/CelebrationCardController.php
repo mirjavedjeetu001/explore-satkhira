@@ -3,16 +3,47 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CelebrationCardRecipient;
 use App\Models\CelebrationCardSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CelebrationCardController extends Controller
 {
     public function index()
     {
         $settings = CelebrationCardSetting::getSettings();
+        $recipients = CelebrationCardRecipient::latest()->get();
 
-        return view('admin.celebration-card.index', compact('settings'));
+        return view('admin.celebration-card.index', compact('settings', 'recipients'));
+    }
+
+    public function storeRecipient(Request $request)
+    {
+        $validated = $request->validate([
+            'recipient_name' => ['required', 'string', 'max:100'],
+            'recipient_designation' => ['nullable', 'string', 'max:100'],
+            'recipient_photo' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+        ]);
+
+        CelebrationCardRecipient::create([
+            'name' => $validated['recipient_name'],
+            'designation' => $validated['recipient_designation'] ?? null,
+            'photo_path' => $request->file('recipient_photo')->store('celebration-card/recipients', 'public'),
+        ]);
+
+        return back()->with('success', 'Recipient card saved successfully.');
+    }
+
+    public function destroyRecipient(CelebrationCardRecipient $recipient)
+    {
+        if ($recipient->photo_path) {
+            Storage::disk('public')->delete($recipient->photo_path);
+        }
+
+        $recipient->delete();
+
+        return back()->with('success', 'Recipient card deleted successfully.');
     }
 
     public function toggleStatus()

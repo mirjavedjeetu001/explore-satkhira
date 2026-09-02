@@ -1,5 +1,12 @@
 @extends('frontend.layouts.app')
 
+@php
+    $recipient = $recipient ?? null;
+    $initialName = $recipient?->name ?? '';
+    $initialDesignation = $recipient?->designation ?? '';
+    $initialPhoto = $recipient?->photo_path ? asset('storage/' . $recipient->photo_path) : null;
+@endphp
+
 @section('title', $settings->title)
 @section('meta_description', $settings->description)
 
@@ -38,12 +45,12 @@
                     <form id="celebrationCardForm" novalidate>
                         <div class="mb-3">
                             <label for="celebrationName" class="form-label fw-semibold">নাম <span class="text-danger">*</span></label>
-                            <input id="celebrationName" type="text" class="form-control form-control-lg" maxlength="100" placeholder="যেমন: মাকিব হাসান" autocomplete="name" required>
+                            <input id="celebrationName" type="text" class="form-control form-control-lg" maxlength="100" value="{{ $initialName }}" placeholder="Mir Javed Jeetu" autocomplete="name" required>
                             <div class="form-text">কার্ডে যে নামটি দেখাতে চান</div>
                         </div>
                         <div class="mb-4">
                             <label for="celebrationDesignation" class="form-label fw-semibold">পদবি</label>
-                            <input id="celebrationDesignation" type="text" class="form-control form-control-lg" maxlength="100" placeholder="যেমন: সম্পাদক" autocomplete="organization-title">
+                            <input id="celebrationDesignation" type="text" class="form-control form-control-lg" maxlength="100" value="{{ $initialDesignation }}" placeholder="Developer" autocomplete="organization-title">
                             <div class="form-text">পদবি না দিলে এই অংশটি দেখাবে না</div>
                         </div>
 
@@ -95,8 +102,9 @@
                         @include('partials.celebration-card-art', [
                             'settings' => $settings,
                             'cardId' => 'celebrationCard',
-                            'cardName' => 'আপনার নাম',
-                            'cardDesignation' => 'আপনার পদবি',
+                            'cardName' => $initialName ?: 'Mir Javed Jeetu',
+                            'cardDesignation' => $initialDesignation ?: 'Developer',
+                            'cardPhoto' => $initialPhoto,
                         ])
                     </div>
                     <p class="text-muted text-center small mt-3 mb-0"><i class="fas fa-arrows-rotate me-1"></i>তথ্য পরিবর্তন করলে preview স্বয়ংক্রিয়ভাবে আপডেট হবে</p>
@@ -142,9 +150,11 @@
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
     .celebration-card-photo { position: absolute; z-index: 3; top: 7%; left: 50%; width: 28%; aspect-ratio: 1; transform: translateX(-50%); object-fit: cover; border: clamp(3px, .55vw, 7px) solid #fff; border-radius: 50%; box-shadow: 0 .45rem 1.25rem rgba(51, 34, 20, .2); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 3%; display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .celebration-template-person-name { color: #4b1213; font-size: clamp(1.35rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; }
-    .celebration-template-person-designation { color: #281a15; font-size: clamp(.9rem, 2.8vw, 1.75rem); font-weight: 600; margin-top: .6rem; }
+    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 2.2%; display: flex; flex-direction: column; align-items: center; gap: .35rem; text-align: center; }
+    .celebration-person-name,
+    .celebration-template-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
+    .celebration-person-designation,
+    .celebration-template-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -156,8 +166,8 @@
     .celebration-rule { width: 38%; height: 5px; margin: 4% 0 2%; border-radius: 99px; background: #c99f46; position: relative; }
     .celebration-rule span { position: absolute; width: 22%; height: 100%; left: 39%; border-radius: inherit; background: #8c2f39; }
     .celebration-person { margin-top: 1%; min-height: 19%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .celebration-person-name { color: #4b1213; font-size: clamp(1.35rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; }
-    .celebration-person-designation { color: #281a15; font-size: clamp(.9rem, 2.8vw, 1.75rem); font-weight: 600; margin-top: .6rem; }
+    .celebration-person-name { max-width: 90%; padding: .08em .42em; border: 2px solid rgba(177, 15, 25, .22); border-bottom: 3px solid #b10f19; border-radius: .4em; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 3px 10px rgba(80, 20, 15, .12); font-size: clamp(1.05rem, 3.7vw, 2.35rem); font-weight: 800; line-height: 1.12; }
+    .celebration-person-designation { padding: .05em .5em; border: 1px solid rgba(177, 15, 25, .25); border-radius: 999px; color: #b10f19; background: rgba(255, 248, 216, .94); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-size: clamp(.72rem, 2.1vw, 1.25rem); font-weight: 700; line-height: 1.25; }
     .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
@@ -183,10 +193,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareButton = document.getElementById('shareCardBtn');
     let busy = false;
 
+    const initialName = @js($initialName);
+    const initialDesignation = @js($initialDesignation);
+    const initialPhoto = @js($initialPhoto);
+    nameInput.placeholder = 'Mir Javed Jeetu';
+    designationInput.placeholder = 'Developer';
+    if (initialName) nameInput.value = initialName;
+    if (initialDesignation) designationInput.value = initialDesignation;
+    if (initialPhoto) {
+        photoElement.src = initialPhoto;
+        photoElement.style.display = 'block';
+    }
+
     function setCardText() {
         const name = nameInput.value.trim();
         const designation = designationInput.value.trim();
         card.querySelector('.celebration-person-name').textContent = name || 'আপনার নাম';
+        if (!name) card.querySelector('.celebration-person-name').textContent = 'Mir Javed Jeetu';
         const designationElement = card.querySelector('.celebration-person-designation');
         designationElement.textContent = designation;
         designationElement.style.display = designation ? '' : 'none';

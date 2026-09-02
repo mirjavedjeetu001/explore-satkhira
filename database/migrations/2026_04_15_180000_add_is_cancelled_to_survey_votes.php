@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('survey_votes', function (Blueprint $table) {
-            $table->boolean('is_cancelled')->default(false)->after('ip_address');
-        });
+        if (! Schema::hasColumn('survey_votes', 'is_cancelled')) {
+            Schema::table('survey_votes', function (Blueprint $table) {
+                $table->boolean('is_cancelled')->default(false)->after('ip_address');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('survey_votes', function (Blueprint $table) {
-            $table->dropColumn('is_cancelled');
-        });
+        if (Schema::hasColumn('survey_votes', 'is_cancelled')) {
+            Schema::table('survey_votes', function (Blueprint $table) {
+                $table->dropColumn('is_cancelled');
+            });
+        }
     }
 };
