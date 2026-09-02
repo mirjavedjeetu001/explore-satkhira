@@ -158,7 +158,7 @@
     .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 4%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .celebration-person-name,
     .celebration-template-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 2.8vw, 2.15rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
-    .celebration-template-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+    .celebration-template-person-designation { display: block; max-width: 90%; min-width: 0; overflow: hidden; padding: .06em .62em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: clip; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -173,7 +173,7 @@
     .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 3.2vw, 2.4rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .celebration-person-name.celebration-person-long,
     .celebration-template-person-name.celebration-person-long { font-size: clamp(.95rem, 2.45vw, 1.95rem); }
-    .celebration-person-designation { display: block; max-width: 84%; overflow: hidden; padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+    .celebration-person-designation { display: block; max-width: 90%; min-width: 0; overflow: hidden; padding: .06em .62em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #111; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.82rem, 1.9vw, 1.35rem); font-weight: 600; line-height: 1.2; white-space: nowrap; text-overflow: clip; }
     .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
@@ -213,15 +213,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareButton = document.getElementById('shareCardBtn');
     let busy = false;
 
+    function fitTextToBadge(element, minimumScale = .56) {
+        if (!element || element.style.display === 'none') return;
+
+        element.style.fontSize = '';
+        element.style.whiteSpace = 'nowrap';
+        element.style.overflowWrap = 'normal';
+        element.style.textOverflow = 'clip';
+        element.style.lineHeight = '';
+
+        let fontSize = parseFloat(getComputedStyle(element).fontSize);
+        const minimumFontSize = Math.max(12, fontSize * minimumScale);
+
+        while (element.scrollWidth > element.clientWidth + 1 && fontSize > minimumFontSize) {
+            fontSize = Math.max(minimumFontSize, fontSize - .5);
+            element.style.fontSize = `${fontSize}px`;
+        }
+
+        // Extremely long Bangla/English text remains visible instead of being clipped.
+        if (element.scrollWidth > element.clientWidth + 1) {
+            element.style.whiteSpace = 'normal';
+            element.style.overflowWrap = 'anywhere';
+            element.style.lineHeight = '1.08';
+        }
+    }
+
     function setCardText() {
         const name = nameInput.value.trim();
         const designation = designationInput.value.trim();
         const nameElement = card.querySelector('.celebration-person-name');
         nameElement.textContent = name || 'Mir Javed Jeetu';
         nameElement.classList.toggle('celebration-person-long', Array.from(name).length > 24);
+        fitTextToBadge(nameElement, .58);
         const designationElement = card.querySelector('.celebration-person-designation');
         designationElement.textContent = designation;
         designationElement.style.display = designation ? '' : 'none';
+        fitTextToBadge(designationElement, .52);
         const enabled = Boolean(name);
         [pngButton, jpgButton, shareButton].forEach(button => button.disabled = !enabled || busy);
     }
@@ -360,6 +387,8 @@ document.addEventListener('DOMContentLoaded', function () {
     jpgButton.addEventListener('click', () => downloadCard('jpg'));
     shareButton.addEventListener('click', shareCard);
     setCardText();
+    document.fonts?.ready.then(setCardText);
+    window.addEventListener('resize', setCardText, { passive: true });
 });
 </script>
 @endpush
