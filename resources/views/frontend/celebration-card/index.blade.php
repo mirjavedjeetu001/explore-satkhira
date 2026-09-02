@@ -147,13 +147,13 @@
     .celebration-preview-stage { padding: clamp(.5rem, 2vw, 1.5rem); border-radius: 1rem; background: radial-gradient(circle at top, #fffdf7 0%, #f0f2f5 72%); }
     .celebration-card-art { width: min(100%, 620px); aspect-ratio: 1 / 1; margin: 0 auto; color: #341712; }
     .celebration-card-surface { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: .75rem; background: #f4ecdf; box-shadow: 0 1rem 2.5rem rgba(51, 34, 20, .18); }
-    .celebration-card-photo { position: absolute; z-index: 3; top: 7%; left: 50%; width: 28%; aspect-ratio: 1; transform: translateX(-50%); object-fit: cover; border: clamp(3px, .55vw, 7px) solid #fff; border-radius: 50%; box-shadow: 0 .45rem 1.25rem rgba(51, 34, 20, .2); }
+    .celebration-card-photo { position: absolute; z-index: 3; top: 4%; left: 50%; width: 68%; height: 31%; transform: translateX(-50%); object-fit: cover; object-position: center 28%; border: clamp(4px, .65vw, 8px) solid #fff; border-radius: 1.25rem; box-shadow: 0 .55rem 1.4rem rgba(51, 34, 20, .22); }
     .celebration-card-template-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 2.5%; display: flex; flex-direction: column; align-items: center; gap: .15rem; text-align: center; }
+    .celebration-template-person { position: absolute; z-index: 3; left: 8%; right: 8%; bottom: 8%; display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center; }
     .celebration-person-name,
-    .celebration-template-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
+    .celebration-template-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 2.8vw, 2.15rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
     .celebration-person-designation,
-    .celebration-template-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
+    .celebration-template-person-designation { padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.78rem, 1.7vw, 1.2rem); font-weight: 600; line-height: 1.2; }
     .celebration-card-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
     .celebration-card-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 9% 8% 7%; text-align: center; }
     .celebration-brand { display: flex; align-items: center; justify-content: center; gap: 1.25%; margin-top: 4%; max-width: 80%; }
@@ -165,8 +165,10 @@
     .celebration-rule { width: 38%; height: 5px; margin: 4% 0 2%; border-radius: 99px; background: #c99f46; position: relative; }
     .celebration-rule span { position: absolute; width: 22%; height: 100%; left: 39%; border-radius: inherit; background: #8c2f39; }
     .celebration-person { margin-top: 1%; min-height: 19%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .08em .5em; border: 1px solid rgba(182, 138, 45, .62); border-bottom: 2px solid #b68a2d; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 8px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.95rem, 2.2vw, 1.7rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
-    .celebration-person-designation { padding: .04em .6em; border: 1px solid rgba(182, 138, 45, .48); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .86); box-shadow: 0 2px 6px rgba(80, 20, 15, .08); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.68rem, 1.35vw, 1rem); font-weight: 600; line-height: 1.2; }
+    .celebration-person-name { display: block; max-width: 90%; overflow: hidden; padding: .1em .62em; border: 2px solid rgba(182, 138, 45, .72); border-bottom: 4px solid #7f2330; border-radius: 999px; color: #7f2330; background: rgba(255, 252, 244, .95); box-shadow: 0 3px 12px rgba(80, 20, 15, .16); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(1.05rem, 2.8vw, 2.15rem); font-weight: 700; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
+    .celebration-person-name.celebration-person-long,
+    .celebration-template-person-name.celebration-person-long { font-size: clamp(.95rem, 2.2vw, 1.8rem); }
+    .celebration-person-designation { padding: .06em .72em; border: 2px solid rgba(182, 138, 45, .58); border-radius: 999px; color: #a36c17; background: rgba(255, 252, 244, .95); box-shadow: 0 2px 7px rgba(80, 20, 15, .1); font-family: Georgia, 'Times New Roman', 'Hind Siliguri', serif; font-size: clamp(.78rem, 1.7vw, 1.2rem); font-weight: 600; line-height: 1.2; }
     .celebration-footer { margin-top: auto; color: #766052; font-size: clamp(.7rem, 1.8vw, 1.1rem); font-weight: 600; }
     .letter-spacing-1 { letter-spacing: .12em; }
     @media (max-width: 575.98px) {
@@ -195,8 +197,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function setCardText() {
         const name = nameInput.value.trim();
         const designation = designationInput.value.trim();
-        card.querySelector('.celebration-person-name').textContent = name || 'আপনার নাম';
-        if (!name) card.querySelector('.celebration-person-name').textContent = 'Mir Javed Jeetu';
+        const nameElement = card.querySelector('.celebration-person-name');
+        nameElement.textContent = name || 'Mir Javed Jeetu';
+        nameElement.classList.toggle('celebration-person-long', Array.from(name).length > 24);
         const designationElement = card.querySelector('.celebration-person-designation');
         designationElement.textContent = designation;
         designationElement.style.display = designation ? '' : 'none';
